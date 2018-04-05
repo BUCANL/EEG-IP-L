@@ -3,39 +3,34 @@
 set -u
 functionsource="bids/code/lossless/misc/bashfunc"
 
-cat <<HEAD
-Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
+# Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
 
-Code written by Brad Kennedy
+# Code written by Brad Kennedy
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program (LICENSE.txt file in the root directory); if not, 
-write to the Free Software Foundation, Inc., 59 Temple Place,
-Suite 330, Boston, MA  02111-1307  USA
+# You should have received a copy of the GNU General Public License
+# along with this program (LICENSE.txt file in the root directory); if not, 
+# write to the Free Software Foundation, Inc., 59 Temple Place,
+# Suite 330, Boston, MA  02111-1307  USA
 
-******************************************************************************
-This is an interactive program designed to help you setup the remote side
-of this pipeline. You need to copy this folder structure to your remote
-server/cluster then from within the directory run ./setup-remote.sh from
-the root of the project folder (eeg_pipe_asr_amica by default you SHOULD
-change the name of this directory).
-
-We will test some things to ensure your environment is setup correctly
-and provide steps you may take in order to get your environment in the
-correct state to run the pipeline.
-
-HEAD
-
+# This is an interactive program designed to help you setup the remote side
+# of this pipeline. You need to copy this folder structure to your remote
+# server/cluster then from within the directory run ./setup-remote.sh from
+# the root of the project folder (eeg_pipe_asr_amica by default you SHOULD
+# change the name of this directory).
+#
+# We will test some things to ensure your environment is setup correctly
+# and provide steps you may take in order to get your environment in the
+# correct state to run the pipeline.
 
 echo "Moving to root of the project folder.."
 cd "$(dirname $BASH_SOURCE)"
