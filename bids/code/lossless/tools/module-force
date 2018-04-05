@@ -1,0 +1,51 @@
+#!/bin/bash
+##
+# Written by Brad Kennedy
+# Works around restrictions on module loading by forcing modules to load
+# without concern of prereqs or conflicts, you are expected to know what
+# you are doing when you use this tool but it is more helpful then
+# manually loading modules using export
+#
+# This tool prints the lines that will set environment variable to the module
+# therefore the results should be `eval`ed... it will not be set in the current
+# bash context unless you do, similar to ssh-agent's operation
+##
+
+if ! [ $1 ] || ! [ $2 ] ; then
+    echo -e "Usage:\neval \`module-force load <modulename>\`" 1>&2
+    exit 1
+fi
+
+set -eu
+swit=$1
+modulename=$2
+
+function __tmpdir {
+    echo "/tmp/`whoami`-force-module/`date '+%s'`-${RANDOM}/" 
+}
+
+
+# Get module file path
+# Sed removes everything but line two and removes : from that line
+mpath=`module show ${modulename} |& sed -n 's/:$//;2p'`
+
+if ! [ ${mpath} ] || ! [ -f ${mpath} ] ; then
+    echo "${modulename} is not a module/file" 1>&2
+    exit 1
+fi
+
+tempmoduledir=`__tmpdir`
+mkdir -p "${tempmoduledir}"
+
+fname=`basename ${modulename}`
+dname=`dirname ${modulename}`
+
+mkdir -p "${tempmoduledir}/${dname}"
+
+cp "${mpath}" "${tempmoduledir}/${modulename}"
+# Get rid of pesky prereqs and conflicts
+sed -i'' -e '/prereq/d' -e '/conflict/d' "${tempmoduledir}/${modulename}"
+
+echo MODULEPATH="${tempmoduledir}:${MODULEPATH}" module "${swit}" "${modulename}"
+
+

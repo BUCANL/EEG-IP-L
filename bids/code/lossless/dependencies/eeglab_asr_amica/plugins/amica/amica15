@@ -1,0 +1,45 @@
+#!/bin/bash
+
+set -eu
+
+amica_default="amica15-default"
+amica_avx2="amica15-avx2"
+hasavx2=
+
+if [ -e /proc/cpuinfo ] ; then
+	hasavx2=`grep flags /proc/cpuinfo | head -n 1 | grep -o avx2 || true`
+else 
+	echo "amica15 WARN: Could not check /proc/cpuinfo for" \
+		"extended ISA flags"
+fi
+
+thispath=`dirname "$0"`
+amica_chosen="${amica_default}"
+
+if [ ${hasavx2} ] ; then
+	if ! [ -e "${thispath}/${amica_avx2}" ] ; then
+		echo "amica15 WARN: We wanted to use ${amica_avx2}" \
+			"but it does not exist" \
+			"ensure you compile it using make ${amica_avx2}"
+	else
+		amica_chosen="${amica_avx2}"
+	fi
+fi
+
+echo amica15 INFO: Running \
+"\"${thispath}/${amica_chosen}" "$@""\""
+
+# System specific jobid printing
+
+if [ ${SLURM_JOBID:-""} ] ; then
+    echo "Scheduler: sbatch"
+    echo "Jobid is: ${SLURM_JOBID}"
+fi
+
+if [ ${SQ_JOBID:-""} ] ; then
+    echo "Scheduler: sqsub"
+    echo "Jobid is: ${SQ_JOBID}"
+fi
+
+
+"${thispath}/${amica_chosen}" $@

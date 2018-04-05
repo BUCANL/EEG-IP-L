@@ -1,0 +1,6 @@
+2017-07-25  Brad Kennedy  <bk@co60.ca>
+
+    * CHANGELOG: Change changelog format to actually contain changes
+    ensure you follow the format and put newer changes above this one
+
+    * eegplugin_interp_mont.m: Updated how we get the version number

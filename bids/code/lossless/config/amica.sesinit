@@ -1,0 +1,9 @@
+OMPI_MCA_mpi_cuda_support=0
+export OMPI_MCA_mpi_cuda_support
+
+# Unload everything incase the user has something else set
+module purge
+module load intel/17.0.1 ldwrapper torque/2.5.13 sq-tm/2.5
+# Uses module-force to force loading of incompatible packages
+eval `bids/code/lossless/tools/module-force load openmpi/intel/1.6.5`
+

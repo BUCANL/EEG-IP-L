@@ -1,0 +1,396 @@
+%% SCRIPT DESCRIPTION
+% This script features the main preprocessing and cleaning of the data before the ICA process begin. Data is flagged for high standard deveiavtion
+% by channel to remove comically bad channels. The data is then rereferenced to the average site, and high/low pass filtered.
+% Channel neighbor correlations are then calculated to find odd channels and bridged channels. The outermost channel is also flagged to reduce the rank of the data.
+% After another rereference channel correlations are calculated by time epoch and flagged. The file is saved containing the, marks structure, then saved again 
+% with all of the mentioned flags puregd from the data in order to prime it for ICA.
+%
+%% From Config          key_strswap         Description
+%-----------------------------------------------------------------------------------------------------------------------------
+%    in_path =           [in_path]           Relative path to input data files assuming cd = work_path
+%	 aref_trim =		 [aref_trim]         Trim of mean for initial average rereference (e.g. 30 = 15% off each side)
+% 	 recur_sec =         [recur_sec]         Recurrence (sec) for artifact detection epoching (e.g. .5, Default 1)
+%    limit_sec =         [limit_sec]         Limits (sec) for artifact detection epoching (e.g. [-.5 0], Default [0 recur_sec])
+%    sd_epoch_z =        [sd_epoch_z]        z threshold for flagging epochs during standard deviation criteria (e.g. 6)
+%    sd_epoch_p =        [sd_epoch_p]        Percentage of flagged channels required to flag an epoch during standard deviation criteria (e.g. .1)
+%    sd_epoch_trim =     [sd_epoch_trim]     Percentage trim for confidence intervals during epoch standard deviation criteria (10 = 5% top and bottom)
+%    sd_epoch_pad =      [sd_epoch_pad]      Number of windows to pad onto each side of the ch_sd time flag
+%    sd_chan_z =         [sd_chan_z]         z threshold for flagging channel during standard deviation criteria (e.g. 6)
+%    sd_chan_p =         [sd_chan_p]         Percentage of flagged epochs required to flag a channel during standard deviation criteria (e.g. .1)
+%    sd_chan_trim =      [sd_chan_trim]      Percentage trim for confidence intervals during channel standard deviation criteria (10 = 5% top and bottom)
+%    ref_loc_file =      [ref_loc_file]      Name of file containing the reference locations (including the relative path)    
+%    low_bound_hz =      [low_bound_hz]      Lower bound of the filter bass-band
+%    high_bound_hz =     [high_bound_hz]     Upper bound of the filter bass-band
+%    n_neighb_chan =     [n_neighb_chan]     Number of channels to use in nearest neighbour r calculation (for channel criteria)
+%    r_chan_z =          [r_chan_z]          z threshold for flagging channel during neighbour r criteria (e.g. 3)
+%    r_chan_p =          [r_chan_p]          Percentage of flagged epochs required to flag a channel during neighbour r criteria (e.g. .1)
+%    r_chan_trim =       [r_chan_trim]       Percentage trim for confidence intervals during channel neighbour r criteria (10 = 5% top and bottom)
+%    bridge_trim =       [bridge_trim]       Percentage trim for z calculation of bridged channels (e.g. 40 = 20% top and bottom)
+%    bridge_z =          [bridge_z]          z threshold for flagging channel during bridging criteria (e.g. 8)
+%    n_neighb_epoch =    [n_neighb_epoch]    Number of channels to use in nearest neighbour r calculation (for epoch criteria)
+%    epoch_z =           [epoch_z]           z threshold for flagging epochs during neighbour r criteria (e.g. 3)
+%    epoch_p =           [epoch_p]           Percentage of flagged channels required to flag an epoch during neighbour r criteria (e.g. .1)
+%    epoch_trim =        [epoch_trim]        Percentage trim for confidence intervals during epoch neighbour r criteria (10 = 5% top and bottom)
+%    min_gap_ms =        [min_gap_ms]        Minimum time (ms) to allow between periods marked for rejection
+%    out_path =          [out_path]          Relative path to output data files assuming cd = work_path
+%    amica_param_file =  [amica_param_file]  template amicadefs.param file to modify.
+%    save_diff =         [savediff]          YES if you want to save the filter residuals (Default: NO)
+
+%% LOAD DATASET
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Check if it is a .set file
+logging_log('NOTICE', 'Starting scalpart');
+[path name ext] = fileparts('[batch_dfn]');
+if ~strcmp(ext,'.set')
+    logging_log('ERROR', sprintf('Wrong file format: %s should be .set',ext));
+    exit(1);
+end
+
+%Load the .set file
+logging_log('INFO', 'Loading set file: [batch_dfn]...');
+EEG = pop_loadset('filename','[batch_dfn]');
+EEG = eeg_checkset( EEG );
+
+% Apply trimmed average re-reference
+trm_m = ve_trimmean(EEG.data,[aref_trim],2);
+trm_m_mat = repmat(trm_m,size(EEG.data,1),1);
+EEG.data = EEG.data - trm_m_mat;
+clear trm_m_mat;
+
+% Window the continuous data
+logging_log('INFO', 'Windowing the continous data...');
+EEG = marks_continuous2epochs(EEG,'recurrence',[[recur_sec]],'limits',[[limit_sec]]);
+logging_log('INFO', 'LOADED DATASET...');
+
+%% CALCULATE DATA SD
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This flag calculates the standard deviation  of the channels. Epochs are flagged if they
+% are above the SD critical value. This flag identifies comically bad epochs.
+
+% Calculate standard deviation of activation on non-'manual' flagged channels and epochs...
+logging_log('INFO', 'Calculating the data sd array for time criteria...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
+[EEG,EEG.data_sd_t]=chan_variance(EEG,'data_field','data', ...
+    'chan_inds',chan_inds, ...
+    'epoch_inds',epoch_inds, ...
+    'plot_figs','off');
+logging_log('INFO', 'CALCULATED EPOCH SD...');
+
+% Create the window criteria vector for flagging ch_sd time_info...
+logging_log('INFO', 'Assessing window data sd distributions...')
+if strcmp([sd_t_meth],'na');
+    EEG.c_data_sd_t=zeros(size(EEG.data_sd_t));
+    flag_sd_t_inds=[];
+else
+    [EEG.c_data_sd_t,flag_sd_t_inds]=marks_array2flags(EEG.data_sd_t, ...
+        'flag_dim','col', ...
+        'init_method',[sd_t_meth], ...
+        'init_vals',[sd_t_vals], ...
+        'init_crit',[sd_t_o], ...
+        'flag_method','fixed', ...
+        'flag_val',[sd_t_p], ...
+        'plot_figs','off');
+end
+logging_log('INFO', 'CREATED EPOCH CRITERIA VECTOR...');
+
+% Edit the time flag info structure
+logging_log('INFO', 'Updating epflaginfo structure...');
+chsd_epoch_flags = zeros(size(EEG.data(1,:,:)));
+chsd_epoch_flags(1,:,epoch_inds(flag_sd_t_inds))=1;
+chsd_epoch_flags=padflags(EEG,chsd_epoch_flags,[sd_t_pad],'value',.5);
+EEG.marks = marks_add_label(EEG.marks,'time_info', ...
+{'ch_sd',[0,0,1],chsd_epoch_flags});
+logging_log('INFO', 'EDITED TIMEFLAGINFO STRUCT...');
+
+% Combine ch_sd time_info flags into 'manual'...
+EEG = pop_marks_merge_labels(EEG,'time_info',{'ch_sd'},'target_label','manual');
+logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
+
+%% CALCULATE DATA SD
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This flag calculates the standard deviation  of the channels. Channels are flagged if they
+% are above the SD critical value. This flag identifies comically bad channels.
+
+% Calculate standard deviation of activation on non-'manual' flagged channels and epochs...
+logging_log('INFO', 'Calculating the data sd array for channel criteria...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
+[EEG,EEG.data_sd_ch]=chan_variance(EEG,'data_field','data', ...
+    'chan_inds',chan_inds, ...
+    'epoch_inds',epoch_inds, ...
+    'plot_figs','off');
+logging_log('INFO', 'CALCULATED CHAN SD...');
+
+% Create the window criteria vector for flagging ch_sd chan_info...
+logging_log('INFO', 'Assessing window data sd distributions...')
+[EEG.c_data_sd_ch,flag_sd_ch_inds]=marks_array2flags(EEG.data_sd_ch, ...
+    'flag_dim','row', ...
+    'init_method',[sd_ch_meth], ...
+    'init_vals',[sd_ch_vals], ...
+    'init_crit',[sd_ch_o], ...
+    'flag_method','fixed', ...
+    'flag_val',[sd_ch_p], ...
+    'plot_figs','off');
+logging_log('INFO', 'CREATED CHANNEL CRITERIA VECTOR...');
+
+% Edit the channel flag info structure
+logging_log('INFO', 'Updating chflaginfo structure...');
+chsd_chan_flags = zeros(EEG.nbchan,1);
+chsd_chan_flags(chan_inds(flag_sd_ch_inds)) = 1;
+EEG.marks = marks_add_label(EEG.marks,'chan_info', ...
+{'ch_sd',[.7,.7,1],[.2,.2,1],-1,chsd_chan_flags});
+logging_log('INFO', 'EDITED CHANFLAGINFO STRUCT...');
+
+% Combine ch_sd chan_info flags into 'manual'...
+EEG = pop_marks_merge_labels(EEG,'chan_info',{'ch_sd'},'target_label','manual');
+logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
+
+% Concatenate epoched data back to continuous data
+logging_log('INFO', 'Concatenating windowed data...');
+EEG = marks_epochs2continuous(EEG);
+EEG = eeg_checkset(EEG,'eventconsistency');
+logging_log('INFO', 'CONCATENATED THE WINDOWED DATA INTO CONTINUOUS DATA...');
+
+%% REREFERENCE TO INTERPOLATED AVERAGE SITE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Rereference the data to an average interpolated site containing 19 channels
+% ... excluding 'manual' flagged channels from the calculation
+
+logging_log('INFO', 'Rereferencing to averaged interpolated site...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+EEG = interp_ref(EEG,'[ref_loc_file]','chans',chan_inds);
+EEG = eeg_checkset(EEG);
+logging_log('INFO', 'REREFERENCED TO INTERPOLATED AVERAGE SITE...');
+
+%% FILTER HIGH PASS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filters the data to remove frequencies lower than the selected value. The residuals that
+% were removed can be saved for further analysis if needed.
+
+logging_log('INFO', 'High pass filtering the data...');
+prefiltdata = EEG.data;
+EEG = pop_eegfiltnew(EEG,[],[low_bound_hz],[],true,[],0);
+EEG.setname = 'filtHP';
+EEG = eeg_checkset( EEG );
+if strcmp('[savediff]','YES')
+    % Save copy of filter difference
+    logging_log('DEBUG', 'Saving file: [batch_dfn,_,-1]_hpdiff.set...');
+    postfiltdata = EEG.data;
+    EEG.data = prefiltdata - EEG.data;
+    EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpdiff.set');
+    EEG.data = postfiltdata;
+    logging_log('DEBUG', 'TIME TO: SAVE hpdiff FILE...');
+end
+logging_log('INFO', 'FILTERED HIGH PASS...');
+
+%% FILTER LOW PASS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Filters the data to remove frequencies higher the selected value. The residuals that
+% were removed can be saved for further analysis if needed.
+
+logging_log('INFO', 'Low pass filtering the data...');
+prefiltdata = EEG.data;
+EEG = pop_eegfiltnew(EEG,[],[high_bound_hz],[],0,[],0);
+EEG.setname = 'filtLP';
+EEG = eeg_checkset( EEG );
+if strcmp('[savediff]','YES')
+    % Save copy of filter difference
+    logging_log('DEBUG', 'Saving file: [batch_dfn,_,-1]_lpdiff.set...');
+    postfiltdata = EEG.data;
+    EEG.data = prefiltdata - EEG.data;
+    EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpdiff.set');
+    EEG.data = postfiltdata;
+    logging_log('INFO', 'SAVED hpdiff FILE...');
+end
+logging_log('INFO', 'FILTERED LOW PASS...');
+clear prefiltdata
+
+%% CALCULATE NEAREST NEIGHBOUR R VALUES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Checks neighboring channels for too high or low of a correlation.
+
+% Window the continuous data
+logging_log('INFO', 'Windowing the continous data...');
+EEG = marks_continuous2epochs(EEG,'recurrence',[[recur_sec]],'limits',[[limit_sec]]);
+logging_log('INFO', 'WINDOWED THE CONTINUOUS DATA...');
+
+% Calculate nearest neighbout correlation on non-'manual' flagged channels and epochs...
+logging_log('INFO', 'Calculating nearst neighbour r array for channel criteria...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
+[EEG,EEG.data_r_ch,~,~,~] = chan_neighbour_r(EEG, ...
+    [n_nbr_ch],'max', ...
+    'chan_inds',chan_inds, ...
+    'epoch_inds',epoch_inds, ...
+    'plot_figs','off');
+
+% Create the window criteria vector for flagging low_r chan_info...
+logging_log('INFO', 'Assessing channel r distributions criteria...')
+[EEG.c_data_r_ch,flag_r_ch_inds]=marks_array2flags(EEG.data_r_ch, ...
+    'flag_dim','row', ...
+    'init_method',[r_ch_meth], ...
+    'init_vals',[r_ch_vals], ...
+    'init_crit',[r_ch_o], ...
+    'flag_method','fixed', ...
+    'flag_val',[r_ch_p], ...
+    'plot_figs','off');
+
+% Edit the channel flag info structure
+logging_log('INFO', 'Updating chflaginfo structure...');
+lowr_chan_flags = zeros(EEG.nbchan,1);
+lowr_chan_flags(chan_inds(flag_r_ch_inds))=1;
+EEG.marks = marks_add_label(EEG.marks,'chan_info', ...
+    {'low_r',[1,.7,.7],[1,.2,.2],-1,lowr_chan_flags});
+
+logging_log('INFO', 'CALCULATED NEAREST NEIGHBOUR R VALUES...');
+
+%% IDENTIFY BRIDGED CHANNELS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Uses the correlation of neighboors calculated to flag bridged channels.
+
+logging_log('INFO', 'Examing nearest neighbour r array for linked channels...');
+mr = mean(EEG.data_r_ch,2);
+sr = std(EEG.data_r_ch,[],2);
+msr = mr./sr;
+flag_b_chan_inds = find(msr>ve_trimmean(msr,[bridge_trim])+ve_trimstd(msr,[bridge_trim])*[bridge_z]);
+logging_log('INFO', 'IDENTIFIED BRIDGED CHANNELS...');
+
+% Edit the channel flag info structure
+logging_log('INFO', 'Updating chflaginfo structure...');
+lnkflags = zeros(EEG.nbchan,1);
+lnkflags(chan_inds(flag_b_chan_inds))=1;
+EEG.marks = marks_add_label(EEG.marks,'chan_info', ...
+    {'bridge',[.7,1,.7],[.2,1,.2],-1,lnkflags});
+logging_log('INFO', 'EDITED CHANFLAGINFO STRUCT...');
+
+% Combine low_rand bridge chan_info flags into 'manual'...
+EEG = pop_marks_merge_labels(EEG,'chan_info',{'low_r','bridge'},'target_label','manual');
+logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
+
+%% FLAG RANK CHAN
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Flags the channel that is the least unique (the best channel to remove prior 
+% to ICA in order to account for the rereference rank deficiency.
+
+logging_log('INFO', 'Updating chflaginfo structure...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+[r_max,rank_ind] = max(EEG.data_r_ch(chan_inds));
+rankflags = zeros(EEG.nbchan,1);
+rankflags(chan_inds(rank_ind))=1;
+EEG.marks = marks_add_label(EEG.marks,'chan_info', ...
+    {'rank',[.1,.1,.24],[.1,.1,.24],-1,rankflags});
+logging_log('INFO', 'EDITED CHANFLAGINFO STRUCT...');
+
+%% REREFERENCE TO INTERPOLATED AVERAGE SITE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Rereference the data to an average interpolated site containined 19 channels
+logging_log('INFO', 'Rereferencing to averaged interpolated site...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+EEG = interp_ref(EEG,'[ref_loc_file]','chans',chan_inds);
+EEG = eeg_checkset(EEG);
+logging_log('INFO', 'REREFERENCED TO INTERPOLATED AVERAGE SITE...');
+
+%% CALCULATE NEAREST NEIGHBOUR R VALUES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Similarly to the neighbor r calculation done between channels this section looks
+% at the correlation, but between all channels and for epochs of time. Time segmenents 
+% are flagged for removal.
+
+logging_log('INFO', 'Calculating nearest neighbour r array for window criteria...');
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
+[EEG,EEG.data_r_t,~,~,~] = chan_neighbour_r(EEG, ...
+    [n_nbr_t],'max', ...
+    'chan_inds',chan_inds, ...
+    'epoch_inds',epoch_inds, ...
+    'plotfigs','off');
+logging_log('INFO', 'CALCULATED NEAREST NEIGHBOUR R VALUES...');
+
+% Create the window criteria vector for flagging low_r time_info...
+logging_log('INFO', 'Assessing epoch r distributions criteria...')
+[EEG.c_data_r_t,flag_r_t_inds]=marks_array2flags(EEG.data_r_t, ...
+    'flag_dim','col', ...
+    'init_method',[r_t_meth], ...
+    'init_vals',[r_t_vals], ...
+    'init_crit',[r_t_o], ...
+    'flag_method','fixed', ...
+    'flag_val',[r_t_p], ...
+    'plot_figs','off');
+logging_log('INFO', 'CREATED EPOCH CRITERIA VECTOR...');
+
+% Edit the time flag info structure
+logging_log('INFO', 'Updating latflaginfo structure...');
+lowr_epoch_flags = zeros(size(EEG.data(1,:,:)));
+lowr_epoch_flags(1,:,epoch_inds(flag_r_t_inds))=1;
+EEG.marks = marks_add_label(EEG.marks,'time_info', ...
+    {'low_r',[0,1,0],lowr_epoch_flags});
+clear lowr_epoch_flags;
+logging_log('INFO', 'TIME TO: UPDATE REJECTION STRUCTURE...');
+
+% Combine low_r time_info flags into 'manual'...
+EEG = pop_marks_merge_labels(EEG,'time_info',{'low_r'},'target_label','manual');
+logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
+
+% Concatenate epoched data back to continuous data
+logging_log('INFO', 'Concatenating windowed data...');
+EEG = marks_epochs2continuous(EEG);
+EEG = eeg_checkset(EEG,'eventconsistency');
+logging_log('INFO', 'CONCATENATED THE WINDOWED DATA INTO CONTINUOUS DATA...');
+
+EEG=pop_marks_flag_gap(EEG,{'manual'},[min_gap_ms],'mark_gap',[.8,.8,.8],'offsets',[0 0],'ref_point','both');
+
+% Combine mark_gap time_info flags into 'manual'...
+EEG = pop_marks_merge_labels(EEG,'time_info',{'mark_gap'},'target_label','manual');
+logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
+
+%%%-----------------------------------------------------------------------
+%% SAVE sa.set FILE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO', 'Saving file: [batch_dfn,_,-1]_sa.set...');
+EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa.set');
+logging_log('INFO', 'SAVED sa FILE...');
+
+%%%-----------------------------------------------------------------------
+%% PREPARE FILE FOR AMICA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Purges the flagged data to make sure it is primed for ICA and creates the amica paramaeter file.
+
+% Removed flagged channels and time segments
+sprintf('%s','Purging flagged channels...\n');
+EEG = pop_marks_select_data(EEG,'channel marks',[],'labels',{'manual','rank'},'remove','on');
+EEG = pop_marks_select_data(EEG,'time marks',[],'labels',{'manual'},'remove','on');
+EEG = eeg_checkset(EEG);
+logging_log('INFO', 'TIME TO: PURGE DATA...');
+
+% Make sure EEG.data is doubles for use in amica
+EEG.data = double(EEG.data);
+
+% Save the SA purge file
+logging_log('INFO',sprintf('%s','Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa_purge.set...'));
+EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa_purge.set');
+
+% Save the AMICA parameter file
+swapstr = file_strswap('[amica_param_file]', ...
+    '[repstr_fdt_fname]','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa_purge.fdt', ...
+    '[repstr_outpath]','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_amicaout_init', ...
+    '[repstr_nbchan]', num2str(EEG.nbchan), ...
+    '[repstr_pnts]', sprintf('%12.0f',EEG.pnts), ...
+    '[repstr_tpp]', '[amica_threads_s02]', ...
+    '[repstr_pca]', num2str(EEG.nbchan));
+fidparam = fopen('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_init.param','w');
+fprintf(fidparam,'%s',swapstr);
+fclose(fidparam);
+
+% CREATE THE AMICA OUTPUT FOLDER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Needed for MPI jobs on cluster only in order to prevent a race effect bug.
+
+[~] = rmdir('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_amicaout_init','s');
+mkdir bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_amicaout_init;
+logging_log('INFO', 'Created Amica Output Folder');
+
+logging_log('INFO', 'Scalpart complete');
+logging_log('INFO', 'Scheduler: [scheduler]');
+print_chan_sample(EEG);

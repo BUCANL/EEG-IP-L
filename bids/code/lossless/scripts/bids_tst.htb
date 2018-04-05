@@ -1,0 +1,5 @@
+EEG = pop_loadset('filename','[batch_dfn]');
+EEG = eeg_checkset( EEG );
+
+EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa_purge.set');
+
