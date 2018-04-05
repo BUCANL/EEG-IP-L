@@ -1,7 +1,11 @@
-function electrodes=mk_electrodes(fname)
+function electrodes=mk_electrodes(EEG,fname)
 
-EEG = pop_loadset('filename',fname);
-
+% load current file only if it hasn't been loaded already
+if ~exist('EEG','var') || (exist('EEG','var') && isempty(EEG)) || ...
+  (~isempty(EEG) && ~strcmp(fname,[EEG.filepath '/' EEG.filename]));
+    EEG = pop_loadset('filename',fname);
+end
+disp(['Creating ' fname(1:end-8) '_electrodes.tsv file...']);
 electrodes={'name','x','y','z','type','material'};%description,sampling_frequency,low_cutoff,high_cutoff,notch,status
 
 for i=1:length(EEG.chanlocs);

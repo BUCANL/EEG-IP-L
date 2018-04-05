@@ -21,7 +21,7 @@
 
 logging_log('INFO', 'Loading set file: [batch_dfn,_,-1]_compart_data.set...');
 tic;
-EEG = pop_loadset('filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_compart_data.set');
+EEG = pop_loadset('filepath','[batch_dfp]','filename','/derivatives/lossless/[/,1,batch_dfn,_,-1]_compart_data.set');
 EEG = eeg_checkset( EEG );
 logging_log('INFO', 'TIME TO: LOAD DATASET...');
 toc

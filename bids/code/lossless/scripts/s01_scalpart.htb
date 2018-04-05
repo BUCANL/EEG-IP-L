@@ -49,7 +49,7 @@ end
 
 %Load the .set file
 logging_log('INFO', 'Loading set file: [batch_dfn]...');
-EEG = pop_loadset('filename','[batch_dfn]');
+EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
 EEG = eeg_checkset( EEG );
 
 % Apply trimmed average re-reference
@@ -349,6 +349,13 @@ logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
 %% SAVE sa.set FILE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 logging_log('INFO', 'Saving file: [batch_dfn,_,-1]_sa.set...');
+if ~exist('bids/derivatives/lossless/[/,1,batch_dfn,/,-1]','dir');
+    if strncmpi('/','[batch_dfn,/,-1]',1);
+        mkdir('bids/derivatives/lossless/[/,1,batch_dfn,/,-1]');
+    else
+        mkdir('bids/derivatives/lossless/[batch_dfn,/,-1]');
+    end
+end
 EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa.set');
 logging_log('INFO', 'SAVED sa FILE...');
 
