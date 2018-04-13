@@ -85,13 +85,13 @@ toc
 logging_log('INFO', 'Calculating the IC sd array for window criteria...');
 tic;
 epoch_inds=marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
-[EEG,EEG.icaact_sd1_t]=chan_variance(EEG,'data_field','icaact', ...
+[EEG,icaact_sd1_t]=chan_variance(EEG,'data_field','icaact', ...
 		'epoch_inds',epoch_inds, ...
 		'plot_figs','off');
 
 % Create the windowing sd criteria
 logging_log('INFO', 'Assessing window icaact sd distributions...')
-[EEG.c_icaact_sd1_t,flag_t_inds]=marks_array2flags(EEG.icaact_sd1_t, ...
+[~,flag_t_inds]=marks_array2flags(icaact_sd1_t, ...
     'flag_dim','col', ...
     'init_method',[sd_t_meth], ...
     'init_vals',[sd_t_vals], ...
@@ -169,6 +169,14 @@ toc;
 logging_log('INFO', 'Saving the Param files');
 sprintf('%s','Saving file: [batch_dfn,_,-1]_compart_data_purge.set...\n');
 EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_compart_data_purge.set');
+
+% Save diagnostic arrays
+try OCTAVE_VERSION;
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat',icaact_sd1_t);
+catch
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat',icaact_sd1_t);
+end
+
 %% SAVE AMICA PARAMETER FILES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % A parameter file need to be made for each of the ICAs running after this

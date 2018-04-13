@@ -147,7 +147,7 @@ toc
 logging_log('INFO', 'Calculating the IC sd array for window criteria...');
 tic;
 epoch_inds=marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
-[EEG,EEG.icaact_sd2_t]=chan_variance(EEG,'data_field','icaact', ...
+[EEG,icaact_sd2_t]=chan_variance(EEG,'data_field','icaact', ...
 		'epoch_inds',epoch_inds, ...
 		'varmeasure','absmean', ...
         'detrend','off', ...
@@ -155,7 +155,7 @@ epoch_inds=marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','
 
 % Creating the ic_sd component flag
 logging_log('INFO', 'Assessing window icaact sd distributions...')
-[EEG.c_icaact_sd2_t,flag_sd_t_inds]=marks_array2flags(EEG.icaact_sd2_t, ...
+[~,flag_sd_t_inds]=marks_array2flags(icaact_sd2_t, ...
     'flag_dim','col', ...
     'init_method',[sd_t_meth], ...
     'init_vals',[sd_t_vals], ...
@@ -182,7 +182,7 @@ clear icsd_epoch_flags;
 % Calculating the Theta/Alpha component flag
 logging_log('INFO', 'Calculating the theta/alpha IC power array for window criteria...');
 tic;
-[EEG,EEG.icaact_ta_t]=chan_variance(EEG,'data_field','icaact', ...
+[EEG,icaact_ta_t]=chan_variance(EEG,'data_field','icaact', ...
 		'epoch_inds',epoch_inds, ...
 		'detrend','on', ...
         'varmeasure','spect', ...
@@ -191,7 +191,7 @@ tic;
 
 % Creating the Theta/Alpha component flag
 logging_log('INFO', 'Assessing window icaact sd distributions...')
-[EEG.c_icaact_ta_t,flag_ta_t_inds]=marks_array2flags(EEG.icaact_ta_t, ...
+[~,flag_ta_t_inds]=marks_array2flags(icaact_ta_t, ...
     'flag_dim','col', ...
     'init_method',[sd_t_meth], ...
     'init_vals',[sd_t_vals], ...
@@ -218,7 +218,7 @@ clear icta_epoch_flags;
 % Calculating the Beta component flag
 logging_log('INFO', 'Calculating the beta IC power array for window criteria...');
 tic;
-[EEG,EEG.icaact_b_t]=chan_variance(EEG,'data_field','icaact', ...
+[EEG,icaact_b_t]=chan_variance(EEG,'data_field','icaact', ...
 		'epoch_inds',epoch_inds, ...
 		'detrend','on', ...
         'varmeasure','spect', ...
@@ -228,7 +228,7 @@ logging_log('INFO', 'TIME TO: CALCULATE BETA ICAACT POWER...');
 
 % Creating the Theta/Alpha component flag
 logging_log('INFO', 'Assessing window icaact sd distributions...')
-[EEG.c_icaact_b_t,flag_b_t_inds]=marks_array2flags(EEG.icaact_b_t, ...
+[~,flag_b_t_inds]=marks_array2flags(icaact_b_t, ...
     'flag_dim','col', ...
     'init_method',[sd_t_meth], ...
     'init_vals',[sd_t_vals], ...
@@ -276,14 +276,127 @@ EEG=pop_marks_merge_labels(EEG,'time_info',{'manual','ic_sd2','mark_gap'},'targe
 logging_log('INFO', 'TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
 toc
 
-%% SAVE IC DATA SET
+% begin prep for dipole fit
+logging_log('INFO','Checking for JVM...');
+javachk('jvm');
+
+% TODO(brad) this isn't added for some reason
+addpath([pwd '/bids/code/lossless/dependencies/eeglab_asr_amica/plugins/Fieldtrip-lite141209/src'])
+
+%% DIPFIT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Does the dipole fitting procedures. This takes a substantial amount of
+% time.
+% TODO: Make sure this is all needed, seems to be repeating things
+logging_log('INFO','FITTING DIPOLES...');
 tic;
-EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_concat_data.set');
-logging_log('INFO', 'TIME TO: SAVE IC DATA SET...');
+EEG = pop_dipfit_settings( EEG, 'hdmfile','bids/code/lossless/misc/standard_vol.mat', ...
+				'coordformat','MNI', ...
+				'mrifile','bids/code/lossless/misc/standard_mri.mat', ...
+				'chanfile','bids/code/lossless/misc/standard_1020.elc', ...
+				'coord_transform',[0 0 0 0 0 0 1 1 1] , ...
+				'chansel',[1:EEG.nbchan] );
+
+EEG = pop_multifit(EEG, [1:EEG.nbchan] ,'threshold',100,'plotopt',{'normlen' 'on'});
+
+EEG=eeg_checkset(EEG);
+logging_log('INFO','TIME TO: FIT DIPOLES...');
 toc
 
-logging_log('INFO', '**********CONCAT_DATA COMPLETE!**********');
+%% Use the ICMARC plugin 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ICMARC uses some kind of system to determine the probability of each 
+% component being one of the following classifications. Classifications based:
+
+% (blink)(neural)(heart)(lateye)(muscle)(mixed)
+% (  1  )(  2   )(  3  )(  4   )(  5   )(  6  )
+
+% Run ICMARC
+EEG = pop_ICMARC_interface(EEG, 'established_spatial_features', 0);
+
+%% MARK ICs FOR REJECTION BASED ON RV
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Creates marks based on dipfit and ICMARC results. Dipfit marks are added
+% for rejection while ICMARC are just for reference.
+
+%IC RISIDUAL VARIENCE FLAG
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Residuals greater than 15% are flagged
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH IC_RV...');
+tic;
+% Dipole criteria changed from 0.15 to 0.2 to be less sensitive
+EEG.reject.gcompreject(find([EEG.dipfit.model.rv]>.15))=1;
+EEG.reject.gcompreject(find(isnan([EEG.dipfit.model.rv])))=1;
+EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+	{'ic_rv',[1,0,0],[1,0,0],-1,EEG.reject.gcompreject'});
+logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+toc
+
+% COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...
+tic;
+EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
+logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
+toc
+
+
+%INCREASE ICMARC SENSITIVITY TO NON_MIXED SIGNALS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For all of the components, if it was classified as mixed
+% Double check to see if that criteria was over 75%, if not use the second
+% highest if it is over 25%
+logging_log('INFO','Increaseing sensitivity of ')
+for i = 1:length(EEG.reject.classtype)
+    if  EEG.reject.classtype(i) == 6
+        if EEG.reject.probabilities(i,6) < 0.75
+            leftovers = EEG.reject.probabilities(i,1:5);
+            [~,newclass] = max(leftovers);
+            if leftovers(newclass) > 0.25
+                EEG.reject.classtype(i) = newclass;
+                logging_log('INFO',['Changed component ' num2str(i) ' classifictaion from 6 to ' num2str(newclass)])
+            end
+        end
+    end
+end
+
+% The percent chance that the component is of each class, size is the number of components by 6 matrix.
+    %EEG.reject.probability
+% The highest percentage becomes the listed class, # corresponding to type
+    %EEG.reject.classtype
+
+
+%ICMARC NEURAL
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH IMARC NEURAL COMPS...');
+tic;
+ICMARC_neural = zeros([1,length(EEG.reject.classtype)]);
+ICMARC_neural(find(EEG.reject.classtype==2)) = 1;
+ICMARC_neural = ICMARC_neural';
+EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+	{'neural',[0,0.4,0.3],[0,0.4,0.3],1,ICMARC_neural});
+logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+toc
+
+%ICMARC BIO (blink,lateye,heart,muscle)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH IMARC GARBAGE COMPS...');
+tic;
+ICMARC_bio = zeros([1,length(EEG.reject.classtype)]);
+ICMARC_bio(find(EEG.reject.classtype~=2 & EEG.reject.classtype~=6)) = 1;
+ICMARC_bio = ICMARC_bio';
+EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+	{'bio',[0.4,0,0.3],[0.4,0,0.3],1,ICMARC_bio});
+logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+toc
+
+%% SAVE LOSSLESS DERIVATIVE *_eeg.set FILE (same name as the input file from the 
+% BIDS root directory [but located in the derivatives/lossless directory]).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO','Saving set file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_eeg.set...');
+tic;
+EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_eeg.set');
+logging_log('INFO','TIME TO: SAVE DIP DATA SET...');
+toc
+
 logging_log('INFO', 'Scheduler: [scheduler]');
 print_chan_sample(EEG);
 

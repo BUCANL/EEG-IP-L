@@ -72,7 +72,7 @@ logging_log('INFO', 'LOADED DATASET...');
 logging_log('INFO', 'Calculating the data sd array for time criteria...');
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
 epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
-[EEG,EEG.data_sd_t]=chan_variance(EEG,'data_field','data', ...
+[EEG,data_sd_t]=chan_variance(EEG,'data_field','data', ...
     'chan_inds',chan_inds, ...
     'epoch_inds',epoch_inds, ...
     'plot_figs','off');
@@ -81,10 +81,9 @@ logging_log('INFO', 'CALCULATED EPOCH SD...');
 % Create the window criteria vector for flagging ch_sd time_info...
 logging_log('INFO', 'Assessing window data sd distributions...')
 if strcmp([sd_t_meth],'na');
-    EEG.c_data_sd_t=zeros(size(EEG.data_sd_t));
     flag_sd_t_inds=[];
 else
-    [EEG.c_data_sd_t,flag_sd_t_inds]=marks_array2flags(EEG.data_sd_t, ...
+    [~,flag_sd_t_inds]=marks_array2flags(data_sd_t, ...
         'flag_dim','col', ...
         'init_method',[sd_t_meth], ...
         'init_vals',[sd_t_vals], ...
@@ -117,7 +116,7 @@ logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
 logging_log('INFO', 'Calculating the data sd array for channel criteria...');
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
 epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
-[EEG,EEG.data_sd_ch]=chan_variance(EEG,'data_field','data', ...
+[EEG,data_sd_ch]=chan_variance(EEG,'data_field','data', ...
     'chan_inds',chan_inds, ...
     'epoch_inds',epoch_inds, ...
     'plot_figs','off');
@@ -125,7 +124,7 @@ logging_log('INFO', 'CALCULATED CHAN SD...');
 
 % Create the window criteria vector for flagging ch_sd chan_info...
 logging_log('INFO', 'Assessing window data sd distributions...')
-[EEG.c_data_sd_ch,flag_sd_ch_inds]=marks_array2flags(EEG.data_sd_ch, ...
+[~,flag_sd_ch_inds]=marks_array2flags(data_sd_ch, ...
     'flag_dim','row', ...
     'init_method',[sd_ch_meth], ...
     'init_vals',[sd_ch_vals], ...
@@ -170,20 +169,23 @@ logging_log('INFO', 'REREFERENCED TO INTERPOLATED AVERAGE SITE...');
 % were removed can be saved for further analysis if needed.
 
 logging_log('INFO', 'High pass filtering the data...');
-prefiltdata = EEG.data;
+pre_hp_data = EEG.data;
 EEG = pop_eegfiltnew(EEG,[],[low_bound_hz],[],true,[],0);
 EEG.setname = 'filtHP';
 EEG = eeg_checkset( EEG );
 if strcmp('[savediff]','YES')
-    % Save copy of filter difference
-    logging_log('DEBUG', 'Saving file: [batch_dfn,_,-1]_hpdiff.set...');
-    postfiltdata = EEG.data;
-    EEG.data = prefiltdata - EEG.data;
-    EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpdiff.set');
-    EEG.data = postfiltdata;
-    logging_log('DEBUG', 'TIME TO: SAVE hpdiff FILE...');
+    % Save high pass filter residual data array
+    logging_log('DEBUG', 'Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat...');
+    data = pre_hp_data - EEG.data;
+    try OCTAVE_VERSION;
+        save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat',data);
+    catch
+        save('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat',data);
+    end
+    logging_log('DEBUG', 'TIME TO: SAVE bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat FILE...');
 end
 logging_log('INFO', 'FILTERED HIGH PASS...');
+clear pre_hp_data
 
 %% FILTER LOW PASS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,21 +193,23 @@ logging_log('INFO', 'FILTERED HIGH PASS...');
 % were removed can be saved for further analysis if needed.
 
 logging_log('INFO', 'Low pass filtering the data...');
-prefiltdata = EEG.data;
+pre_lp_data = EEG.data;
 EEG = pop_eegfiltnew(EEG,[],[high_bound_hz],[],0,[],0);
 EEG.setname = 'filtLP';
 EEG = eeg_checkset( EEG );
 if strcmp('[savediff]','YES')
-    % Save copy of filter difference
-    logging_log('DEBUG', 'Saving file: [batch_dfn,_,-1]_lpdiff.set...');
-    postfiltdata = EEG.data;
-    EEG.data = prefiltdata - EEG.data;
-    EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpdiff.set');
-    EEG.data = postfiltdata;
-    logging_log('INFO', 'SAVED hpdiff FILE...');
+    % Save high pass filter residual data array
+    logging_log('DEBUG', 'Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat...');
+    data = pre_lp_data - EEG.data;
+    try OCTAVE_VERSION;
+        save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat',data);
+    catch
+        save('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat',data);
+    end
+    logging_log('DEBUG', 'TIME TO: SAVE bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat FILE...');
 end
 logging_log('INFO', 'FILTERED LOW PASS...');
-clear prefiltdata
+clear pre_lp_data
 
 %% CALCULATE NEAREST NEIGHBOUR R VALUES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -220,7 +224,7 @@ logging_log('INFO', 'WINDOWED THE CONTINUOUS DATA...');
 logging_log('INFO', 'Calculating nearst neighbour r array for channel criteria...');
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
 epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
-[EEG,EEG.data_r_ch,~,~,~] = chan_neighbour_r(EEG, ...
+[EEG,data_r_ch,~,~,~] = chan_neighbour_r(EEG, ...
     [n_nbr_ch],'max', ...
     'chan_inds',chan_inds, ...
     'epoch_inds',epoch_inds, ...
@@ -228,7 +232,7 @@ epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert'
 
 % Create the window criteria vector for flagging low_r chan_info...
 logging_log('INFO', 'Assessing channel r distributions criteria...')
-[EEG.c_data_r_ch,flag_r_ch_inds]=marks_array2flags(EEG.data_r_ch, ...
+[~,flag_r_ch_inds]=marks_array2flags(data_r_ch, ...
     'flag_dim','row', ...
     'init_method',[r_ch_meth], ...
     'init_vals',[r_ch_vals], ...
@@ -252,8 +256,8 @@ logging_log('INFO', 'CALCULATED NEAREST NEIGHBOUR R VALUES...');
 % Uses the correlation of neighboors calculated to flag bridged channels.
 
 logging_log('INFO', 'Examing nearest neighbour r array for linked channels...');
-mr = median(EEG.data_r_ch,2);
-iqrr = iqr(EEG.data_r_ch,2);
+mr = median(data_r_ch,2);
+iqrr = iqr(data_r_ch,2);
 msr = mr./iqrr;
 flag_b_chan_inds = find(msr>ve_trimmean(msr,[bridge_trim])+ve_trimstd(msr,[bridge_trim])*[bridge_z]);
 logging_log('INFO', 'IDENTIFIED BRIDGED CHANNELS...');
@@ -277,7 +281,7 @@ logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
 
 logging_log('INFO', 'Updating chflaginfo structure...');
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
-[r_max,rank_ind] = max(EEG.data_r_ch(chan_inds));
+[r_max,rank_ind] = max(data_r_ch(chan_inds));
 rankflags = zeros(EEG.nbchan,1);
 rankflags(chan_inds(rank_ind))=1;
 EEG.marks = marks_add_label(EEG.marks,'chan_info', ...
@@ -302,7 +306,7 @@ logging_log('INFO', 'REREFERENCED TO INTERPOLATED AVERAGE SITE...');
 logging_log('INFO', 'Calculating nearest neighbour r array for window criteria...');
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
 epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
-[EEG,EEG.data_r_t,~,~,~] = chan_neighbour_r(EEG, ...
+[EEG,data_r_t,~,~,~] = chan_neighbour_r(EEG, ...
     [n_nbr_t],'max', ...
     'chan_inds',chan_inds, ...
     'epoch_inds',epoch_inds, ...
@@ -311,7 +315,7 @@ logging_log('INFO', 'CALCULATED NEAREST NEIGHBOUR R VALUES...');
 
 % Create the window criteria vector for flagging low_r time_info...
 logging_log('INFO', 'Assessing epoch r distributions criteria...')
-[EEG.c_data_r_t,flag_r_t_inds]=marks_array2flags(EEG.data_r_t, ...
+[~,flag_r_t_inds]=marks_array2flags(data_r_t, ...
     'flag_dim','col', ...
     'init_method',[r_t_meth], ...
     'init_vals',[r_t_vals], ...
@@ -379,6 +383,19 @@ EEG.data = double(EEG.data);
 % Save the SA purge file
 logging_log('INFO',sprintf('%s','Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa_purge.set...'));
 EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_sa_purge.set');
+
+% Save diagnostic arrays
+try OCTAVE_VERSION;
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_t.mat',data_sd_t);
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_ch.mat',data_sd_ch);
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_ch.mat',data_r_ch);
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_t.mat',data_r_t);
+catch
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_t.mat',data_sd_t);
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_ch.mat',data_sd_ch);
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_ch.mat',data_r_ch);
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_t.mat',data_r_t);
+end
 
 % Save the AMICA parameter file
 swapstr = file_strswap('[amica_param_file]', ...
