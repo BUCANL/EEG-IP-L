@@ -41,8 +41,7 @@ function out = format_scheduler(~, job_spec)
         out = [out job_spec.job_init];
     end
     %The following line is not robust to varying folder structures...
-    retry_fails = 'bids/code/lossless/dependencies/eeglab_asr_amica/plugins/batch_context/batch/exec_func/retry-fails.sh';
-    out = sprintf('%s%s sbatch', out, retry_fails);
+    out = sprintf('%s sbatch', out);
     if ~isempty(job_spec.name)
         out = sprintf('%s --job-name=%s', out, job_spec.name);
     end

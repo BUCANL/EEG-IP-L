@@ -178,9 +178,9 @@ if [save_f_res]
     logging_log('DEBUG', 'Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat...');
     data = pre_hp_data - EEG.data;
     try OCTAVE_VERSION;
-        save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat',data);
+        save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat','data');
     catch
-        save('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat',data);
+        save('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat','data');
     end
     logging_log('DEBUG', 'TIME TO: SAVE bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat FILE...');
 end
@@ -202,9 +202,9 @@ if [save_f_res]
     logging_log('DEBUG', 'Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat...');
     data = pre_lp_data - EEG.data;
     try OCTAVE_VERSION;
-        save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat',data);
+        save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat','data');
     catch
-        save('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat',data);
+        save('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat','data');
     end
     logging_log('DEBUG', 'TIME TO: SAVE bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat FILE...');
 end
@@ -386,15 +386,15 @@ EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_t.mat',data_sd_t);
-    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_ch.mat',data_sd_ch);
-    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_ch.mat',data_r_ch);
-    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_t.mat',data_r_t);
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_t.mat','data_sd_t');
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_ch.mat','data_sd_ch');
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_ch.mat','data_r_ch');
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_t.mat','data_r_t');
 catch
-    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_t.mat',data_sd_t);
-    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_ch.mat',data_sd_ch);
-    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_ch.mat',data_r_ch);
-    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_t.mat',data_r_t);
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_t.mat','data_sd_t');
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_sd_ch.mat','data_sd_ch');
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_ch.mat','data_r_ch');
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_data_r_t.mat','data_r_t');
 end
 
 % Save the AMICA parameter file

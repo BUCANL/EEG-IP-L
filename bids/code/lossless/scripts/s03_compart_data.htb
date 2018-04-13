@@ -172,9 +172,9 @@ EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat',icaact_sd1_t);
+    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat','icaact_sd1_t');
 catch
-    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat',icaact_sd1_t);
+    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat','icaact_sd1_t');
 end
 
 %% SAVE AMICA PARAMETER FILES
