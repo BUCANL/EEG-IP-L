@@ -173,7 +173,7 @@ pre_hp_data = EEG.data;
 EEG = pop_eegfiltnew(EEG,[],[low_bound_hz],[],true,[],0);
 EEG.setname = 'filtHP';
 EEG = eeg_checkset( EEG );
-if strcmp('[savediff]','YES')
+if [save_f_res]
     % Save high pass filter residual data array
     logging_log('DEBUG', 'Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_hpd.mat...');
     data = pre_hp_data - EEG.data;
@@ -197,7 +197,7 @@ pre_lp_data = EEG.data;
 EEG = pop_eegfiltnew(EEG,[],[high_bound_hz],[],0,[],0);
 EEG.setname = 'filtLP';
 EEG = eeg_checkset( EEG );
-if strcmp('[savediff]','YES')
+if [save_f_res]
     % Save high pass filter residual data array
     logging_log('DEBUG', 'Saving file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_lpd.mat...');
     data = pre_lp_data - EEG.data;
