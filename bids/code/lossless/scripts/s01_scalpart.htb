@@ -36,6 +36,12 @@
 %    amica_param_file =  [amica_param_file]  template amicadefs.param file to modify.
 %    save_diff =         [savediff]          YES if you want to save the filter residuals (Default: NO)
 
+%% CHECK FOR OUTPUT PATH AND CRETAE IF NECESSARY
+if ~exist('bids/derivatives/lossless/[/,1,batch_dfn,/,-1]','dir');
+    disp('Making directory bids/derivatives/lossless/[/,1,batch_dfn,/,-1]');
+    mkdir bids/derivatives/lossless/[/,1,batch_dfn,/,-1]
+end
+
 %% LOAD DATASET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
