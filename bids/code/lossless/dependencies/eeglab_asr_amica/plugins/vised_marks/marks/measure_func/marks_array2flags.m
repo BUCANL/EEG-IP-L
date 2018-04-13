@@ -17,6 +17,8 @@ try g.flag_val; catch, g.flag_val=3; end; % value of percentage
 try g.trim; catch, g.trim=0; end;
 try g.plot_figs; catch, g.plot_figs='off';end;
 
+try g.title_prefix; catch, g.title_prefix='';end;
+
 %% if flagdir is column wise rotate the inarray.
 if strcmp(g.flag_dim,'col');
     inarray=inarray';
@@ -114,13 +116,12 @@ if strcmp(g.plot_figs,'on')
     
     if strcmp(g.flag_dim,'row')        
         figure;
-%        subplot(1,3,[1,2]);
         surf(double(inarray),'LineStyle','none');
         colorbar('WestOutside');
         axis('tight');
         view(0,90);
-        
-%        subplot(1,3,[3]);
+        title([g.title_prefix,'raw input array']);
+
         figure;
         scatter(1:length(m_dist),m_dist,20,...
             'MarkerEdgeColor',[.3 .3 .3],...
@@ -144,7 +145,7 @@ if strcmp(g.plot_figs,'on')
             'MarkerEdgeColor',[.3 .3 .7],...
             'MarkerFaceColor',[.3 .3 .7]);
         axis('tight');
-        %view(90,90)
+        title([g.title_prefix,'initial distributions with outliers']);
 
         figure;
         %subplot(1,3,[1,2]);
@@ -152,6 +153,7 @@ if strcmp(g.plot_figs,'on')
         colorbar('WestOutside');
         axis('tight');
         view(0,90);
+        title([g.title_prefix,'initial array of flagged outliers']);
         
         %subplot(1,3,[3]);
         figure;
@@ -159,15 +161,16 @@ if strcmp(g.plot_figs,'on')
         hold on;plot(ones(size(critrow))*rowthresh,'r');
         axis('tight');
         view(90,270)
+        title([g.title_prefix,'cutoff values']);
+
     else
         figure;
-%        subplot(1,3,[1,2]);
         surf(double(inarray),'LineStyle','none');
         colorbar('WestOutside');
         axis('tight');
         view(0,90);
+        title([g.title_prefix,'raw input array']);
         
-%        subplot(1,3,[3]);
         figure;
         scatter(1:length(m_dist),m_dist,20,...
             'MarkerEdgeColor',[.3 .3 .3],...
@@ -192,17 +195,20 @@ if strcmp(g.plot_figs,'on')
             'MarkerFaceColor',[.3 .3 .7]);
         axis('tight');
         view(90,270)
+        title([g.title_prefix,'initial distributions with outliers']);
         
         figure;
         %subplot(3,1,[1,2]);
         surf(outarray,'LineStyle','none');
         axis('tight');
         view(0,90);
+        title([g.title_prefix,'initial array of flagged outliers']);
         
         %subplot(3,1,[3]);
         figure;
         plot(critrow);
         hold on;plot(ones(size(critrow))*rowthresh,'r');
         axis('tight');
+        title([g.title_prefix,'cutoff values']);
     end
 end
