@@ -1,19 +1,19 @@
 # eeg_pipe_asr_amica
 
-This repository contains the eeg_pipe_asr_amica pipeline package that contains everything you need to get started processing EEG data.
+This repository contains the lossless EEG pipeline package that contains everything you need to get started processing EEG data.
 
 # Documentation
-All documentation is stored on [the Wiki](https://git.sharcnet.ca/jdesjard/bids_lossless_eeg/wikis/home)
+All documentation is stored on [the Wiki](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/home)
 
 ## Install
-You may find install/download instructions [here](https://git.sharcnet.ca/jdesjard/bids_lossless_eeg/wikis/install-download)
+You may find install/download instructions [here](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/install-download)
 
 ## Contribution Guide
-[The Contribution Guide](https://git.sharcnet.ca/jdesjard/bids_lossless_eeg/wikis/contributing)
+[The Contribution Guide](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/contributing)
 
 ## Contact / Issues
-Feel free to make an issue in the [Issue Tracker](https://git.sharcnet.ca/jdesjard/bids_lossless_eeg/issues)
-or [contact us directly](https://git.sharcnet.ca/jdesjard/bids_lossless_eeg/wikis/contributing#contacting-us)
+Feel free to make an issue in the [Issue Tracker](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/issues)
+or [contact us directly](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/contributing#contacting-us)
 
 ## License / Copyright
 
