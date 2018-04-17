@@ -1,15 +1,9 @@
-# eeg_pipe_asr_amica
+# The Lossless EEG Pipeline
 
 This repository contains the lossless EEG pipeline package that contains everything you need to get started processing EEG data.
 
 # Documentation
-All documentation is stored on [the Wiki](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/home)
-
-## Install
-You may find install/download instructions [here](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/install-download)
-
-## Contribution Guide
-[The Contribution Guide](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/contributing)
+All documentation including installation instructions is stored on the [Wiki](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/home)
 
 ## Contact / Issues
 Feel free to make an issue in the [Issue Tracker](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/issues)
