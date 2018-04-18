@@ -71,7 +71,7 @@ if checkset "amica-make" ; then
     bold "INFO:"; echo "Entering amica-make section.."
     # Avoid poluting the environment with subshell
     (
-    sesinit="`request_init amica-sbatch`"
+    sesinit="`request_init amica`"
     source "${sesinit}"
     bold "INFO:"; echo "Checking for required programs for building amica"
     test_which "make" "You need GNU/Make (make) in your path to compile"
@@ -97,7 +97,7 @@ fi
 if checkset "octave-pkgs" ; then
     # Avoid poluting the environment with subshell
     (
-    sesinit="`request_init octave-sbatch`"
+    sesinit="`request_init octave`"
     source "${sesinit}"
     bold "INFO:"; echo "Checking for octave"
     test_which "octave" "Octave is required to verify we have the correct packages"

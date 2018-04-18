@@ -1,4 +1,2 @@
-module unload intel;
-module unload octave;
-module load octave/3.8.1;
+module load octave;
 
