@@ -21,7 +21,7 @@
 
 logging_log('INFO', 'Loading set file: [batch_dfn,_,-1]_compart_data.set...');
 tic;
-EEG = pop_loadset('filepath','[batch_dfp]','filename','/derivatives/lossless/[/,1,batch_dfn,_,-1]_compart_data.set');
+EEG = pop_loadset('filepath','[in_path]','filename','[/,1,batch_dfn,_,-1]_compart_data.set');
 EEG = eeg_checkset( EEG );
 logging_log('INFO', 'TIME TO: LOAD DATASET...');
 toc
@@ -32,7 +32,7 @@ EEG.icachansind = marks_label2index(EEG.marks.chan_info,{'manual','rank'},'indic
 % Load Amica A
 logging_log('INFO', 'Loading Amica ABC...');
 tic;
-EEG.amica(2).models=loadmodout15('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_amicaout_A');
+EEG.amica(2).models=loadmodout15('[in_path]/[/,1,batch_dfn,_,-1]_amicaout_A');
 EEG.icaweights=EEG.amica(2).models.W;
 EEG.icasphere=EEG.amica(2).models.S(1:EEG.amica(2).models.num_pcs,:);
 
@@ -52,9 +52,9 @@ EEG.icawinv = [];
 EEG.icawinv = pinv(EEG.icaweights * EEG.icasphere);
 
 % Load Amica B
-EEG.amica(3).models=loadmodout15('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_amicaout_B');
+EEG.amica(3).models=loadmodout15('[in_path]/[/,1,batch_dfn,_,-1]_amicaout_B');
 % Load Amica C
-EEG.amica(4).models=loadmodout15('bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_amicaout_C');
+EEG.amica(4).models=loadmodout15('[in_path]/[/,1,batch_dfn,_,-1]_amicaout_C');
 logging_log('INFO', 'TIME TO: LOAD ICA ABC INFO...');
 toc
 
@@ -157,7 +157,7 @@ epoch_inds=marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','
 logging_log('INFO', 'Assessing window icaact sd distributions...')
 [~,flag_sd_t_inds]=marks_array2flags(icaact_sd2_t, ...
     'flag_dim','col', ...
-    'init_method',[sd_t_meth], ...
+    'init_method','[sd_t_meth]', ...
     'init_vals',[sd_t_vals], ...
     'init_crit',[sd_t_o], ...
     'flag_method','fixed', ...
@@ -193,7 +193,7 @@ tic;
 logging_log('INFO', 'Assessing window icaact sd distributions...')
 [~,flag_ta_t_inds]=marks_array2flags(icaact_ta_t, ...
     'flag_dim','col', ...
-    'init_method',[sd_t_meth], ...
+    'init_method','[sd_t_meth]', ...
     'init_vals',[sd_t_vals], ...
     'init_crit',[sd_t_o], ...
     'flag_method','fixed', ...
@@ -230,7 +230,7 @@ logging_log('INFO', 'TIME TO: CALCULATE BETA ICAACT POWER...');
 logging_log('INFO', 'Assessing window icaact sd distributions...')
 [~,flag_b_t_inds]=marks_array2flags(icaact_b_t, ...
     'flag_dim','col', ...
-    'init_method',[sd_t_meth], ...
+    'init_method','[sd_t_meth]', ...
     'init_vals',[sd_t_vals], ...
     'init_crit',[sd_t_o], ...
     'flag_method','fixed', ...
@@ -391,17 +391,17 @@ toc
 %% SAVE LOSSLESS DERIVATIVE *_eeg.set FILE (same name as the input file from the 
 % BIDS root directory [but located in the derivatives/lossless directory]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','Saving set file: bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_eeg.set...');
+logging_log('INFO','Saving set file: [out_path]/[/,1,batch_dfn,_,-1]_eeg.set...');
 tic;
-EEG = pop_saveset( EEG, 'filename','bids/derivatives/lossless/[/,1,batch_dfn,_,-1]_eeg.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_eeg.set');
 logging_log('INFO','TIME TO: SAVE DIP DATA SET...');
 toc
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat','icaact_sd2_t');
+    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd2_t');
 catch
-    save('bids/derivatives/lossless/[/,1,batch_dfn,.,-1]_icaact_sd1_t.mat','icaact_sd2_t');
+    save('[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd2_t');
 end
 
 logging_log('INFO', 'Scheduler: [scheduler]');
