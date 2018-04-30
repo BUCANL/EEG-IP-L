@@ -1,5 +1,7 @@
 # The Lossless EEG Pipeline
 
+![photo](www.cosc.brocku.ca/~tk11br/pipelineGraphic.png)
+
 This repository contains the lossless EEG pipeline package that contains everything you need to get started processing EEG data.
 
 # Documentation
