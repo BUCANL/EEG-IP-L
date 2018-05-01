@@ -2,7 +2,7 @@ warning off;
 
 pkg load signal;
 addpath([pwd '/bids/code/lossless/dependencies/eeglab_asr_amica'], ...
-  [pwd '/bids/code/lossless/dependencies/matlog']);
+  [pwd '/bids/derivatives/lossless/code/dependencies/matlog']);
 cd '[:,1,remote_project_work]';
 
 % eeglab auto loads the path correctly instead of shotgun blasting with

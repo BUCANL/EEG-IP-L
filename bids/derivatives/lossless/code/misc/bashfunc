@@ -1,5 +1,5 @@
 
-lockdir="bids/code/lossless/misc/locks"
+lockdir="bids/derivatives/lossless/code/misc/locks"
 
 # Colours
 B='\033[0;34m'
@@ -83,7 +83,7 @@ HEAD
     fi
     bold "INFO:" ; echo "$1 is not available, attempting to install it"
     bold "INFO:" ; echo "This will take some time, please wait patiently"
-    cd "bids/code/lossless/dependencies/Octave_pkg"
+    cd "bids/derivatives/lossless/code/dependencies/Octave_pkg"
     
     octave --eval "`cat <<HEAD
 try
@@ -141,9 +141,9 @@ function request_init {
     echo "You may need to select a different version based on your scheduler" >&2
     filen=""
     while ! [ -f "$filen" ]; do
-        read -e -p "File name: [bids/code/lossless/config/$1.sesinit]: " filen
+        read -e -p "File name: [bids/derivatives/lossless/code/config/$1.sesinit]: " filen
         if [ -z "$filen" ] ; then
-            filen="bids/code/lossless/config/$1.sesinit"
+            filen="bids/derivatives/lossless/code/config/$1.sesinit"
         fi
         if [ -f "$filen" ]; then
             echo "$filen"

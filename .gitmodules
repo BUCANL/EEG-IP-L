@@ -1,3 +1,0 @@
-[submodule "bids/code/lossless/dependencies/eeglab_asr_amica"]
-	path = bids/code/lossless/dependencies/eeglab_asr_amica
-	url = https://git.sharcnet.ca/bucanl_eeglab_versions/eeglab_lossless.git
