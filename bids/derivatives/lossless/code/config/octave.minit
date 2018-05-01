@@ -1,7 +1,7 @@
 warning off;
 
 pkg load signal;
-addpath([pwd '/bids/code/lossless/dependencies/eeglab_asr_amica'], ...
+addpath([pwd '/bids/derivatives/lossless/code/dependencies/eeglab_asr_amica'], ...
   [pwd '/bids/derivatives/lossless/code/dependencies/matlog']);
 cd '[:,1,remote_project_work]';
 
