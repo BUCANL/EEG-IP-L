@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -u
-functionsource="bids/code/lossless/misc/bashfunc"
+functionsource="bids/derivatives/lossless/code/misc/bashfunc"
 
 cat <<HEAD
 Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
@@ -47,8 +47,8 @@ source "$functionsource"
 bold "Begin Setup\n"
 
 bold "INFO:"; echo "Verify project submodules have been cloned"
-depend="bids/code/lossless/dependencies"
-msg="You likely need to run git clone --recursive https://git.sharcnet.ca/bucanl_pipelines/eeg_pipe_asr_amica.git with the --recursive flag"
+depend="bids/derivatives/lossless/code/dependencies"
+msg="You likely need to run git clone --recursive https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg.git with the --recursive flag"
 test_dir_exit "$depend/eeglab_asr_amica" "$msg"
 test_dir_exit "$depend/eeglab_asr_amica/plugins/amica" "$msg"
 test_dir_exit "$depend/eeglab_asr_amica/plugins/batch_context" "$msg"
@@ -62,7 +62,7 @@ mkdir -p bids/derivatives/lossless/log
 
 if checkset "executable-files" ; then
     bold "INFO:" echo "Ensuring files are executable"
-    test_exec "bids/code/lossless/tools/module-force"
+    test_exec "bids/derivatives/lossless/code/tools/module-force"
     test_exec "$depend/eeglab_asr_amica/plugins/amica/amica15"
     set_lockset "executable-files"
 fi
