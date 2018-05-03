@@ -59,7 +59,7 @@ EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
 EEG = eeg_checkset( EEG );
 
 % Apply trimmed average re-reference
-trm_m = ve_trimmean(EEG.data,[aref_trim],2);
+trm_m = ve_trimmean(EEG.data,[aref_trim],1);
 trm_m_mat = repmat(trm_m,size(EEG.data,1),1);
 EEG.data = EEG.data - trm_m_mat;
 clear trm_m_mat;
