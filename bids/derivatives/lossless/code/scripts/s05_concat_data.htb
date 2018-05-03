@@ -388,12 +388,12 @@ EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
 logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
 toc
 
-%% SAVE LOSSLESS DERIVATIVE *_eeg.set FILE (same name as the input file from the 
+%% SAVE LOSSLESS DERIVATIVE *_eeg_ll.set FILE (same name as the input file from the 
 % BIDS root directory [but located in the derivatives/lossless directory]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','Saving set file: [out_path]/[/,1,batch_dfn,_,-1]_eeg.set...');
+logging_log('INFO','Saving set file: [out_path]/[/,1,batch_dfn,_,-1]_eeg_ll.set...');
 tic;
-EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_eeg.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_eeg_ll.set');
 logging_log('INFO','TIME TO: SAVE DIP DATA SET...');
 toc
 
