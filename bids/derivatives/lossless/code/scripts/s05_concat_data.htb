@@ -399,9 +399,9 @@ toc
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd2_t');
+    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd2_t.mat','icaact_sd2_t');
 catch
-    save('[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd2_t');
+    save('[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd2_t.mat','icaact_sd2_t');
 end
 
 logging_log('INFO', 'Scheduler: [scheduler]');

@@ -8,17 +8,20 @@ tfh=gcf;
 %set(tfh,'Position',[ 1948 -9 1903 1049]);
 
 %RESET/INITIATE IC MARKS...
-%erase manual marks
 manual_ind=find(strcmp('manual',{EEG.marks.comp_info.label}));
-EEG.marks.comp_info(manual_ind).flags=zeros(size(EEG.marks.comp_info(manual_ind).flags));
+%EEG.marks.comp_info(manual_ind).flags=zeros(size(EEG.marks.comp_info(manual_ind).flags));
+neural_ind=marks_label2index(EEG.marks.comp_info,{'neural'},'indexes');
+EEG.marks.comp_info(manual_ind).flags(neural_ind)=0;
+bio_ind=marks_label2index(EEG.marks.comp_info,{'bio'},'indexes');
+EEG.marks.comp_info(manual_ind).flags(bio_ind)=1;
 
 %set mixed mark
-minx_ind=marks_label2index(EEG.marks.comp_info,{'ICMARC_neural','ICMARC_bio'},'flags','invert','on');
+minx_ind=marks_label2index(EEG.marks.comp_info,{'neural','bio'},'flags','invert','on');
 EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
 	{'mix',[0,.3,.4],[0,.3,.4],1,minx_ind'});
 
 
-qc_cortical_flags=marks_label2index(EEG.marks.comp_info,{'ICMARC_neural'},'flags');
+qc_cortical_flags=marks_label2index(EEG.marks.comp_info,{'neural'},'flags');
 EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
 	{'qc_cortical',[0,.6,0],[0,.6,0],1,zeros(size(qc_cortical_flags'))});
 
@@ -32,8 +35,15 @@ uiwait;
 try close(tfh),clear tfh, catch clear tfh, end
 
 %SAVE *_qc.SET DATASET FILE... 
-EEG = pop_saveset( EEG, 'filename','[batch_dfn,_,-1]_qc.set','filepath','analysis/data/3_check');
-EEG = eeg_checkset( EEG );
+%EEG = pop_saveset( EEG, 'filename','[batch_dfn,_,-1]_qc.set','filepath','analysis/data/3_check');
+%EEG = eeg_checkset( EEG );
 
+savejson('',EEG.marks.chan_info,'[batch_dfn,_,-1]_chan_info.json');
+system('gzip [batch_dfn,_,-1]_chan_info.json')
 
+savejson('',EEG.marks.comp_info,'[batch_dfn,_,-1]_comp_info.json');
+system('gzip [batch_dfn,_,-1]_comp_info.json')
+
+savejson('',EEG.marks.time_info,'[batch_dfn,_,-1]_time_info.json');
+system('gzip [batch_dfn,_,-1]_time_info.json')
 
