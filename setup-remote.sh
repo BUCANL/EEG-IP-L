@@ -101,12 +101,19 @@ if checkset "octave-pkgs" ; then
     source "${sesinit}"
     bold "INFO:"; echo "Checking for octave"
     test_which "octave" "Octave is required to verify we have the correct packages"
-    bold "INFO:"; echo "Checking if we have control and signal"
 
+    bold "INFO:"; echo "Checking if we have control, signal, struct, and parallel"
     test_octave_pkg "control" "control-3.0.0.tar.gz"
   
     bold "INFO:" ; echo "This will take some time, please wait patiently"
     test_octave_pkg "signal" "signal-1.3.2.tar.gz"
+
+    bold "INFO:" ; echo "This will take some time, please wait patiently"
+    test_octave_pkg "struct" "struct-1.0.14.tar.gz"
+
+    bold "INFO:" ; echo "This will take some time, please wait patiently"
+    test_octave_pkg "parallel" "parallel-3.1.1.tar.gz"
+
     )
     set_lockset "octave-pkgs"
 fi
