@@ -28,11 +28,11 @@ flag=1;
 end
 
 k=1;
-while k<=size(a,1),
+while k<=size(a,1);
     a1(k/2+0.5,:)=a(k,:);
     b1(k/2+.5)=b(k);
-    if k+1<=size(a,1);
-        a2(k/2+.5,:)=a(k+1,:);
+    if k+1<=size(a,2);
+        a2(k/2+.5,:)=a(:,k+1);
     end
     if k+1<=size(b,1);
         b2(k/2+.5)=b(k+1);
