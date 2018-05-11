@@ -35,15 +35,6 @@ uiwait;
 try close(tfh),clear tfh, catch clear tfh, end
 
 %SAVE *_qc.SET DATASET FILE... 
-%EEG = pop_saveset( EEG, 'filename','[batch_dfn,_,-1]_qc.set','filepath','analysis/data/3_check');
-%EEG = eeg_checkset( EEG );
-
-savejson('',EEG.marks.chan_info,'[batch_dfn,_,-1]_chan_info.json');
-system('gzip [batch_dfn,_,-1]_chan_info.json')
-
-savejson('',EEG.marks.comp_info,'[batch_dfn,_,-1]_comp_info.json');
-system('gzip [batch_dfn,_,-1]_comp_info.json')
-
-savejson('',EEG.marks.time_info,'[batch_dfn,_,-1]_time_info.json');
-system('gzip [batch_dfn,_,-1]_time_info.json')
+EEG = pop_saveset( EEG,'filename','[batch_dfn]','filepath','[batch_dfp]');
+init_bids_sub(EEG,'[batch_dfn,_,-2]','[_,-2,batch_dfn,.,-1]');
 
