@@ -265,7 +265,7 @@ logging_log('INFO', 'Examing nearest neighbour r array for linked channels...');
 mr = median(data_r_ch,2);
 iqrr = iqr(data_r_ch,2);
 msr = mr./iqrr;
-flag_b_chan_inds = find(msr>ve_trimmean(msr,[bridge_trim])+ve_trimstd(msr,[bridge_trim])*[bridge_z]);
+flag_b_chan_inds = find(msr>ve_trimmean(msr,[bridge_trim],1)+ve_trimstd(msr,[bridge_trim],1)*[bridge_z]);
 logging_log('INFO', 'IDENTIFIED BRIDGED CHANNELS...');
 
 % Edit the channel flag info structure
