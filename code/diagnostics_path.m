@@ -1,1 +1,1 @@
-addpath('bids/derivatives/lossless/code/tools/diagnostics');
+addpath('../derivatives/lossless/code/tools/diagnostics');

@@ -1,2 +1,2 @@
-addpath('bids/code/eeg_init');
+addpath('eeg_init');
 lossless_path;
