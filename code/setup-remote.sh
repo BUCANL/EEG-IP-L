@@ -58,7 +58,7 @@ test_dir_exit "$depend/eeglab_asr_amica/plugins/interp_mont" "$msg"
 #test_dir_warn "analysis/data/1_init" "Have you copied your data files?"
 
 bold "INFO:"; echo "Making required directories"
-mkdir -p bids/derivatives/lossless/log
+mkdir -p ../derivatives/lossless/log
 
 if checkset "executable-files" ; then
     bold "INFO:" echo "Ensuring files are executable"
