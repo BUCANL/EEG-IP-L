@@ -1,7 +1,7 @@
 warning off;
 
 addpath([pwd '/bids/code/lossless/dependencies/eeglab_asr_amica'], ...
-  [pwd '/bids/derivatives/lossless/code/dependencies/matlog']);
+  [pwd '/derivatives/lossless/code/dependencies/matlog']);
 
 % eeglab auto loads the path correctly instead of shotgun blasting with
 % addpath(genpath(<>)) as we were doing prior
