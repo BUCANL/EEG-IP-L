@@ -2,7 +2,7 @@ function init_bids_all(rootdir,fnamesuf,varargin)
 
 if nargin<2
    if ~exist('rootdir','var');
-       rootdir='bids/';
+       rootdir='';
    end
    if ~exist('fnamesuf','var');
        fnamesuf='';

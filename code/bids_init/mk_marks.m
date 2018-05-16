@@ -10,24 +10,31 @@ if isfield(EEG,'marks');
   % Loop takes a deep copy of the structure but ignores the 'flags' field
 
   chan_struct = struct();
-  for fn = fieldnames(EEG.marks.chan_info)'
-    if ~strcmp('flags',fn)
-      chan_struct.(fn{1}) = EEG.marks.chan_info.(fn{1});
-    end
+  
+  for si = 1:length(EEG.marks.chan_info);
+      for fn = fieldnames(EEG.marks.chan_info(si))'
+          if ~strcmp('flags',fn)
+              chan_struct(si).(fn{1}) = EEG.marks.chan_info(si).(fn{1});
+          end
+      end
   end
 
   comp_struct = struct();
-  for fn = fieldnames(EEG.marks.comp_info)'
-    if ~strcmp('flags',fn)
-      comp_struct.(fn{1}) = EEG.marks.comp_info.(fn{1});
-    end
+  for si = 1:length(EEG.marks.comp_info);
+      for fn = fieldnames(EEG.marks.comp_info)'
+          if ~strcmp('flags',fn)
+              comp_struct.(fn{1}) = EEG.marks.comp_info.(fn{1});
+          end
+      end
   end
-
-  time_truct = struct();
-  for fn = fieldnames(EEG.marks.time_info)'
-    if ~strcmp('flags',fn)
-      time_struct.(fn{1}) = EEG.marks.time_info.(fn{1});
-    end
+  
+  time_struct = struct();
+  for si = 1:length(EEG.marks.time_info);
+      for fn = fieldnames(EEG.marks.time_info)'
+          if ~strcmp('flags',fn)
+              time_struct.(fn{1}) = EEG.marks.time_info.(fn{1});
+          end
+      end
   end
-
+  
 end
