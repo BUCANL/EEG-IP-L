@@ -1,3 +1,0 @@
-[submodule "derivatives/lossless/code/dependencies/eeglab_asr_amica"]
-	path = derivatives/lossless/code/dependencies/eeglab_asr_amica
-	url = https://git.sharcnet.ca/bucanl_pipelines/eeg_pipe_asr_amica.git
