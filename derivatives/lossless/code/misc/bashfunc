@@ -1,5 +1,4 @@
-
-lockdir="derivatives/lossless/code/misc/locks"
+lockdir="../derivatives/lossless/code/misc/locks"
 
 # Colours
 B='\033[0;34m'
@@ -141,9 +140,9 @@ function request_init {
     echo "You may need to select a different version based on your scheduler" >&2
     filen=""
     while ! [ -f "$filen" ]; do
-        read -e -p "File name: [derivatives/lossless/code/config/$1.sesinit]: " filen
+        read -e -p "File name: [../derivatives/lossless/code/config/$1.sesinit]: " filen
         if [ -z "$filen" ] ; then
-            filen="derivatives/lossless/code/config/$1.sesinit"
+            filen="../derivatives/lossless/code/config/$1.sesinit"
         fi
         if [ -f "$filen" ]; then
             echo "$filen"
