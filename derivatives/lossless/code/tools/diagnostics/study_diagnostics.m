@@ -34,11 +34,11 @@ data_time = [];
 ica_chans = [];
 sub_names = [];
 
-sub_dir = dir('bids/derivatives/lossless/sub-*');
+sub_dir = dir('derivatives/lossless/sub-*');
 for i=1:length(sub_dir);
-    set_name = dir(['bids/derivatives/lossless/' sub_dir(i).name '/eeg/*set']);
+    set_name = dir(['derivatives/lossless/' sub_dir(i).name '/eeg/*set']);
     if ~isempty(set_name);
-        set_name = ['bids/derivatives/lossless/' sub_dir(i).name '/eeg/' set_name.name];
+        set_name = ['derivatives/lossless/' sub_dir(i).name '/eeg/' set_name.name];
         EEG = pop_loadset('filename',set_name,'loadmode','info');
     else
         EEG =[];
