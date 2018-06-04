@@ -37,9 +37,9 @@
 %    save_diff =         [savediff]          YES if you want to save the filter residuals (Default: NO)
 
 %% CHECK FOR OUTPUT PATH AND CRETAE IF NECESSARY
-if ~exist('[out_path]/[/,1,batch_dfn,/,-1]','dir');
-    disp('Making directory [out_path]/[/,1,batch_dfn,/,-1]');
-    mkdir [out_path]/[/,1,batch_dfn,/,-1]
+if ~exist('[out_path]/[batch_dfn,/,-1]','dir');
+    disp('Making directory [out_path]/[batch_dfn,/,-1]');
+    mkdir [out_path]/[batch_dfn,/,-1]
 end
 
 %% LOAD DATASET
@@ -181,14 +181,14 @@ EEG.setname = 'filtHP';
 EEG = eeg_checkset( EEG );
 if [save_f_res]
     % Save high pass filter residual data array
-    logging_log('DEBUG', 'Saving file: [out_path]/[/,1,batch_dfn,_,-1]_hpd.mat...');
+    logging_log('DEBUG', 'Saving file: [out_path]/[batch_dfn,_,-1]_hpd.mat...');
     data = pre_hp_data - EEG.data;
     try OCTAVE_VERSION;
-        save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_hpd.mat','data');
+        save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_hpd.mat','data');
     catch
-        save('[out_path]/[/,1,batch_dfn,_,-1]_hpd.mat','data');
+        save('[out_path]/[batch_dfn,_,-1]_hpd.mat','data');
     end
-    logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[/,1,batch_dfn,_,-1]_hpd.mat FILE...');
+    logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[batch_dfn,_,-1]_hpd.mat FILE...');
 end
 logging_log('INFO', 'FILTERED HIGH PASS...');
 clear pre_hp_data
@@ -205,14 +205,14 @@ EEG.setname = 'filtLP';
 EEG = eeg_checkset( EEG );
 if [save_f_res]
     % Save high pass filter residual data array
-    logging_log('DEBUG', 'Saving file: [out_path]/[/,1,batch_dfn,_,-1]_lpd.mat...');
+    logging_log('DEBUG', 'Saving file: [out_path]/[batch_dfn,_,-1]_lpd.mat...');
     data = pre_lp_data - EEG.data;
     try OCTAVE_VERSION;
-        save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_lpd.mat','data');
+        save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_lpd.mat','data');
     catch
-        save('[out_path]/[/,1,batch_dfn,_,-1]_lpd.mat','data');
+        save('[out_path]/[batch_dfn,_,-1]_lpd.mat','data');
     end
-    logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[/,1,batch_dfn,_,-1]_lpd.mat FILE...');
+    logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[batch_dfn,_,-1]_lpd.mat FILE...');
 end
 logging_log('INFO', 'FILTERED LOW PASS...');
 clear pre_lp_data
@@ -361,10 +361,10 @@ logging_log('INFO', 'COMBINED MARKS STRUCTURE INTO MANUAL FLAGS...');
 %% SAVE sa.set FILE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 logging_log('INFO', 'Saving file: [batch_dfn,_,-1]_sa.set...');
-if ~exist('[out_path]/[/,1,batch_dfn,/,-1]','dir');
-    mkdir('[out_path]/[/,1,batch_dfn,/,-1]');
+if ~exist('[out_path]/[batch_dfn,/,-1]','dir');
+    mkdir('[out_path]/[batch_dfn,/,-1]');
 end
-EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_sa.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_sa.set');
 logging_log('INFO', 'SAVED sa FILE...');
 
 %%%-----------------------------------------------------------------------
@@ -383,31 +383,31 @@ logging_log('INFO', 'TIME TO: PURGE DATA...');
 EEG.data = double(EEG.data);
 
 % Save the SA purge file
-logging_log('INFO',sprintf('%s','Saving file: [out_path]/[/,1,batch_dfn,_,-1]_sa_purge.set...'));
-EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_sa_purge.set');
+logging_log('INFO',sprintf('%s','Saving file: [out_path]/[batch_dfn,_,-1]_sa_purge.set...'));
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_sa_purge.set');
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_data_sd_t.mat','data_sd_t');
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_data_sd_ch.mat','data_sd_ch');
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_data_r_ch.mat','data_r_ch');
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_data_r_t.mat','data_r_t');
+    save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_data_sd_t.mat','data_sd_t');
+    save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_data_sd_ch.mat','data_sd_ch');
+    save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_data_r_ch.mat','data_r_ch');
+    save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_data_r_t.mat','data_r_t');
 catch
-    save('[out_path]/[/,1,batch_dfn,_,-1]_data_sd_t.mat','data_sd_t');
-    save('[out_path]/[/,1,batch_dfn,_,-1]_data_sd_ch.mat','data_sd_ch');
-    save('[out_path]/[/,1,batch_dfn,_,-1]_data_r_ch.mat','data_r_ch');
-    save('[out_path]/[/,1,batch_dfn,_,-1]_data_r_t.mat','data_r_t');
+    save('[out_path]/[batch_dfn,_,-1]_data_sd_t.mat','data_sd_t');
+    save('[out_path]/[batch_dfn,_,-1]_data_sd_ch.mat','data_sd_ch');
+    save('[out_path]/[batch_dfn,_,-1]_data_r_ch.mat','data_r_ch');
+    save('[out_path]/[batch_dfn,_,-1]_data_r_t.mat','data_r_t');
 end
 
 % Save the AMICA parameter file
 swapstr = file_strswap('[amica_param_file]', ...
-    '[repstr_fdt_fname]','[out_path]/[/,1,batch_dfn,_,-1]_sa_purge.fdt', ...
-    '[repstr_outpath]','[out_path]/[/,1,batch_dfn,_,-1]_amicaout_init', ...
+    '[repstr_fdt_fname]','[out_path]/[batch_dfn,_,-1]_sa_purge.fdt', ...
+    '[repstr_outpath]','[out_path]/[batch_dfn,_,-1]_amicaout_init', ...
     '[repstr_nbchan]', num2str(EEG.nbchan), ...
     '[repstr_pnts]', sprintf('%12.0f',EEG.pnts), ...
     '[repstr_tpp]', '[amica_threads_s02]', ...
     '[repstr_pca]', num2str(EEG.nbchan));
-fidparam = fopen('[out_path]/[/,1,batch_dfn,_,-1]_init.param','w');
+fidparam = fopen('[out_path]/[batch_dfn,_,-1]_init.param','w');
 fprintf(fidparam,'%s',swapstr);
 fclose(fidparam);
 
@@ -415,8 +415,8 @@ fclose(fidparam);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Needed for MPI jobs on cluster only in order to prevent a race effect bug.
 
-[~] = rmdir('[out_path]/[/,1,batch_dfn,_,-1]_amicaout_init','s');
-mkdir [out_path]/[/,1,batch_dfn,_,-1]_amicaout_init;
+[~] = rmdir('[out_path]/[batch_dfn,_,-1]_amicaout_init','s');
+mkdir [out_path]/[batch_dfn,_,-1]_amicaout_init;
 logging_log('INFO', 'Created Amica Output Folder');
 
 logging_log('INFO', 'Scalpart complete');

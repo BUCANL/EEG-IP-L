@@ -27,7 +27,7 @@
 % Load the EEG datafile
 logging_log('INFO', 'Loading set file: [batch_dfn,_,-1]_sa.set...');
 tic;
-EEG = pop_loadset('filepath','[in_path]','filename','[/,1,batch_dfn,_,-1]_sa.set');
+EEG = pop_loadset('filepath','[in_path]','filename','[batch_dfn,_,-1]_sa.set');
 EEG = eeg_checkset( EEG );
 logging_log('INFO', 'TIME TO: LOAD DATASET...');
 toc
@@ -38,7 +38,7 @@ icatimeind = find(~EEG.marks.time_info(1).flags);
 
 % Load AMICA Model 1
 tic;
-EEG.amica(1).models=loadmodout15('[out_path]/[/,1,batch_dfn,_,-1]_amicaout_init');
+EEG.amica(1).models=loadmodout15('[out_path]/[batch_dfn,_,-1]_amicaout_init');
 EEG.icaweights=EEG.amica(1).models.W;
 EEG.icasphere=EEG.amica(1).models.S(1:EEG.amica(1).models.num_pcs,:);
 EEG=eeg_checkset(EEG);
@@ -138,7 +138,7 @@ toc
 
 tic;
 logging_log('INFO', 'Saving file: [batch_dfn,_,-1]_compart_data.set...');
-EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_compart_data.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_compart_data.set');
 logging_log('INFO', 'TIME TO: SAVE compart_data FILE...');
 toc;
 %% SAVE compart_data_purge FILE
@@ -168,13 +168,13 @@ toc;
 % Saving File to enter next ICAs
 logging_log('INFO', 'Saving the Param files');
 sprintf('%s','Saving file: [batch_dfn,_,-1]_compart_data_purge.set...\n');
-EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_compart_data_purge.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_compart_data_purge.set');
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd1_t');
+    save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd1_t');
 catch
-    save('[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd1_t');
+    save('[out_path]/[batch_dfn,_,-1]_icaact_sd1_t.mat','icaact_sd1_t');
 end
 
 %% SAVE AMICA PARAMETER FILES
@@ -186,39 +186,39 @@ tic;
 % A
 % Saving AMICA Parameter File
 swapstr=file_strswap('[amica_param_file]', ...
-			'[repstr_fdt_fname]','[out_path]/[/,1,batch_dfn,_,-1]_compart_data_purge.fdt', ...
-			'[repstr_outpath]','[out_path]/[/,1,batch_dfn,_,-1]_amicaout_A', ...
+			'[repstr_fdt_fname]','[out_path]/[batch_dfn,_,-1]_compart_data_purge.fdt', ...
+			'[repstr_outpath]','[out_path]/[batch_dfn,_,-1]_amicaout_A', ...
 			'[repstr_nbchan]', num2str(EEG.nbchan), ...
 			'[repstr_pnts]', sprintf('%12.0f',EEG.pnts), ...
             '[repstr_tpp]', '[amica_threads_s07_08_09]', ...
 			'[repstr_pca]', num2str(EEG.nbchan));
-fidparam=fopen('[out_path]/[/,1,batch_dfn,_,-1]_A.param','w');
+fidparam=fopen('[out_path]/[batch_dfn,_,-1]_A.param','w');
 fprintf(fidparam,'%s',swapstr);
 fclose(fidparam);
 
 % B
 % Saving AMICA Parameter File
 swapstr=file_strswap('[amica_param_file]', ...
-			'[repstr_fdt_fname]','[out_path]/[/,1,batch_dfn,_,-1]_compart_data_purge.fdt', ...
-			'[repstr_outpath]','[out_path]/[/,1,batch_dfn,_,-1]_amicaout_B', ...
+			'[repstr_fdt_fname]','[out_path]/[batch_dfn,_,-1]_compart_data_purge.fdt', ...
+			'[repstr_outpath]','[out_path]/[batch_dfn,_,-1]_amicaout_B', ...
 			'[repstr_nbchan]', num2str(EEG.nbchan), ...
 			'[repstr_pnts]', sprintf('%12.0f',EEG.pnts), ...
             '[repstr_tpp]', '[amica_threads_s07_08_09]', ...
 			'[repstr_pca]', num2str(EEG.nbchan));
-fidparam=fopen('[out_path]/[/,1,batch_dfn,_,-1]_B.param','w');
+fidparam=fopen('[out_path]/[batch_dfn,_,-1]_B.param','w');
 fprintf(fidparam,'%s',swapstr);
 fclose(fidparam);
 
 % C
 % Saving AMICA Parameter File
 swapstr=file_strswap('[amica_param_file]', ...
-			'[repstr_fdt_fname]','[out_path]/[/,1,batch_dfn,_,-1]_compart_data_purge.fdt', ...
-			'[repstr_outpath]','[out_path]/[/,1,batch_dfn,_,-1]_amicaout_C', ...
+			'[repstr_fdt_fname]','[out_path]/[batch_dfn,_,-1]_compart_data_purge.fdt', ...
+			'[repstr_outpath]','[out_path]/[batch_dfn,_,-1]_amicaout_C', ...
 			'[repstr_nbchan]', num2str(EEG.nbchan), ...
 			'[repstr_pnts]', sprintf('%12.0f',EEG.pnts), ...
             '[repstr_tpp]', '[amica_threads_s07_08_09]', ...
 			'[repstr_pca]', num2str(EEG.nbchan));
-fidparam=fopen('[out_path]/[/,1,batch_dfn,_,-1]_C.param','w');
+fidparam=fopen('[out_path]/[batch_dfn,_,-1]_C.param','w');
 fprintf(fidparam,'%s',swapstr);
 fclose(fidparam);
 
@@ -226,14 +226,14 @@ fclose(fidparam);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Needed for MPI jobs on cluster. Otherwise race effect will occur.
 
-[~] = rmdir('[out_path]/[/,1,batch_dfn,_,-1]_amicaout_A','s');
-[~] = rmdir('[out_path]/[/,1,batch_dfn,_,-1]_amicaout_B','s');
-[~] = rmdir('[out_path]/[/,1,batch_dfn,_,-1]_amicaout_C','s');
+[~] = rmdir('[out_path]/[batch_dfn,_,-1]_amicaout_A','s');
+[~] = rmdir('[out_path]/[batch_dfn,_,-1]_amicaout_B','s');
+[~] = rmdir('[out_path]/[batch_dfn,_,-1]_amicaout_C','s');
 
 
-mkdir '[out_path]/[/,1,batch_dfn,_,-1]_amicaout_A';
-mkdir '[out_path]/[/,1,batch_dfn,_,-1]_amicaout_B';
-mkdir '[out_path]/[/,1,batch_dfn,_,-1]_amicaout_C';
+mkdir '[out_path]/[batch_dfn,_,-1]_amicaout_A';
+mkdir '[out_path]/[batch_dfn,_,-1]_amicaout_B';
+mkdir '[out_path]/[batch_dfn,_,-1]_amicaout_C';
 
 logging_log('INFO', 'TIME TO: CREATE AMICA PARAMETER FILES...');
 toc

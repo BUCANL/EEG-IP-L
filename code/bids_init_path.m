@@ -1,2 +1,2 @@
-addpath('bids_init');
+addpath('code/bids_init');
 lossless_path;

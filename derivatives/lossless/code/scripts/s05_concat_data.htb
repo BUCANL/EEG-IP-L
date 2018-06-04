@@ -21,7 +21,7 @@
 
 logging_log('INFO', 'Loading set file: [batch_dfn,_,-1]_compart_data.set...');
 tic;
-EEG = pop_loadset('filepath','[in_path]','filename','[/,1,batch_dfn,_,-1]_compart_data.set');
+EEG = pop_loadset('filepath','[in_path]','filename','[batch_dfn,_,-1]_compart_data.set');
 EEG = eeg_checkset( EEG );
 logging_log('INFO', 'TIME TO: LOAD DATASET...');
 toc
@@ -32,7 +32,7 @@ EEG.icachansind = marks_label2index(EEG.marks.chan_info,{'manual','rank'},'indic
 % Load Amica A
 logging_log('INFO', 'Loading Amica ABC...');
 tic;
-EEG.amica(2).models=loadmodout15('[in_path]/[/,1,batch_dfn,_,-1]_amicaout_A');
+EEG.amica(2).models=loadmodout15('[in_path]/[batch_dfn,_,-1]_amicaout_A');
 EEG.icaweights=EEG.amica(2).models.W;
 EEG.icasphere=EEG.amica(2).models.S(1:EEG.amica(2).models.num_pcs,:);
 
@@ -52,9 +52,9 @@ EEG.icawinv = [];
 EEG.icawinv = pinv(EEG.icaweights * EEG.icasphere);
 
 % Load Amica B
-EEG.amica(3).models=loadmodout15('[in_path]/[/,1,batch_dfn,_,-1]_amicaout_B');
+EEG.amica(3).models=loadmodout15('[in_path]/[batch_dfn,_,-1]_amicaout_B');
 % Load Amica C
-EEG.amica(4).models=loadmodout15('[in_path]/[/,1,batch_dfn,_,-1]_amicaout_C');
+EEG.amica(4).models=loadmodout15('[in_path]/[batch_dfn,_,-1]_amicaout_C');
 logging_log('INFO', 'TIME TO: LOAD ICA ABC INFO...');
 toc
 
@@ -303,6 +303,14 @@ EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
 toc
 
+%Adjust montage
+EEG = warp_locs( EEG, 'sourcedata/misc/standard_1005.elc', ...
+    'mesh','sourcedata/misc/standard_vol_SCCN.mat', ...
+    'transform',[0,0,0,0,0,1.57,1,1,1], ...
+    'manual','off');
+EEG.chaninfo.nosedir='+Y';
+EEG=eeg_checkset(EEG);
+
 %% Use the ICMARC plugin 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ICMARC uses some kind of system to determine the probability of each 
@@ -391,17 +399,17 @@ toc
 %% SAVE LOSSLESS DERIVATIVE *_eeg_ll.set FILE (same name as the input file from the 
 % BIDS root directory [but located in the derivatives/lossless directory]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','Saving set file: [out_path]/[/,1,batch_dfn,_,-1]_eeg_ll.set...');
+logging_log('INFO','Saving set file: [out_path]/[batch_dfn,_,-1]_eeg_ll.set...');
 tic;
-EEG = pop_saveset( EEG, 'filename','[out_path]/[/,1,batch_dfn,_,-1]_eeg_ll.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_eeg_ll.set');
 logging_log('INFO','TIME TO: SAVE DIP DATA SET...');
 toc
 
 % Save diagnostic arrays
 try OCTAVE_VERSION;
-    save('-mat7-binary','[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd2_t.mat','icaact_sd2_t');
+    save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_icaact_sd2_t.mat','icaact_sd2_t');
 catch
-    save('[out_path]/[/,1,batch_dfn,_,-1]_icaact_sd2_t.mat','icaact_sd2_t');
+    save('[out_path]/[batch_dfn,_,-1]_icaact_sd2_t.mat','icaact_sd2_t');
 end
 
 logging_log('INFO', 'Scheduler: [scheduler]');
