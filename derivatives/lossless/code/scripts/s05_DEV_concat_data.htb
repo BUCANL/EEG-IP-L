@@ -302,13 +302,17 @@ EEG = pop_dipfit_settings( EEG, 'hdmfile','derivatives/lossless/code/misc/standa
 
 % NEW MULTI-THREADED SETUP
 EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8, ...
-    'threshold',100,'plotopt',{'normlen' 'on'});
+    'dipoles',2,'threshold',100,'plotopt',{'normlen' 'on'});
 
 EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
 toc
 
-%IC RESIDUAL VARIANCE FLAG
+%% MARK ICs FOR REJECTION BASED ON RV
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Creates marks based on dipfit results. Dipfit marks are added
+% for rejection while ICMARC are just for reference.
+% IC RESIDUAL VARIANCE FLAG
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Residuals greater than 15% are flagged - can be done here as it only references
 % dipoles and their values.
@@ -322,6 +326,12 @@ EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
 logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
 toc
 
+% COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...
+tic;
+EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
+logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
+toc
+
 % Adjust montage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This will pretty much always be dataset specific - so be careful
@@ -332,27 +342,30 @@ EEG = warp_locs( EEG, 'sourcedata/misc/standard_1005.elc', ...
 EEG.chaninfo.nosedir='+Y';
 EEG=eeg_checkset(EEG);
 
-%% Use the ICMARC plugin 
+%% Use the ICLabel plugin 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ICMARC uses some kind of system to determine the probability of each 
-% component being one of the following classifications. Classifications based:
+% ICLabel is a database style plugin that classifies ICA components into the
+% following seven categories
 
-% (blink)(neural)(heart)(lateye)(muscle)(mixed)
-% (  1  )(  2   )(  3  )(  4   )(  5   )(  6  )
+% (Brain)(Muscle)(Eye)(Heart)(Line Noise)(Channel Noise)(Other)
+% (  1  )(  2   )( 3 )(  4  )(    5     )(      6      )(  7  )
 
-% Run ICMARC
-EEG = pop_ICMARC_interface(EEG, 'established_spatial_features', 0);
+% Colour structure and groupings are as follows:
+% ----------
+% Brain         -> [0, 0.4, 0]
+% ----------
+% Muscle        -> [0.4, 0, 0]
+% Eye           -> [0.8, 0, 0]
+% Heart         -> [0.8, 0.4, 0]
+% ----------
+% Line Noise    -> [0.2, 0.4, 0.8]
+% Channel noise -> [0.4, 0, 0.8]
+% ----------
+% Other         -> [0.8, 0.8, 0]
+% ----------
 
-%% MARK ICs FOR REJECTION BASED ON RV
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Creates marks based on dipfit and ICMARC results. Dipfit marks are added
-% for rejection while ICMARC are just for reference.
-
-% COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...
-tic;
-EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
-logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
-toc
+% Run ICLabel
+EEG = iclabel(EEG)
 
 %ICMARC NEURAL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
