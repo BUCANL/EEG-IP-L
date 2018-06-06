@@ -308,7 +308,23 @@ EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
 toc
 
-%Adjust montage
+%IC RESIDUAL VARIANCE FLAG
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Residuals greater than 15% are flagged - can be done here as it only references
+% dipoles and their values.
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH IC_RV...');
+tic;
+% Dipole criteria changed from 0.15 to 0.2 to be less sensitive
+EEG.reject.gcompreject(find([EEG.dipfit.model.rv]>.15))=1;
+EEG.reject.gcompreject(find(isnan([EEG.dipfit.model.rv])))=1;
+EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+	{'ic_rv',[1,0,0],[1,0,0],-1,EEG.reject.gcompreject'});
+logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+toc
+
+% Adjust montage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This will pretty much always be dataset specific - so be careful
 EEG = warp_locs( EEG, 'sourcedata/misc/standard_1005.elc', ...
     'mesh','sourcedata/misc/standard_vol_SCCN.mat', ...
     'transform',[0,0,0,0,0,1.57,1,1,1], ...
@@ -332,50 +348,11 @@ EEG = pop_ICMARC_interface(EEG, 'established_spatial_features', 0);
 % Creates marks based on dipfit and ICMARC results. Dipfit marks are added
 % for rejection while ICMARC are just for reference.
 
-%IC RISIDUAL VARIENCE FLAG
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Residuals greater than 15% are flagged
-logging_log('INFO','UPDATE MARKS STRUCTURE WITH IC_RV...');
-tic;
-% Dipole criteria changed from 0.15 to 0.2 to be less sensitive
-EEG.reject.gcompreject(find([EEG.dipfit.model.rv]>.15))=1;
-EEG.reject.gcompreject(find(isnan([EEG.dipfit.model.rv])))=1;
-EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'ic_rv',[1,0,0],[1,0,0],-1,EEG.reject.gcompreject'});
-logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
-toc
-
 % COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...
 tic;
 EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
 logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
 toc
-
-
-%INCREASE ICMARC SENSITIVITY TO NON_MIXED SIGNALS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% For all of the components, if it was classified as mixed
-% Double check to see if that criteria was over 75%, if not use the second
-% highest if it is over 25%
-logging_log('INFO','Increaseing sensitivity of ')
-for i = 1:length(EEG.reject.classtype)
-    if  EEG.reject.classtype(i) == 6
-        if EEG.reject.probabilities(i,6) < 0.75
-            leftovers = EEG.reject.probabilities(i,1:5);
-            [~,newclass] = max(leftovers);
-            if leftovers(newclass) > 0.25
-                EEG.reject.classtype(i) = newclass;
-                logging_log('INFO',['Changed component ' num2str(i) ' classifictaion from 6 to ' num2str(newclass)])
-            end
-        end
-    end
-end
-
-% The percent chance that the component is of each class, size is the number of components by 6 matrix.
-    %EEG.reject.probability
-% The highest percentage becomes the listed class, # corresponding to type
-    %EEG.reject.classtype
-
 
 %ICMARC NEURAL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
