@@ -380,7 +380,7 @@ lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
 % length(EEG.etc.ic_classification.ICLabel.classifications);
 
 % Run ICLabel
-EEG = iclabel(EEG)
+EEG = iclabel(EEG);
 
 % Extract labels from the structure.
 rawLabels = zeros([1,length(EEG.etc.ic_classification.ICLabel.classifications)]);
