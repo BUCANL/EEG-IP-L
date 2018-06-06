@@ -391,15 +391,16 @@ end
 
 %ICLabel Exporting to marks
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL COMPS...');
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
 tic;
-ICLabel_neural = zeros([1,length(rawLabels)]);
-ICLabel_neural(find(rawLabels==1)) = 1;
-ICLabel_neural = ICLabel_neural';
-EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'neural',[0, 0.4, 0],[0, 0.4, 0],1,ICLabel_neural});
-	
-
+for compStage = 1:7
+     ICLabel_pass= zeros([1,length(rawLabels)]);
+     ICLabel_pass(find(rawLabels==compStage)) = 1;
+     ICLabel_pass = ICLabel_pass';
+     EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+          {lookupTable(compStage).name,lookupTable(compStage).colour, ...
+          lookupTable(compStage).colour,1,ICLabel_pass});
+end
 logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
 toc
 
