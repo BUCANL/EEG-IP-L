@@ -364,30 +364,42 @@ EEG=eeg_checkset(EEG);
 % Other         -> [0.8, 0.8, 0]
 % ----------
 
+% Create lookup table of the above information.
+pairs = {'brain',[0, 0.4, 0];
+'muscle',[0.4,0,0];
+'eye',[0.8,0,0];
+'heart',[0.8,0.4,0];
+'line_noise',[0.2,0.4,0.8];
+'chan_noise',[0.4,0,0.8];
+'other',[0.8,0.8,0]}
+lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
+
+% Below code is how to call proper label lookup
+% [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
+% Below line should give you number of components
+% length(EEG.etc.ic_classification.ICLabel.classifications);
+
 % Run ICLabel
 EEG = iclabel(EEG)
 
-%ICMARC NEURAL
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','UPDATE MARKS STRUCTURE WITH IMARC NEURAL COMPS...');
-tic;
-ICMARC_neural = zeros([1,length(EEG.reject.classtype)]);
-ICMARC_neural(find(EEG.reject.classtype==2)) = 1;
-ICMARC_neural = ICMARC_neural';
-EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'neural',[0,0.4,0.3],[0,0.4,0.3],1,ICMARC_neural});
-logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
-toc
+% Extract labels from the structure.
+rawLabels = zeros([1,length(EEG.etc.ic_classification.ICLabel.classifications)]);
+for index = 1:length(EEG.etc.ic_classification.ICLabel.classifications)
+    [p,i] = max(EEG.etc.ic_classification.ICLabel.classifications(index, :));
+    rawLabels(index) = i;
+end
 
-%ICMARC BIO (blink,lateye,heart,muscle)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','UPDATE MARKS STRUCTURE WITH IMARC GARBAGE COMPS...');
+%ICLabel Exporting to marks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL COMPS...');
 tic;
-ICMARC_bio = zeros([1,length(EEG.reject.classtype)]);
-ICMARC_bio(find(EEG.reject.classtype~=2 & EEG.reject.classtype~=6)) = 1;
-ICMARC_bio = ICMARC_bio';
+ICLabel_neural = zeros([1,length(rawLabels)]);
+ICLabel_neural(find(rawLabels==1)) = 1;
+ICLabel_neural = ICLabel_neural';
 EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'bio',[0.4,0,0.3],[0.4,0,0.3],1,ICMARC_bio});
+	{'neural',[0, 0.4, 0],[0, 0.4, 0],1,ICLabel_neural});
+	
+
 logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
 toc
 
