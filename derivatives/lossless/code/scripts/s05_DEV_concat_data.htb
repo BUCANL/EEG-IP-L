@@ -14,6 +14,13 @@
 %  epoch_trim = 	[epoch_trim]  	Percentage trim for confidence intervals during channel neighbour r criteria (10 = 5% top and bottom)
 %  min_gap_ms = 	[min_gap_ms]  	Minimum time (ms) to allow between periods marked for rejection  
 %  icr_crit =       [icr_crit]      False discovery rate of component replicatablilty, measure of sensitivity %
+%  dip_vol =        [dip_vol]     file path/name of the standard volume file used in dipole fitting (e.g. derivatives/lossless/code/misc/standard_vol.mat).
+%  dip_mri =        [dip_mri]     file path/name of the standard mri file used in dipole fitting (e.g. derivatives/lossless/code/misc/standard_mri.mat).
+%  dip_elc =        [dip_elc]     file path/name of the standard electrode file used in dipole fitting (derivatives/lossless/code/misc/standard_1020.elc).
+%  dip_transmat =   [dip_transmat]  Transformation matrix to apply during dipole fit (e.g. [0 0 0 0 0 0 1 1 1])
+%  cor_transmat =   [cor_transmat]  The transformation matrix to apply between dipole fitting to the standard head and performing ICLabel to the EEGLAB default orientation (e.g.[0,0,0,0,0,1.57,1,1,1])
+%  cor_nosedir =    [cor_nosedir]   Nose direction of montage to apply between dipole fitting to the standard head and performing ICLabel to the EEGLAB default orientation (e.g.+Y)
+
 
 %% LOAD COMPART DATASET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -290,11 +297,11 @@ addpath([pwd '/derivatives/lossless/code/dependencies/eeglab_asr_amica/plugins/F
 % TODO: Make sure this is all needed, seems to be repeating things
 logging_log('INFO','FITTING DIPOLES...');
 tic;
-EEG = pop_dipfit_settings( EEG, 'hdmfile','derivatives/lossless/code/misc/standard_vol.mat', ...
+EEG = pop_dipfit_settings( EEG, 'hdmfile','[dip_vol]', ... 
 				'coordformat','MNI', ...
-				'mrifile','derivatives/lossless/code/misc/standard_mri.mat', ...
-				'chanfile','derivatives/lossless/code/misc/standard_1020.elc', ...
-				'coord_transform',[0 0 0 0 0 0 1 1 1] , ...
+				'mrifile','[dip_mri]', ... 
+				'chanfile','[dip_elc]', ...
+				'coord_transform',[dip_transmat], ...
 				'chansel',[1:EEG.nbchan] );
 
 % OLD SINGLE THREADED SETUP
@@ -302,7 +309,7 @@ EEG = pop_dipfit_settings( EEG, 'hdmfile','derivatives/lossless/code/misc/standa
 
 % NEW MULTI-THREADED SETUP
 EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8, ...
-    'dipoles',2,'threshold',100,'plotopt',{'normlen' 'on'});
+    'dipoles',1,'threshold',100,'plotopt',{'normlen' 'on'});
 
 EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
@@ -335,74 +342,76 @@ toc
 % Adjust montage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This will pretty much always be dataset specific - so be careful
-EEG = warp_locs( EEG, 'sourcedata/misc/standard_1005.elc', ...
-    'mesh','sourcedata/misc/standard_vol_SCCN.mat', ...
-    'transform',[0,0,0,0,0,1.57,1,1,1], ...
+EEG = warp_locs( EEG,
+    'transform',[cor_transmat], ...
     'manual','off');
-EEG.chaninfo.nosedir='+Y';
+EEG.chaninfo.nosedir='[cor_nosedir]';
 EEG=eeg_checkset(EEG);
 
-%% Use the ICLabel plugin 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ICLabel is a database style plugin that classifies ICA components into the
-% following seven categories
+%START TEMPORARY MOVE TO QC SCRIP
+% %% Use the ICLabel plugin 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % ICLabel is a database style plugin that classifies ICA components into the
+% % following seven categories
+% 
+% % (Brain)(Muscle)(Eye)(Heart)(Line Noise)(Channel Noise)(Other)
+% % (  1  )(  2   )( 3 )(  4  )(    5     )(      6      )(  7  )
+% 
+% % Colour structure and groupings are as follows:
+% % ----------
+% % Brain         -> [0, 0.4, 0]
+% % ----------
+% % Muscle        -> [0.4, 0, 0]
+% % Eye           -> [0.8, 0, 0]
+% % Heart         -> [0.8, 0.4, 0]
+% % ----------
+% % Line Noise    -> [0.2, 0.4, 0.8]
+% % Channel noise -> [0.4, 0, 0.8]
+% % ----------
+% % Other         -> [0.8, 0.8, 0]
+% % ----------
+% 
+% % Create lookup table of the above information.
+% pairs = {'brain',[0, 0.4, 0];
+% 'muscle',[0.4,0,0];
+% 'eye',[0.8,0,0];
+% 'heart',[0.8,0.4,0];
+% 'line_noise',[0.2,0.4,0.8];
+% 'chan_noise',[0.4,0,0.8];
+% 'other',[0.8,0.8,0]}
+% lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
+% 
+% % Below code is how to call proper label lookup
+% % [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
+% % Below line should give you number of components
+% % length(EEG.etc.ic_classification.ICLabel.classifications);
+% 
+% % Run ICLabel
+% EEG = iclabel(EEG);
+% 
+% % Extract labels from the structure.
+% rawLabels = zeros([1,length(EEG.etc.ic_classification.ICLabel.classifications)]);
+% for index = 1:length(EEG.etc.ic_classification.ICLabel.classifications)
+%     [p,i] = max(EEG.etc.ic_classification.ICLabel.classifications(index, :));
+%     rawLabels(index) = i;
+% end
+% 
+% %ICLabel Exporting to marks
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
+% tic;
+% for compStage = 1:7
+%      ICLabel_pass= zeros([1,length(rawLabels)]);
+%      ICLabel_pass(find(rawLabels==compStage)) = 1;
+%      ICLabel_pass = ICLabel_pass';
+%      EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+%           {lookupTable(compStage).name,lookupTable(compStage).colour, ...
+%           lookupTable(compStage).colour,1,ICLabel_pass});
+% end
+% logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+% toc
+%END TEMPORARY MOVE TO QC SCRIP
 
-% (Brain)(Muscle)(Eye)(Heart)(Line Noise)(Channel Noise)(Other)
-% (  1  )(  2   )( 3 )(  4  )(    5     )(      6      )(  7  )
-
-% Colour structure and groupings are as follows:
-% ----------
-% Brain         -> [0, 0.4, 0]
-% ----------
-% Muscle        -> [0.4, 0, 0]
-% Eye           -> [0.8, 0, 0]
-% Heart         -> [0.8, 0.4, 0]
-% ----------
-% Line Noise    -> [0.2, 0.4, 0.8]
-% Channel noise -> [0.4, 0, 0.8]
-% ----------
-% Other         -> [0.8, 0.8, 0]
-% ----------
-
-% Create lookup table of the above information.
-pairs = {'brain',[0, 0.4, 0];
-'muscle',[0.4,0,0];
-'eye',[0.8,0,0];
-'heart',[0.8,0.4,0];
-'line_noise',[0.2,0.4,0.8];
-'chan_noise',[0.4,0,0.8];
-'other',[0.8,0.8,0]}
-lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
-
-% Below code is how to call proper label lookup
-% [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
-% Below line should give you number of components
-% length(EEG.etc.ic_classification.ICLabel.classifications);
-
-% Run ICLabel
-EEG = iclabel(EEG);
-
-% Extract labels from the structure.
-rawLabels = zeros([1,length(EEG.etc.ic_classification.ICLabel.classifications)]);
-for index = 1:length(EEG.etc.ic_classification.ICLabel.classifications)
-    [p,i] = max(EEG.etc.ic_classification.ICLabel.classifications(index, :));
-    rawLabels(index) = i;
-end
-
-%ICLabel Exporting to marks
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
-tic;
-for compStage = 1:7
-     ICLabel_pass= zeros([1,length(rawLabels)]);
-     ICLabel_pass(find(rawLabels==compStage)) = 1;
-     ICLabel_pass = ICLabel_pass';
-     EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-          {lookupTable(compStage).name,lookupTable(compStage).colour, ...
-          lookupTable(compStage).colour,1,ICLabel_pass});
-end
-logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
-toc
 
 %% SAVE LOSSLESS DERIVATIVE *_eeg_ll.set FILE (same name as the input file from the 
 % BIDS root directory [but located in the derivatives/lossless directory]).

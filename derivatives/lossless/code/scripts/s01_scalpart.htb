@@ -8,6 +8,11 @@
 %% From Config          key_strswap         Description
 %-----------------------------------------------------------------------------------------------------------------------------
 %    in_path =           [in_path]           Relative path to input data files assuming cd = work_path
+%    montage_info =      [montage_info]      Montage information to fit channel locations on a standard surface.
+%                                            This can be a transformations matrix (e.g. [-.14,-22,-48,-.07,0,-1.57,1080,1260,1240])
+%                                            ... or a a file contasining a transformation matrix (e.g. [batch_dfn]_transmat.mat).
+%                                            ... or a BIDS channel location tsv file (assuming that during BIDS init the channels were coregistered to the standard surface).
+%    event_marks_script =[event_marks_script]Scipt file path/name that creates marks based on events in the raw data file. 
 %	 aref_trim =		 [aref_trim]         Trim of mean for initial average rereference (e.g. 30 = 15% off each side)
 % 	 recur_sec =         [recur_sec]         Recurrence (sec) for artifact detection epoching (e.g. .5, Default 1)
 %    limit_sec =         [limit_sec]         Limits (sec) for artifact detection epoching (e.g. [-.5 0], Default [0 recur_sec])
@@ -53,13 +58,32 @@ if ~strcmp(ext,'.set')
     exit(1);
 end
 
-%Load the .set file
+%Load the .set file (this will need to be BIDS data file format compliant)
 logging_log('INFO', 'Loading set file: [batch_dfn]...');
 EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
 EEG = eeg_checkset( EEG );
 
+%add channel coregistration procedure here.
+%warp locations to standard head surface: 
+if ~isempty('[montage_info]');
+    if isnumeric([montage_info])
+        EEG = warp_locs( EEG, ...
+            'transform',[montage_info], ...
+            'manual','off');
+    else
+        %if it is a BIDS channel tsv, load the tsv,
+        %else read the file that is assumed to be a transformation matrix.
+    end
+end
+
+%execute the event marks initiation script.
+if exist('[event_marks_script]');
+    run [event_marks_script]
+end
+
 % Apply trimmed average re-reference
-trm_m = ve_trimmean(EEG.data,[aref_trim],1);
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+trm_m = ve_trimmean(EEG.data(chan_inds,:),[aref_trim],1);
 trm_m_mat = repmat(trm_m,size(EEG.data,1),1);
 EEG.data = EEG.data - trm_m_mat;
 clear trm_m_mat;
