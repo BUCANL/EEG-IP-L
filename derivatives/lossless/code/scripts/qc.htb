@@ -31,7 +31,7 @@ pairs = {'brain',[0, 0.4, 0];
 'heart',[0.8,0.4,0];
 'line_noise',[0.2,0.4,0.8];
 'chan_noise',[0.4,0,0.8];
-'other',[0.8,0.8,0]}
+'other',[0.8,0.8,0]};
 lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
 
 % Below code is how to call proper label lookup
