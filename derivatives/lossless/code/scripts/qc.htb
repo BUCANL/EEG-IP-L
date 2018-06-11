@@ -2,6 +2,68 @@
 EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
 EEG = eeg_checkset(EEG);
 
+%% Use the ICLabel plugin 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ICLabel is a database style plugin that classifies ICA components into the
+% following seven categories
+
+% (Brain)(Muscle)(Eye)(Heart)(Line Noise)(Channel Noise)(Other)
+% (  1  )(  2   )( 3 )(  4  )(    5     )(      6      )(  7  )
+
+% Colour structure and groupings are as follows:
+% ----------
+% Brain         -> [0, 0.4, 0]
+% ----------
+% Muscle        -> [0.4, 0, 0]
+% Eye           -> [0.8, 0, 0]
+% Heart         -> [0.8, 0.4, 0]
+% ----------
+% Line Noise    -> [0.2, 0.4, 0.8]
+% Channel noise -> [0.4, 0, 0.8]
+% ----------
+% Other         -> [0.8, 0.8, 0]
+% ----------
+
+% Create lookup table of the above information.
+pairs = {'brain',[0, 0.4, 0];
+'muscle',[0.4,0,0];
+'eye',[0.8,0,0];
+'heart',[0.8,0.4,0];
+'line_noise',[0.2,0.4,0.8];
+'chan_noise',[0.4,0,0.8];
+'other',[0.8,0.8,0]}
+lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
+
+% Below code is how to call proper label lookup
+% [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
+% Below line should give you number of components
+% length(EEG.etc.ic_classification.ICLabel.classifications);
+
+% Run ICLabel
+EEG = iclabel(EEG);
+
+% Extract labels from the structure.
+rawLabels = zeros([1,length(EEG.etc.ic_classification.ICLabel.classifications)]);
+for index = 1:length(EEG.etc.ic_classification.ICLabel.classifications)
+    [p,i] = max(EEG.etc.ic_classification.ICLabel.classifications(index, :));
+    rawLabels(index) = i;
+end
+
+%ICLabel Exporting to marks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
+tic;
+for compStage = 1:7
+     ICLabel_pass= zeros([1,length(rawLabels)]);
+     ICLabel_pass(find(rawLabels==compStage)) = 1;
+     ICLabel_pass = ICLabel_pass';
+     EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+          {lookupTable(compStage).name,lookupTable(compStage).colour, ...
+          lookupTable(compStage).colour,1,ICLabel_pass});
+end
+logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+toc
+
 %PLOT IC TOPOGRAPHIES...
 pop_topoplot(EEG,0, [1:min(size(EEG.icawinv))] , 'qc',0,1, 'electrodes', 'off', 'masksurf', 'on','nosedir','+Y');
 tfh=gcf;
