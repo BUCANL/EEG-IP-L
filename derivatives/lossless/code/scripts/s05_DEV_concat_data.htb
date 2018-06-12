@@ -308,8 +308,7 @@ EEG = pop_dipfit_settings( EEG, 'hdmfile','[dip_vol]', ...
 % EEG = pop_multifit(EEG, [1:EEG.nbchan] ,'threshold',100,'plotopt',{'normlen' 'on'});
 
 % NEW MULTI-THREADED SETUP
-EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8, ...
-    'dipoles',1,'threshold',100,'plotopt',{'normlen' 'on'});
+EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8, 'dipoles', 2,'threshold',100,'plotopt',{'normlen' 'on'});
 
 EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
