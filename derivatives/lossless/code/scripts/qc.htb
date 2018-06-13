@@ -34,10 +34,11 @@ pairs = {'brain',[0, 0.4, 0];
 'other',[0.8,0.8,0]};
 lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
 
-% Below code is how to call proper label lookup
-% [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
-% Below line should give you number of components
-% length(EEG.etc.ic_classification.ICLabel.classifications);
+%%% USEFUL SCRIPTING CODE %%%
+% Label lookup:
+%   [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
+% Component count:
+%   length(EEG.etc.ic_classification.ICLabel.classifications);
 
 % Run ICLabel
 EEG = iclabel(EEG);
@@ -51,6 +52,8 @@ end
 
 %ICLabel Exporting to marks
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THIS EXPORTING TO MARKS MAYBE CLOBBER OLD STRUCTURES OR LEAVE OLD ONES EMPTY
+% YOU WERE WARNED
 logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
 tic;
 for compStage = 1:7
@@ -70,6 +73,8 @@ tfh=gcf;
 %set(tfh,'Position',[ 1948 -9 1903 1049]);
 
 %RESET/INITIATE IC MARKS...
+% THIS EXPORTING TO MARKS MAYBE CLOBBER OLD STRUCTURES OR LEAVE OLD ONES EMPTY
+% YOU WERE WARNED
 manual_ind=find(strcmp('manual',{EEG.marks.comp_info.label}));
 %EEG.marks.comp_info(manual_ind).flags=zeros(size(EEG.marks.comp_info(manual_ind).flags));
 neural_ind=marks_label2index(EEG.marks.comp_info,{'neural'},'indexes');
@@ -78,16 +83,17 @@ bio_ind=marks_label2index(EEG.marks.comp_info,{'bio'},'indexes');
 EEG.marks.comp_info(manual_ind).flags(bio_ind)=1;
 
 %set mixed mark
+% THIS EXPORTING TO MARKS MAYBE CLOBBER OLD STRUCTURES OR LEAVE OLD ONES EMPTY
+% YOU WERE WARNED
 minx_ind=marks_label2index(EEG.marks.comp_info,{'neural','bio'},'flags','invert','on');
 EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
 	{'mix',[0,.3,.4],[0,.3,.4],1,minx_ind'});
-
-
 qc_cortical_flags=marks_label2index(EEG.marks.comp_info,{'neural'},'flags');
 EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
 	{'qc_cortical',[0,.6,0],[0,.6,0],1,zeros(size(qc_cortical_flags'))});
 
-%PLOT IC DATA SCROLL PLOT USING VISED PLUGIN...
+% BELOW IS OLD VISED CODE - POSSIBLY REPLACE WITH pop_viewprops(EEG, 0);
+% FOR PLOTTING COMPONENTS
 EEG = pop_vised(EEG,'data_type','ICA','pop_gui','off');
 
 %WAIT FOR SCROLL PLOT TO CLOSE...
