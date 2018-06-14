@@ -34,11 +34,10 @@ pairs = {'brain',[0, 0.4, 0];
 'other',[0.8,0.8,0]};
 lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
 
-%%% USEFUL SCRIPTING CODE %%%
-% Label lookup:
-%   [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
-% Component count:
-%   length(EEG.etc.ic_classification.ICLabel.classifications);
+% Below code is how to call proper label lookup
+% [prob, classind] = max(EEG.etc.ic_classification.ICLabel.classifications(1, :));
+% Below line should give you number of components
+% length(EEG.etc.ic_classification.ICLabel.classifications);
 
 % Run ICLabel
 EEG = iclabel(EEG);
@@ -52,8 +51,6 @@ end
 
 %ICLabel Exporting to marks
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% THIS EXPORTING TO MARKS MAYBE CLOBBER OLD STRUCTURES OR LEAVE OLD ONES EMPTY
-% YOU WERE WARNED
 logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
 tic;
 for compStage = 1:7
@@ -68,41 +65,55 @@ logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
 toc
 
 %PLOT IC TOPOGRAPHIES...
-pop_topoplot(EEG,0, [1:min(size(EEG.icawinv))] , 'qc',0,1, 'electrodes', 'off', 'masksurf', 'on','nosedir','+Y');
-tfh=gcf;
+%pop_topoplot(EEG,0, [1:min(size(EEG.icawinv))] , 'qc',0,1, 'electrodes', 'off', 'masksurf', 'on');
+
+%for i=1;length([1:min(size(EEG.icawinv))]);
+pop_viewprops(EEG,0);
+    %if i>35; tfh=pop_viewprops(EEG,0);
+%end
 %set(tfh,'Position',[ 1948 -9 1903 1049]);
 
 %RESET/INITIATE IC MARKS...
-% THIS EXPORTING TO MARKS MAYBE CLOBBER OLD STRUCTURES OR LEAVE OLD ONES EMPTY
-% YOU WERE WARNED
 manual_ind=find(strcmp('manual',{EEG.marks.comp_info.label}));
-%EEG.marks.comp_info(manual_ind).flags=zeros(size(EEG.marks.comp_info(manual_ind).flags));
-neural_ind=marks_label2index(EEG.marks.comp_info,{'neural'},'indexes');
-EEG.marks.comp_info(manual_ind).flags(neural_ind)=0;
-bio_ind=marks_label2index(EEG.marks.comp_info,{'bio'},'indexes');
-EEG.marks.comp_info(manual_ind).flags(bio_ind)=1;
+%neural_ind=marks_label2index(EEG.marks.comp_info,{'neural'},'indexes');
+%EEG.marks.comp_info(manual_ind).flags(neural_ind)=0;
+%bio_ind=marks_label2index(EEG.marks.comp_info,{'bio'},'indexes');
+%EEG.marks.comp_info(manual_ind).flags(bio_ind)=1;
+
+EEG.marks.comp_info(manual_ind).flags=zeros(size(EEG.marks.comp_info(manual_ind).flags));
 
 %set mixed mark
-% THIS EXPORTING TO MARKS MAYBE CLOBBER OLD STRUCTURES OR LEAVE OLD ONES EMPTY
-% YOU WERE WARNED
-minx_ind=marks_label2index(EEG.marks.comp_info,{'neural','bio'},'flags','invert','on');
-EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'mix',[0,.3,.4],[0,.3,.4],1,minx_ind'});
-qc_cortical_flags=marks_label2index(EEG.marks.comp_info,{'neural'},'flags');
-EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'qc_cortical',[0,.6,0],[0,.6,0],1,zeros(size(qc_cortical_flags'))});
+% minx_ind=marks_label2index(EEG.marks.comp_info,{'neural','bio'},'flags','invert','on');
+% EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+% 	{'mix',[0,.3,.4],[0,.3,.4],1,minx_ind'});
+% 
+% 
+% qc_cortical_flags=marks_label2index(EEG.marks.comp_info,{'neural'},'flags');
+% EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+% 	{'qc_cortical',[0,.6,0],[0,.6,0],1,zeros(size(qc_cortical_flags'))});
 
-% BELOW IS OLD VISED CODE - POSSIBLY REPLACE WITH pop_viewprops(EEG, 0);
-% FOR PLOTTING COMPONENTS
-EEG = pop_vised(EEG,'data_type','ICA','pop_gui','off');
+%PLOT CHAN DATA SCROLL PLOT USING VISED PLUGIN...
+EEG_scalp = pop_vised(EEG,'data_type','EEG','pop_gui','off','spacing',80,'command','');
+
+sfh = gcf;
+
+%PLOT IC DATA SCROLL PLOT USING VISED PLUGIN...
+EEG = pop_vised(EEG,'data_type','ICA','children','sfh','pop_gui','off');
+tic;
 
 %WAIT FOR SCROLL PLOT TO CLOSE...
 uiwait;
 
-%CLOSE/CLEAR TOPOGRAPHY PLOT HANDLES...
-try close(tfh),clear tfh, catch clear tfh, end
+qc_time = num2str(toc);
+disp(['Time taken to perform QC: ' qc_time 'sec.']);
+
+%CLOSE/CLEAR TOPOGRAPHY PLOT HANDLES
+tfh = findobj('Type', 'figure');
+close(tfh(find(strcmp('View components properties - pop_viewprops() (dataset: filtLP - 1-s epochs - 1-s epochs - 1-s epochs)',{tfh.Name}))).Number);
+
+%CLOSE/CLEAR EEG SCROLL PLOT HANDLES
+try close(sfh),clear sfh, catch clear sfh, end
 
 %SAVE *_qc.SET DATASET FILE... 
-EEG = pop_saveset( EEG,'filename','[batch_dfn]','filepath','[batch_dfp]');
-init_bids_sub(EEG,'[batch_dfn,_,-2]','[_,-2,batch_dfn,.,-1]');
-
+EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qc.set','filepath','[batch_dfp]');
+%init_bids_sub(EEG,'[batch_dfn,_,-2]','[_,-2,batch_dfn,.,-1]');
