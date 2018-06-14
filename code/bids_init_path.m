@@ -1,2 +1,2 @@
-addpath('code/bids_init');
+addpath(genpath('code/bids_init'));
 lossless_path;

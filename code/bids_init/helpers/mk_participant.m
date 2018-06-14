@@ -26,12 +26,14 @@ end
 % group = 1;
 % group = EEG.group;
 
-if strcmp(pid(1),'6');
-    group = 'at-risk';
-else
-    group = 'control';
-end
+%if strcmp(pid(1),'6');
+%    group = 'at-risk';
+%else
+%    group = 'control';
+%end
 
-participant = {pid,'6m','???',group,}; % participant demographics data
+%participant = {pid,'6m','???',group,}; % participant demographics data
     
+participant = {pid};
+
 end
