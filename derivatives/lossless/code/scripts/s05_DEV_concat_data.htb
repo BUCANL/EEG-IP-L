@@ -322,21 +322,21 @@ toc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Residuals greater than 15% are flagged - can be done here as it only references
 % dipoles and their values.
-logging_log('INFO','UPDATE MARKS STRUCTURE WITH IC_RV...');
-tic;
+%logging_log('INFO','UPDATE MARKS STRUCTURE WITH IC_RV...');
+%tic;
 % Dipole criteria changed from 0.15 to 0.2 to be less sensitive
-EEG.reject.gcompreject(find([EEG.dipfit.model.rv]>.15))=1;
-EEG.reject.gcompreject(find(isnan([EEG.dipfit.model.rv])))=1;
-EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-	{'ic_rv',[1,0,0],[1,0,0],-1,EEG.reject.gcompreject'});
-logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
-toc
+%EEG.reject.gcompreject(find([EEG.dipfit.model.rv]>.15))=1;
+%EEG.reject.gcompreject(find(isnan([EEG.dipfit.model.rv])))=1;
+%EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
+%	{'ic_rv',[1,0,0],[1,0,0],-1,EEG.reject.gcompreject'});
+%logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
+%toc
 
 % COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...
-tic;
-EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
-logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
-toc
+%tic;
+%EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
+%logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
+%toc
 
 % Adjust montage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
