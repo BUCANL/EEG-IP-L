@@ -81,6 +81,14 @@ if exist('[event_marks_script]');
     run [event_marks_script]
 end
 
+if ~isfield(EEG,'marks');
+    if isempty(EEG.icaweights)
+        EEG.marks=marks_init(size(EEG.data));
+    else
+        EEG.marks=marks_init(size(EEG.data),min(size(EEG.icaweights)));
+    end
+end
+
 % Apply trimmed average re-reference
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
 trm_m = ve_trimmean(EEG.data(chan_inds,:),[aref_trim],1);
