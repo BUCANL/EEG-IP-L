@@ -1,7 +1,8 @@
 function participants=mk_participants(filename)
 
 disp('Creating participants.tsv file...');
-participants={'participant_id','age','sex','group'}; % participant demographics data
+%participants={'participant_id','age','sex','group'}; % participant demographics data
+participants={'participant_id'}; % participant demographics data
 sub_dirs = dir('sub-*');
 for i=1:length(sub_dirs);
     % find set file in current directory:
