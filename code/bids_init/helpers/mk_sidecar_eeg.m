@@ -51,6 +51,11 @@ if isfield(opts,'EMGChannelCount');
 else
     sidecar_eeg.EMGChannelCount=0;
 end
+if isfield(opts,'ECGChannelCount');
+    sidecar_eeg.ECGChannelCount=opts.ECGChannelCount;
+else
+    sidecar_eeg.ECGChannelCount=0;
+end
 sidecar_eeg.EEGReference=EEG.ref;
 if isfield(opts,'MiscChannelCount');
     sidecar_eeg.MiscChannelCount=opts.MiscChannelCount;
