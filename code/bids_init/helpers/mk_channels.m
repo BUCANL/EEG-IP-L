@@ -20,11 +20,11 @@ for i=1:length(EEG.chanlocs);
    end
    if isfield(EEG,'marks');
       if EEG.marks.chan_info(1).flags(i);
-         channels{i+1,3}='good';
+         channels{i+1,3}='TRUE';
       else
-          channels{i+1,3}='bad';
+          channels{i+1,3}='FALSE';
       end
    else
-      channels{i+1,3}='good';
+      channels{i+1,3}='TRUE';
    end
 end

@@ -40,34 +40,51 @@ if isfield(opts,'DeviceSerialNumber');
 end
 sidecar_eeg.SamplingFrequency=EEG.srate;
 sidecar_eeg.EEGChannelCount=EEG.nbchan;
-sidecar_eeg.EOGChannelCount='';
-sidecar_eeg.EMGChannelCount='';
+
+if isfield(opts,'EOGChannelCount');
+    sidecar_eeg.EOGChannelCount=opts.EOGChannelCount;
+else
+    sidecar_eeg.EOGChannelCount=0;
+end
+if isfield(opts,'EMGChannelCount');
+    sidecar_eeg.EMGChannelCount=opts.EMGChannelCount;
+else
+    sidecar_eeg.EMGChannelCount=0;
+end
 sidecar_eeg.EEGReference=EEG.ref;
-sidecar_eeg.MiscChannelCount='';
-sidecar_eeg.TriggerChannelCount='';
+if isfield(opts,'MiscChannelCount');
+    sidecar_eeg.MiscChannelCount=opts.MiscChannelCount;
+else
+    sidecar_eeg.MiscChannelCount=0;
+end
+if isfield(opts,'TriggerChannelCount');
+    sidecar_eeg.TriggerChannelCount=opts.TriggerChannelCount;
+else
+    sidecar_eeg.TriggerChannelCount=0;
+end
 if isfield(opts,'PowerLineFrequency');
-    sidecar_eeg.PowerLineFrequency='';
+    sidecar_eeg.PowerLineFrequency=opts.PowerLineFrequency;
 end
 if isfield(opts,'EEGPlacementScheme');
-    sidecar_eeg.EEGPlacementScheme='';
+    sidecar_eeg.EEGPlacementScheme=opts.EEGPlacementScheme;
 end
 if isfield(opts,'Manufacturer');
-    sidecar_eeg.Manufacturer='';
+    sidecar_eeg.Manufacturer=opts.Manufacturer;
 end
 if isfield(opts,'ManufacturerModelName');
-    sidecar_eeg.ManufacturerModelName='';
+    sidecar_eeg.ManufacturerModelName=opts.ManufacturerModelName;
 end
 if isfield(opts,'CapManufacturer');
-    sidecar_eeg.CapManufacturer='';
+    sidecar_eeg.CapManufacturer=opts.CapManufacturer;
 end
 if isfield(opts,'CapModelName');
-    sidecar_eeg.CapModelName='';
+    sidecar_eeg.CapModelName=opts.CapModelName;
 end
 if isfield(opts,'HardwareFilters');
-    sidecar_eeg.HardwareFilters='';
+    sidecar_eeg.HardwareFilters=opts.HardwareFilters;
 end
 if isfield(opts,'SoftwareFilters');
-    sidecar_eeg.SoftwareFilters='';
+    sidecar_eeg.SoftwareFilters=opts.SoftwareFilters;
 end
 
 if EEG.trials==1;
@@ -82,10 +99,10 @@ else
 end
 
 if isfield(opts,'DeviceSoftwareVersion');
-    sidecar_eeg.DeviceSoftwareVersion='';
+    sidecar_eeg.DeviceSoftwareVersion=opts.DeviceSoftwareVersion;
 end
 if isfield(opts,'SubjectArtefactDescription');
-    sidecar_eeg.SubjectArtefactDescription='';
+    sidecar_eeg.SubjectArtefactDescription=opts.SubjectArtefactDescription;
 end
 %to propose
 if isfield(opts,'Category')
