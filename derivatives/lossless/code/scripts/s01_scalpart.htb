@@ -12,7 +12,7 @@
 %                                            This can be a transformations matrix (e.g. [-.14,-22,-48,-.07,0,-1.57,1080,1260,1240])
 %                                            ... or a a file contasining a transformation matrix (e.g. [batch_dfn]_transmat.mat).
 %                                            ... or a BIDS channel location tsv file (assuming that during BIDS init the channels were coregistered to the standard surface).
-%    event_marks_script =[event_marks_script]Scipt file path/name that creates marks based on events in the raw data file. 
+%    staging_script =    [staging_script]    Scipt file path/name that creates marks based on events in the raw data file. 
 %	 aref_trim =		 [aref_trim]         Trim of mean for initial average rereference (e.g. 30 = 15% off each side)
 % 	 recur_sec =         [recur_sec]         Recurrence (sec) for artifact detection epoching (e.g. .5, Default 1)
 %    limit_sec =         [limit_sec]         Limits (sec) for artifact detection epoching (e.g. [-.5 0], Default [0 recur_sec])
@@ -77,8 +77,8 @@ if ~isempty('[montage_info]');
 end
 
 %execute the event marks initiation script.
-if exist(['[event_marks_script]', '.m']);
-    run [event_marks_script]
+if exist(['[staging_script]', '.m']);
+    run [staging_script]
 end
 
 if ~isfield(EEG,'marks');
