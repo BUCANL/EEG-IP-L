@@ -77,7 +77,7 @@ if ~isempty('[montage_info]');
 end
 
 %execute the event marks initiation script.
-if exist(['[staging_script]', '.m']);
+if exist(['[staging_script]', '.m']) || exist('[staging_script]');
     run [staging_script]
 end
 
