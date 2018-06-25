@@ -1,0 +1,13 @@
+# Pipeline workspace:
+octave-workspace
+
+# Ignore all derivative data...
+derivatives/lossless/*
+# But keep the pipeline code.
+!derivatives/lossless/code/*
+
+# BIDS ignores:
+sourcedata/*
+sub-*
+participants.tsv
+dataset_description.json
