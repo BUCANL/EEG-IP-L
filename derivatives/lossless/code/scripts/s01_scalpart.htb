@@ -63,22 +63,24 @@ logging_log('INFO', 'Loading set file: [batch_dfn]...');
 EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
 EEG = eeg_checkset( EEG );
 
-%add channel coregistration procedure here.
-%warp locations to standard head surface: 
-if ~isempty('[montage_info]');
-    if isnumeric([montage_info])
-        EEG = warp_locs( EEG,'[ref_loc_file]', ...
-            'transform',[montage_info], ...
-            'manual','off');
-    else
-        %if it is a BIDS channel tsv, load the tsv,
-        %else read the file that is assumed to be a transformation matrix.
-    end
+%execute the staging script if specified.
+if exist('[staging_script]');
+    [ssp,ssn,sse]=fileparts('[staging_script]');
+    addpath(ssp);
+    [staging_script]
 end
 
-%execute the event marks initiation script.
-if exist(['[staging_script]', '.m']) || exist('[staging_script]');
-    run [staging_script]
+%add channel coregistration procedure here.
+%warp locations to standard head surface:
+if ~isempty('[montage_info]');
+    if isempty(str2num('[montage_info]'));
+        %if it is a BIDS channel tsv, load the tsv,
+        %else read the file that is assumed to be a transformation matrix.
+    else
+        EEG = warp_locs( EEG,'[ref_loc_file]', ...
+            'transform',[[montage_info]], ...
+            'manual','off');
+    end
 end
 
 if ~isfield(EEG,'marks');
