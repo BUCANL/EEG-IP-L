@@ -210,7 +210,7 @@ logging_log('INFO', 'REREFERENCED TO INTERPOLATED AVERAGE SITE...');
 % Filters the data to remove frequencies lower than the selected value. The residuals that
 % were removed can be saved for further analysis if needed.
 logging_log('INFO', 'High pass filtering the data...');
-if([low_bound_hz]);
+if([[low_bound_hz]]);
     pre_hp_data = EEG.data;
     EEG = pop_eegfiltnew(EEG,[],[low_bound_hz],[],true,[],0);
     EEG.setname = 'filtHP';
@@ -239,7 +239,7 @@ end
 % Filters the data to remove frequencies higher the selected value. The residuals that
 % were removed can be saved for further analysis if needed.
 logging_log('INFO', 'Low pass filtering the data...');
-if([high_bound_hz]);
+if([[high_bound_hz]]);
     pre_lp_data = EEG.data;
     EEG = pop_eegfiltnew(EEG,[],[high_bound_hz],[],0,[],0);
     EEG.setname = 'filtLP';
