@@ -238,25 +238,28 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Filters the data to remove frequencies higher the selected value. The residuals that
 % were removed can be saved for further analysis if needed.
-
 logging_log('INFO', 'Low pass filtering the data...');
-pre_lp_data = EEG.data;
-EEG = pop_eegfiltnew(EEG,[],[high_bound_hz],[],0,[],0);
-EEG.setname = 'filtLP';
-EEG = eeg_checkset( EEG );
-if [save_f_res]
-    % Save high pass filter residual data array
-    logging_log('DEBUG', 'Saving file: [out_path]/[batch_dfn,_,-1]_lpd.mat...');
-    data = pre_lp_data - EEG.data;
-    try OCTAVE_VERSION;
-        save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_lpd.mat','data');
-    catch
-        save('[out_path]/[batch_dfn,_,-1]_lpd.mat','data');
+if([high_bound_hz]);
+    pre_lp_data = EEG.data;
+    EEG = pop_eegfiltnew(EEG,[],[high_bound_hz],[],0,[],0);
+    EEG.setname = 'filtLP';
+    EEG = eeg_checkset( EEG );
+    if [save_f_res]
+        % Save high pass filter residual data array
+        logging_log('DEBUG', 'Saving file: [out_path]/[batch_dfn,_,-1]_lpd.mat...');
+        data = pre_lp_data - EEG.data;
+        try OCTAVE_VERSION;
+            save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_lpd.mat','data');
+        catch
+            save('[out_path]/[batch_dfn,_,-1]_lpd.mat','data');
+        end
+        logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[batch_dfn,_,-1]_lpd.mat FILE...');
     end
-    logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[batch_dfn,_,-1]_lpd.mat FILE...');
+    logging_log('INFO', 'FILTERED LOW PASS...');
+    clear pre_lp_data
+else
+    logging_log('INFO', 'Low pass filtering skipped...');
 end
-logging_log('INFO', 'FILTERED LOW PASS...');
-clear pre_lp_data
 
 %% CALCULATE NEAREST NEIGHBOUR R VALUES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
