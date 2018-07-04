@@ -209,25 +209,30 @@ logging_log('INFO', 'REREFERENCED TO INTERPOLATED AVERAGE SITE...');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Filters the data to remove frequencies lower than the selected value. The residuals that
 % were removed can be saved for further analysis if needed.
-
 logging_log('INFO', 'High pass filtering the data...');
-pre_hp_data = EEG.data;
-EEG = pop_eegfiltnew(EEG,[],[low_bound_hz],[],true,[],0);
-EEG.setname = 'filtHP';
-EEG = eeg_checkset( EEG );
-if [save_f_res]
-    % Save high pass filter residual data array
-    logging_log('DEBUG', 'Saving file: [out_path]/[batch_dfn,_,-1]_hpd.mat...');
-    data = pre_hp_data - EEG.data;
-    try OCTAVE_VERSION;
-        save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_hpd.mat','data');
-    catch
-        save('[out_path]/[batch_dfn,_,-1]_hpd.mat','data');
+if([low_bound_hz]);
+    pre_hp_data = EEG.data;
+    EEG = pop_eegfiltnew(EEG,[],[low_bound_hz],[],true,[],0);
+    EEG.setname = 'filtHP';
+    EEG = eeg_checkset( EEG );
+    if [save_f_res]
+        % Save high pass filter residual data array
+        logging_log('DEBUG', 'Saving file: [out_path]/[batch_dfn,_,-1]_hpd.mat...');
+        data = pre_hp_data - EEG.data;
+        try OCTAVE_VERSION;
+            save('-mat7-binary','[out_path]/[batch_dfn,_,-1]_hpd.mat','data');
+        catch
+            save('[out_path]/[batch_dfn,_,-1]_hpd.mat','data');
+        end
+        logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[batch_dfn,_,-1]_hpd.mat FILE...');
     end
-    logging_log('DEBUG', 'TIME TO: SAVE [out_path]/[batch_dfn,_,-1]_hpd.mat FILE...');
+    logging_log('INFO', 'FILTERED HIGH PASS...');
+    clear pre_hp_data
+else
+    logging_log('INFO', 'High pass step skipped...');
 end
-logging_log('INFO', 'FILTERED HIGH PASS...');
-clear pre_hp_data
+
+
 
 %% FILTER LOW PASS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
