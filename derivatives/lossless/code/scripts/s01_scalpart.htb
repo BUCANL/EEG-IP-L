@@ -67,7 +67,7 @@ EEG = eeg_checkset( EEG );
 if exist('[staging_script]');
     [ssp,ssn,sse]=fileparts('[staging_script]');
     addpath(ssp);
-    [staging_script]
+    eval(ssn);
 end
 
 %add channel coregistration procedure here.
