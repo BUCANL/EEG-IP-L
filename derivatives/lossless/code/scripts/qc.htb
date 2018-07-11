@@ -2,6 +2,8 @@
 EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
 EEG = eeg_checkset(EEG);
 
+eventList = {'boundary','checker-f1','checker-left','checker-right','e-254','e-255','face-inverted','face-inverted-f1','face-upright','face-upright-f1','house-inverted','house-inverted-f1','house-upright','house-upright-f1','press-left','press-right'};
+
 % CHECK FOR IC CLASSIFICATION MARKS
 if isempty(find(strcmp('brain',{EEG.marks.comp_info.label})));
     %% Use the ICLabel plugin 
@@ -78,12 +80,12 @@ pop_viewprops(EEG,0);
 %set(tfh,'Position',[ 1948 -9 1903 1049]);
 
 %PLOT CHAN DATA SCROLL PLOT USING VISED PLUGIN...
-EEG_scalp = pop_vised(EEG,'data_type','EEG','pop_gui','off','spacing',80,'command','');
+EEG_scalp = pop_vised(EEG,'data_type','EEG','pop_gui','off','spacing',80,'command','','tag','vef_eeg','event_type',eventList);
 
 sfh = gcf;
 
 %PLOT IC DATA SCROLL PLOT USING VISED PLUGIN...
-EEG = pop_vised(EEG,'data_type','ICA','children','sfh','pop_gui','off');
+EEG = pop_vised(EEG,'data_type','ICA','children','vef_eeg','pop_gui','off','tag','vef_comp','event_type',eventList);
 tic;
 
 %WAIT FOR SCROLL PLOT TO CLOSE...
