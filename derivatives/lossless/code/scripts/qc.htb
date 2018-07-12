@@ -84,12 +84,25 @@ EEG_scalp = pop_vised(EEG,'data_type','EEG','pop_gui','off','spacing',80,'comman
 
 sfh = gcf;
 
+link = '';
+% Comment below line to desync second scrollplot from main
+% link = 'vef_eeg';
+
 %PLOT IC DATA SCROLL PLOT USING VISED PLUGIN...
-EEG = pop_vised(EEG,'data_type','ICA','children','vef_eeg','pop_gui','off','tag','vef_comp','event_type',eventList);
+EEG = pop_vised(EEG,'data_type','ICA','children',link,'pop_gui','off','tag','vef_comp','event_type',eventList);
 tic;
 
 %WAIT FOR SCROLL PLOT TO CLOSE...
-uiwait;
+% uiwait;
+% REMOVING THIS FOR THE NEXT LITTLE BIT
+reloadStr = 'close(findobj(''tag'',''vef_comp''));EEG = pop_vised(EEG,''data_type'',''ICA'',''children'',link,''pop_gui'',''off'',''tag'',''vef_comp'',''event_type'',eventList);';
+f = figure('Position',[300 300 500 50]);
+h = uicontrol('Position',[20 20 200 40],'String','Save and Exit',...
+              'Callback','uiresume(gcbf)');
+g = uicontrol('Position',[300 20 200 40],'String','Reload Component Plot',...
+              'Callback',reloadStr);
+uiwait(gcf); 
+close(f);
 
 qc_time = num2str(toc);
 disp(['Time taken to perform QC: ' qc_time 'sec.']);
