@@ -63,6 +63,15 @@ logging_log('INFO', 'Loading set file: [batch_dfn]...');
 EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
 EEG = eeg_checkset( EEG );
 
+if ~isfield(EEG,'marks');
+    if isempty(EEG.icaweights)
+        EEG.marks=marks_init(size(EEG.data));
+    else
+        EEG.marks=marks_init(size(EEG.data),min(size(EEG.icaweights)));
+    end
+end
+EEG.marks = marks_add_label(EEG.marks,'time_info', {'init_ind',[0,0,1],[1:EEG.pnts]});
+
 %execute the staging script if specified.
 if exist('[staging_script]');
     [ssp,ssn,sse]=fileparts('[staging_script]');
@@ -80,14 +89,6 @@ if ~isempty('[montage_info]');
         EEG = warp_locs( EEG,'[ref_loc_file]', ...
             'transform',[[montage_info]], ...
             'manual','off');
-    end
-end
-
-if ~isfield(EEG,'marks');
-    if isempty(EEG.icaweights)
-        EEG.marks=marks_init(size(EEG.data));
-    else
-        EEG.marks=marks_init(size(EEG.data),min(size(EEG.icaweights)));
     end
 end
 
