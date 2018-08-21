@@ -94,10 +94,10 @@ end
 
 % Apply trimmed average re-reference
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
-trm_m = ve_trimmean(EEG.data(chan_inds,:),[aref_trim],1);
-trm_m_mat = repmat(trm_m,size(EEG.data,1),1);
-EEG.data = EEG.data - trm_m_mat;
-clear trm_m_mat;
+chan_m = mean(EEG.data(chan_inds,:),1);
+chan_m_mat = repmat(chan_m,size(EEG.data,1),1);
+EEG.data = EEG.data - chan_m_mat;
+clear chan_m_mat;
 
 % Window the continuous data
 logging_log('INFO', 'Windowing the continous data...');
