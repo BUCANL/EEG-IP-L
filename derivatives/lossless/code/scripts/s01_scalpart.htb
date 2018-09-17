@@ -70,7 +70,9 @@ if ~isfield(EEG,'marks');
         EEG.marks=marks_init(size(EEG.data),min(size(EEG.icaweights)));
     end
 end
-EEG.marks = marks_add_label(EEG.marks,'time_info', {'init_ind',[0,0,1],[1:EEG.pnts]});
+
+EEG.marks = marks_add_label(EEG.marks,'time_info', ...
+{'init_ind',[0,0,1],[1:EEG.pnts]});
 
 %execute the staging script if specified.
 if exist('[staging_script]');
@@ -92,17 +94,37 @@ if ~isempty('[montage_info]');
     end
 end
 
-% Apply trimmed average re-reference
-chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
-chan_m = mean(EEG.data(chan_inds,:),1);
-chan_m_mat = repmat(chan_m,size(EEG.data,1),1);
-EEG.data = EEG.data - chan_m_mat;
-clear chan_m_mat;
+% Apply average re-reference
+%chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+%chan_m = mean(EEG.data(chan_inds,:),1);
+%chan_m_mat = repmat(chan_m,size(EEG.data,1),1);
+%EEG.data = EEG.data - chan_m_mat;
+%clear chan_m_mat;
 
 % Window the continuous data
 logging_log('INFO', 'Windowing the continous data...');
 EEG = marks_continuous2epochs(EEG,'recurrence',[[recur_sec]],'limits',[[limit_sec]]);
 logging_log('INFO', 'LOADED DATASET...');
+
+% rereference to selected channels..
+chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
+epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
+[EEG,trim_ch_sd]=chan_variance(EEG,'data_field','data', ...
+         'chan_inds',chan_inds, ...
+         'epoch_inds',epoch_inds, ...
+         'plot_figs','off');
+
+chan_dist=zeros(size(trim_ch_sd));
+for i=1:size(trim_ch_sd,2);
+    chan_dist(:,i)=(trim_ch_sd(:,i)-median(trim_ch_sd(:,i)))/diff(quantile(trim_ch_sd(:,i),[.3,.7]));
+end
+mean_chan_dist=mean(chan_dist,2);
+m=median(mean_chan_dist);
+q=quantile(mean_chan_dist,[.3,.7]);
+
+refchans=find(mean_chan_dist<m+6*diff(q));
+
+EEG.data=EEG.data-repmat(mean(EEG.data(chan_inds(refchans),:,:),1),size(EEG.data,1),1);
 
 %% CALCULATE DATA SD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
