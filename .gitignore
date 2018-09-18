@@ -13,6 +13,9 @@ code/misc
 derivatives/lossless/code/scripts/staging/*
 !derivatives/lossless/code/scripts/.gitkeep
 
+# Ignore the configs as they're specialized to a project
+derivatives/lossless/code/config/remote-sbatch
+
 # BIDS ignores:
 sourcedata/*
 sub-*
