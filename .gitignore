@@ -6,7 +6,7 @@ octave-workspace
 # But keep the pipeline code.
 # !derivatives/lossless/code/*
 derivatives/lossless/log
-code/eeg_init
+code/eeg_init/*
 code/misc
 
 # Specifically hide the staging script
@@ -22,3 +22,4 @@ sub-*
 participants.tsv
 dataset_description.json
 grp_*
+*.mat
