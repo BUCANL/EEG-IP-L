@@ -1,108 +1,101 @@
-function eeg_init(inbdffiles,outsetfile)
+function eeg_init(EEG,infname)
 
-%loop through inbdffiles
-for i=1:length(inbdffiles);
-    %import bdf file
-    ALLEEG(i) = pop_biosig(inbdffiles{i}, 'channels', 1:128 );
+disp(['current file: ', infname(1:end-1)])
+
+%parse infname.
+[p,n]=fileparts(infname);
+%subject ID
+subids_ind=strfind(lower(n),'ec_t')+6;
+subide_ind=strfind(lower(n),'ec_t')+8;
+subid=n(subids_ind:subide_ind);
+
+if isempty(str2num(subid));
+    ecs_ind=strfind(lower(n),'ec');
+    if strcmp(lower(n(ecs_ind+7)),'t');
+        subid=n(ecs_ind+3:ecs_ind+5);
+    elseif strcmp(lower(n(ecs_ind+6)),'t');
+        subid=n(ecs_ind+2:ecs_ind+4);
+    elseif strcmp(lower(n(ecs_ind+3)),'p');
+        subid=n(ecs_ind+5:ecs_ind+7);
+    end
     
-    %resample to 512
-    ALLEEG(i) = pop_resample( ALLEEG(i), 512);
-end
-
-%merge files
-EEG = pop_mergeset( ALLEEG, 1:length(ALLEEG), 0);
-
-%load average BUCANL BioSemi head channel coordinates
-EEG=pop_chanedit(EEG, 'load',{'sourcedata/misc/BioSemi_BUCANL_EEGLAB.sfp' 'filetype' 'autodetect'});
-
-%rename events
-for i=1:length(EEG.event);
-    if isnumeric(EEG.event(i).type);
-        EEG.event(i).type=num2str(EEG.event(i).type);
-    end
-    if strcmp(EEG.event(i).type,'11');
-        EEG.event(i).type='house-upright-f1';
-    elseif strcmp(EEG.event(i).type,'12');
-        EEG.event(i).type='house-upright-f2';
-    elseif strcmp(EEG.event(i).type,'13');
-        EEG.event(i).type='house-upright-f3';
-    elseif strcmp(EEG.event(i).type,'14');
-        EEG.event(i).type='house-upright-f4';
-    elseif strcmp(EEG.event(i).type,'15');
-        EEG.event(i).type='house-upright-f5';
-    elseif strcmp(EEG.event(i).type,'16');
-        EEG.event(i).type='house-upright-f6';
-    elseif strcmp(EEG.event(i).type,'21');
-        EEG.event(i).type='house-inverted-f1';
-    elseif strcmp(EEG.event(i).type,'22');
-        EEG.event(i).type='house-inverted-f2';
-    elseif strcmp(EEG.event(i).type,'23');
-        EEG.event(i).type='house-inverted-f3';
-    elseif strcmp(EEG.event(i).type,'24');
-        EEG.event(i).type='house-inverted-f4';
-    elseif strcmp(EEG.event(i).type,'25');
-        EEG.event(i).type='house-inverted-f5';
-    elseif strcmp(EEG.event(i).type,'26');
-        EEG.event(i).type='house-inverted-f6';
-    elseif strcmp(EEG.event(i).type,'31');
-        EEG.event(i).type='face-upright-f1';
-    elseif strcmp(EEG.event(i).type,'32');
-        EEG.event(i).type='face-upright-f2';
-    elseif strcmp(EEG.event(i).type,'33');
-        EEG.event(i).type='face-upright-f3';
-    elseif strcmp(EEG.event(i).type,'34');
-        EEG.event(i).type='face-upright-f4';
-    elseif strcmp(EEG.event(i).type,'35');
-        EEG.event(i).type='face-upright-f5';
-    elseif strcmp(EEG.event(i).type,'36');
-        EEG.event(i).type='face-upright-f6';
-    elseif strcmp(EEG.event(i).type,'41');
-        EEG.event(i).type='face-inverted-f1';
-    elseif strcmp(EEG.event(i).type,'42');
-        EEG.event(i).type='face-inverted-f2';
-    elseif strcmp(EEG.event(i).type,'43');
-        EEG.event(i).type='face-inverted-f3';
-    elseif strcmp(EEG.event(i).type,'44');
-        EEG.event(i).type='face-inverted-f4';
-    elseif strcmp(EEG.event(i).type,'45');
-        EEG.event(i).type='face-inverted-f5';
-    elseif strcmp(EEG.event(i).type,'46');
-        EEG.event(i).type='face-inverted-f6';
-    elseif strcmp(EEG.event(i).type,'51');
-        EEG.event(i).type='checker-f1';
-    elseif strcmp(EEG.event(i).type,'52');
-        EEG.event(i).type='checker-f2';
-    elseif strcmp(EEG.event(i).type,'53');
-        EEG.event(i).type='checker-f3';
-    elseif strcmp(EEG.event(i).type,'54');
-        EEG.event(i).type='checker-f4';
-    elseif strcmp(EEG.event(i).type,'55');
-        EEG.event(i).type='checker-f5';
-    elseif strcmp(EEG.event(i).type,'56');
-        EEG.event(i).type='checker-f6';
-    elseif strcmp(EEG.event(i).type,'211');
-        EEG.event(i).type='face-upright';
-    elseif strcmp(EEG.event(i).type,'212');
-        EEG.event(i).type='face-inverted';
-    elseif strcmp(EEG.event(i).type,'213');
-        EEG.event(i).type='house-upright';
-    elseif strcmp(EEG.event(i).type,'214');
-        EEG.event(i).type='house-inverted';
-    elseif strcmp(EEG.event(i).type,'215');
-        EEG.event(i).type='checker-left';
-    elseif strcmp(EEG.event(i).type,'216');
-        EEG.event(i).type='checker-right';
-    elseif strcmp(EEG.event(i).type,'201');
-        EEG.event(i).type='press-left';
-    elseif strcmp(EEG.event(i).type,'204');
-        EEG.event(i).type='press-right';
-    elseif strcmp(EEG.event(i).type,'boundary');
-        EEG.event(i).duration=0;
-    else
-        EEG.event(i).type=['e-',num2str(EEG.event(i).type)];
+    if isempty(str2num(subid));
+        disp('COULD NOT FIND THE SUBJECT ID.');
+        return;
     end
 end
+
+%session ID 
+sesids_ind=strfind(n,'_t')+2;
+sesid=n(sesids_ind);
+
+if isempty(str2num(sesid));
+    disp('COULD NOT FIND THE SESSION ID.');
+    return;
+end
+
+if strcmp(sesid,'1');
+    agelab='m06';
+    tasklab='t1task';
+elseif strcmp(sesid,'2');
+    agelab='m12';
+    tasklab='t2task';
+elseif strcmp(sesid,'3');
+    agelab='m18';
+    tasklab='t3task';
+end
+
+outfpath=['sub-s',subid,'/ses-',agelab,'/eeg/'];
+disp(['outpath: ', outfpath]);
+disp(['current session: ' sesid]);
+
+    
+EEG = pop_readegi(infname(1:end-1), [],[],'auto');
+
+%ADD Cz TO DATA ARRAY.
+EEG.data(129,:)=zeros(size(EEG.data(1,:)));
+EEG.nbchan=129;
+EEG.chanlocs(129)=EEG.chanlocs(128);
+EEG.chanlocs(129).labels=EEG.chaninfo.nodatchans(4).labels;
+EEG.chanlocs(129).Y=EEG.chaninfo.nodatchans(4).Y;
+EEG.chanlocs(129).X=EEG.chaninfo.nodatchans(4).X;
+EEG.chanlocs(129).Z=EEG.chaninfo.nodatchans(4).Z;
+EEG.chanlocs(129).sph_theta=EEG.chaninfo.nodatchans(4).sph_theta;
+EEG.chanlocs(129).sph_phi=EEG.chaninfo.nodatchans(4).sph_phi;
+EEG.chanlocs(129).sph_radius=EEG.chaninfo.nodatchans(4).sph_radius;
+EEG.chanlocs(129).theta=EEG.chaninfo.nodatchans(4).theta;
+EEG.chanlocs(129).radius=EEG.chaninfo.nodatchans(4).radius;
+EEG.chanlocs(129).type='EEG';
+EEG.chaninfo.nodatchans=EEG.chaninfo.nodatchans(1:3);
+
+EEG = pop_chanedit(EEG, 'load',{'sourcedata/misc/GSN129.sfp' 'filetype' 'autodetect'});
+
+if ~isempty(EEG.event);
+    for i=1:length(EEG.event);
+        if strcmp(EEG.event(i).type,'epoc');
+            EEG.event(i).type='boundary';
+        end
+    end
+end
+
+% CHECK FOR OUTPUT PATH AND CRETAE IF NECESSARY
+if ~exist(outfpath);
+    disp(['Making directory ', outfpath]);
+    eval(['mkdir ' outfpath]);
+end
+
+outfname=['sub-s',subid,'_ses-',agelab,'_task-',tasklab,'_eeg.set'];
+
+if strcmp(n(1:2),'p0');
+    outfname = ['sub-s',subid,'_ses-',agelab,'_task-',tasklab,'_eeg_',n(1:3),'.set'];
+end
+
+if strcmp(n(end-5:end-3),'eeg');
+    outfname = ['sub-s',subid,'_ses-',agelab,'_task-',tasklab,'_eeg_p',n(end-1:end),'.set'];
+end
+
+disp(outfname);
 
 %save output set file
-EEG = pop_saveset( EEG, 'filename',outsetfile);
-
+EEG = pop_saveset( EEG, 'filename',[outfpath,'/',outfname]);
+end

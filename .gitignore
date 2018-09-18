@@ -5,9 +5,16 @@ octave-workspace
 # derivatives/lossless/*
 # But keep the pipeline code.
 # !derivatives/lossless/code/*
+derivatives/lossless/log
+code/eeg_init
+code/misc
+
+# Specifically hide the staging script
+derivatives/lossless/code/scripts/staging
 
 # BIDS ignores:
 sourcedata/*
 sub-*
 participants.tsv
 dataset_description.json
+grp_*
