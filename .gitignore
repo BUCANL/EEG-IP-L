@@ -10,8 +10,7 @@ code/eeg_init
 code/misc
 
 # Specifically hide the staging script
-derivatives/lossless/code/scripts/staging/*
-!derivatives/lossless/code/scripts/.gitkeep
+derivatives/lossless/code/scripts/staging_script.m
 
 # Ignore the configs as they're specialized to a project
 derivatives/lossless/code/config/remote-sbatch
