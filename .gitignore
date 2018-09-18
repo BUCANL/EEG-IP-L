@@ -10,7 +10,7 @@ code/eeg_init
 code/misc
 
 # Specifically hide the staging script
-derivatives/lossless/code/scripts/staging
+# derivatives/lossless/code/scripts/staging/*
 
 # BIDS ignores:
 sourcedata/*
