@@ -2,70 +2,6 @@
 EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
 EEG = eeg_checkset(EEG);
 
-eventList = {'boundary','checker-f1','checker-left','checker-right','e-254','e-255','face-inverted','face-inverted-f1','face-upright','face-upright-f1','house-inverted','house-inverted-f1','house-upright','house-upright-f1','press-left','press-right'};
-
-% CHECK FOR IC CLASSIFICATION MARKS
-if isempty(find(strcmp('brain',{EEG.marks.comp_info.label})));
-    %% Use the ICLabel plugin 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % ICLabel is a database style plugin that classifies ICA components into the
-    % following seven categories
-
-    % (Brain)(Muscle)(Eye)(Heart)(Line Noise)(Channel Noise)(Other)
-    % (  1  )(  2   )( 3 )(  4  )(    5     )(      6      )(  7  )
-
-    % Colour structure and groupings are as follows:
-    % ----------
-    % Brain         -> [0, 0.4, 0]
-    % ----------
-    % Muscle        -> [0.4, 0, 0]
-    % Eye           -> [0.8, 0, 0]
-    % Heart         -> [0.8, 0.4, 0]
-    % ----------
-    % Line Noise    -> [0.2, 0.4, 0.8]
-    % Channel noise -> [0.4, 0, 0.8]
-    % ----------
-    % Other         -> [0.8, 0.8, 0]
-    % ----------
-
-    % Create lookup table of the above information.
-    pairs = {'brain',[0, 0.4, 0];
-    'muscle',[0.4,0,0];
-    'eye',[0.8,0,0];
-    'heart',[0.8,0.4,0];
-    'line_noise',[0.2,0.4,0.8];
-    'chan_noise',[0.4,0,0.8];
-    'other',[0.8,0.8,0]};
-    lookupTable = cell2struct(pairs, {'name', 'colour'}, 2);
-
-    % Run ICLabel
-    EEG = iclabel(EEG);
-
-    % Extract labels from the structure.
-    rawLabels = zeros([1,length(EEG.etc.ic_classification.ICLabel.classifications)]);
-    for index = 1:length(EEG.etc.ic_classification.ICLabel.classifications)
-        [p,i] = max(EEG.etc.ic_classification.ICLabel.classifications(index, :));
-        rawLabels(index) = i;
-    end
-
-    %ICLabel Exporting to marks
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    logging_log('INFO','UPDATE MARKS STRUCTURE WITH ICLABEL BRAIN COMPS...');
-    for compStage = 1:7
-        ICLabel_pass= zeros([1,length(rawLabels)]);
-        ICLabel_pass(find(rawLabels==compStage)) = 1;
-        ICLabel_pass = ICLabel_pass';
-        EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-                    {lookupTable(compStage).name,lookupTable(compStage).colour, ...
-                    lookupTable(compStage).colour,1,ICLabel_pass});
-    end
-
-    %RESET/INITIATE IC MARKS...
-    manual_ind=find(strcmp('manual',{EEG.marks.comp_info.label}));
-    brain_ind=find(strcmp('brain',{EEG.marks.comp_info.label}));
-    EEG.marks.comp_info(manual_ind).flags=~EEG.marks.comp_info(brain_ind).flags;
-end
-
 bfh=figure;
 bar(EEG.etc.ic_classification.ICLabel.classifications,'stacked','Horizontal','on');
 colormap(jet);
@@ -73,50 +9,65 @@ axis 'tight';
 legend({ 'brain','muscle','eye','heart','line_noise','chan_noise','other'});
 view(180,90);
 set(gca,'ytick',[1:min(size(EEG.icasphere))])
+set(bfh,'Position',[1986 1 348 973]);
+
+%PLOT CHAN DATA SCROLL PLOT USING VISED PLUGIN...
+EEG_scalp = pop_vised(EEG,'data_type','EEG', ...
+    'pop_gui','off', ...
+    'spacing',80, ...
+    'command','', ...
+    'tag','ve_eeg', ...
+    'keyselectcommand',{'t,ve_eegplot(''topoplot'',gcbf)';'r,ve_eegplot(''drawp'',0)';'o,qc_ovl_tog';'u,qc_ovl_upd'});
+sfh = gcf;
+set(sfh,'Position',[66 1 1484 1003]);
+
+%PLOT FULL DURATION NON-MANUAL ICAACT SURFACE PLOT
+notman_pnts = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
+normact=zeros(size(EEG.icaact(:,notman_pnts)));
+
+sortnormact=zeros(size(EEG.icaact(:,notman_pnts)));
+for i=1:min(size(EEG.icaweights));
+    normact(i,:)=(EEG.icaact(i,notman_pnts)-min(EEG.icaact(i,notman_pnts)))/(max(EEG.icaact(i,notman_pnts))-min(EEG.icaact(i,notman_pnts)));
+    sortnormact(i,:)=sort(normact(i,:));
+end
+
+nash=figure;
+surf(normact,'linestyle','none');axis('tight');view(0,270);
+set(nash,'Position',[1550 1 371 973]);
+
+%snash=figure;
+%surf(sortnormact,'linestyle','none');axis('tight');view(0,270);
+%set(snash,'Position',[1567 1 371 973]);
+
+%PLOT IC DATA SCROLL PLOT USING VISED PLUGIN...
+EEG = pop_vised(EEG,'data_type','ICA','children','ve_eeg','pop_gui','off','tag','ve_ica');
+cfh = gcf;
+set(cfh,'Position',[2332 1 1509 1003]);
 
 %PLOT IC TOPOGRAPHIES...
 %pop_topoplot(EEG,0, [1:min(size(EEG.icawinv))] , 'qc',0,1, 'electrodes', 'off', 'masksurf', 'on');
-pop_viewprops(EEG,0);
-%set(tfh,'Position',[ 1948 -9 1903 1049]);
+pop_viewprops(EEG,0,[1:min(size(EEG.icaweights))],{'freqrange',[1,100]});
 
-%PLOT CHAN DATA SCROLL PLOT USING VISED PLUGIN...
-EEG_scalp = pop_vised(EEG,'data_type','EEG','pop_gui','off','spacing',80,'command','','tag','vef_eeg','event_type',eventList);
-
-sfh = gcf;
-
-link = '';
-% Comment below line to desync second scrollplot from main
-% link = 'vef_eeg';
-
-%PLOT IC DATA SCROLL PLOT USING VISED PLUGIN...
-EEG = pop_vised(EEG,'data_type','ICA','children',link,'pop_gui','off','tag','vef_comp','event_type',eventList);
 tic;
 
 %WAIT FOR SCROLL PLOT TO CLOSE...
-% uiwait;
-% REMOVING THIS FOR THE NEXT LITTLE BIT
-reloadStr = 'close(findobj(''tag'',''vef_comp''));EEG = pop_vised(EEG,''data_type'',''ICA'',''children'',link,''pop_gui'',''off'',''tag'',''vef_comp'',''event_type'',eventList);';
-f = figure('Position',[300 300 500 50]);
-h = uicontrol('Position',[20 20 200 40],'String','Save and Exit',...
-              'Callback','uiresume(gcbf)');
-g = uicontrol('Position',[300 20 200 40],'String','Reload Component Plot',...
-              'Callback',reloadStr);
-uiwait(gcf); 
-close(f);
+uiwait(cfh);
 
 qc_time = num2str(toc);
 disp(['Time taken to perform QC: ' qc_time 'sec.']);
 
 %CLOSE/CLEAR TOPOGRAPHY PLOT HANDLES
 tfh = findobj('Type', 'figure');
-close(tfh(find(strcmp('View components properties - pop_viewprops() (dataset: filtLP - 1-s epochs - 1-s epochs - 1-s epochs)',{tfh.Name}))).Number);
+close(tfh(find(strncmp('View components properties - pop_viewprops() (dataset:',get(tfh,'Name'),54)))); % backwards compatible with MATLAB 2012
 
 %CLOSE/CLEAR ICLABEL BAR GRAPH
 try close(bfh),clear bfh, catch clear bfh, end
+try close(nash),clear nash, catch clear nash, end
+%try close(snash),clear snash, catch clear snash, end
 
 %CLOSE/CLEAR EEG SCROLL PLOT HANDLES
 try close(sfh),clear sfh, catch clear sfh, end
 
 %SAVE *_qc.SET DATASET FILE... 
-EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qc.set','filepath','[batch_dfp]');
-%init_bids_sub(EEG,'[batch_dfn,_,-2]','[_,-2,batch_dfn,.,-1]');
+EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qcr.set','filepath','[batch_dfp]');
+
