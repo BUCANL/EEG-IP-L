@@ -183,23 +183,23 @@ logging_log('INFO', 'TIME TO: EDIT FIND IC_SD AND UPDATE TIMEINFO REJECTION STRU
 toc
 clear icsd_epoch_flags;
 
-%% CALCULATE THETA/ALPHA ICAACT POWER
+%% CALCULATE DELTA/THETA ICAACT POWER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Calculates and flags times of low Theta/Alpha Power
+% Calculates and flags times of high Theta/Alpha Power
 
-% Calculating the Theta/Alpha component flag
-logging_log('INFO', 'Calculating the theta/alpha IC power array for window criteria...');
+% Calculating the Delta/Theta component flag
+logging_log('INFO', 'Calculating the delta/theta IC power array for window criteria...');
 tic;
-[EEG,icaact_ta_t]=chan_variance(EEG,'data_field','icaact', ...
+[EEG,icaact_dt_t]=chan_variance(EEG,'data_field','icaact', ...
 		'epoch_inds',epoch_inds, ...
 		'detrend','on', ...
         'varmeasure','spect', ...
-        'spectrange',[3 13], ...
+        'spectrange',[0 7], ...
         'plot_figs','off');
 
-% Creating the Theta/Alpha component flag
+% Creating the Delta/Theta component flag
 logging_log('INFO', 'Assessing window icaact sd distributions...')
-[~,flag_ta_t_inds]=marks_array2flags(icaact_ta_t, ...
+[~,flag_dt_t_inds]=marks_array2flags(icaact_dt_t, ...
     'flag_dim','col', ...
     'init_method','[sd_t_meth]', ...
     'init_vals',[sd_t_vals], ...
@@ -211,17 +211,53 @@ logging_log('INFO', 'Assessing window icaact sd distributions...')
 
 % Updating rejection structure
 logging_log('INFO', 'Updating latflaginfo structure...');
-icta_epoch_flags=zeros(size(EEG.data(1,:,:)));
-icta_epoch_flags(1,:,epoch_inds(flag_ta_t_inds))=1;
+icdt_epoch_flags=zeros(size(EEG.data(1,:,:)));
+icdt_epoch_flags(1,:,epoch_inds(flag_dt_t_inds))=1;
 EEG.marks=marks_add_label(EEG.marks,'time_info', ...
-	{'ic_ta',[1,1,0],icta_epoch_flags});
-logging_log('INFO', 'TIME TO: CALCULATE THETA/ALPHA ICAACT POWER AND UPDATE MARKS...');
+	{'ic_dt',[1,1,0],icdt_epoch_flags});
+logging_log('INFO', 'TIME TO: CALCULATE DELTA/THETA ICAACT POWER AND UPDATE MARKS...');
 toc
-clear icta_epoch_flags;
+clear icdt_epoch_flags;
+
+%% CALCULATE ALPHA ICAACT POWER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculates and flags times of high Alpha Power
+
+% Calculating the Alpha component flag
+logging_log('INFO', 'Calculating the alpha IC power array for window criteria...');
+tic;
+[EEG,icaact_a_t]=chan_variance(EEG,'data_field','icaact', ...
+		'epoch_inds',epoch_inds, ...
+		'detrend','on', ...
+        'varmeasure','spect', ...
+        'spectrange',[8 13], ...
+        'plot_figs','off');
+
+% Creating the Alpha component flag
+logging_log('INFO', 'Assessing window icaact sd distributions...')
+[~,flag_a_t_inds]=marks_array2flags(icaact_a_t, ...
+    'flag_dim','col', ...
+    'init_method','[sd_t_meth]', ...
+    'init_vals',[sd_t_vals], ...
+    'init_crit',[sd_t_o], ...
+    'flag_method','[sd_t_f_meth]', ...
+    'flag_vals',[ [sd_t_f_vals] ], ...
+    'flag_crit',[sd_t_f_o], ...
+    'plot_figs','off');
+
+% Updating rejection structure
+logging_log('INFO', 'Updating latflaginfo structure...');
+ica_epoch_flags=zeros(size(EEG.data(1,:,:)));
+ica_epoch_flags(1,:,epoch_inds(flag_a_t_inds))=1;
+EEG.marks=marks_add_label(EEG.marks,'time_info', ...
+	{'ic_a',[1,1,0],ica_epoch_flags});
+logging_log('INFO', 'TIME TO: CALCULATE ALPHA ICAACT POWER AND UPDATE MARKS...');
+toc
+clear ica_epoch_flags;
 
 %% CALCULATE BETA ICAACT POWER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Calculates and flags times of low Beta Power. 
+% Calculates and flags times of high Beta Power. 
 % Note that at the moment this mark is used for removals.
 
 % Calculating the Beta component flag
@@ -235,7 +271,7 @@ tic;
         'plot_figs','off');
 logging_log('INFO', 'TIME TO: CALCULATE BETA ICAACT POWER...');
 
-% Creating the Theta/Alpha component flag
+% Creating the Beta component flag
 logging_log('INFO', 'Assessing window icaact sd distributions...')
 [~,flag_b_t_inds]=marks_array2flags(icaact_b_t, ...
     'flag_dim','col', ...
@@ -259,6 +295,86 @@ logging_log('INFO', 'TIME TO: CALCULATE BETA ICAACT POWER AND UPDATE MARKS...');
 toc
 clear icb_epoch_flags;
 
+%% CALCULATE LOW GAMMA ICAACT POWER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculates and flags times of high Low-Gamma Power. 
+% Note that at the moment this mark is used for removals.
+
+% Calculating the Beta component flag
+logging_log('INFO', 'Calculating the low-gamma IC power array for window criteria...');
+tic;
+[EEG,icaact_lg_t]=chan_variance(EEG,'data_field','icaact', ...
+		'epoch_inds',epoch_inds, ...
+		'detrend','on', ...
+        'varmeasure','spect', ...
+        'spectrange',[31 60], ...
+        'plot_figs','off');
+logging_log('INFO', 'TIME TO: CALCULATE LOW-GAMMA ICAACT POWER...');
+
+% Creating the LOW-GAMMA component flag
+logging_log('INFO', 'Assessing window icaact sd distributions...')
+[~,flag_lg_t_inds]=marks_array2flags(icaact_lg_t, ...
+    'flag_dim','col', ...
+    'init_method','[sd_t_meth]', ...
+    'init_vals',[sd_t_vals], ...
+    'init_crit',[sd_t_o], ...
+    'flag_method','[sd_t_f_meth]', ...
+    'flag_vals',[ [sd_t_f_vals] ], ...
+    'flag_crit',[sd_t_f_o], ...
+    'plot_figs','off');
+
+logging_log('INFO', 'TIME TO: CREATE WINDOW CRITERIA VECTOR...');
+
+% Updating rejection structure
+logging_log('INFO', 'Updating latflaginfo structure...');
+iclg_epoch_flags=zeros(size(EEG.data(1,:,:)));
+iclg_epoch_flags(1,:,epoch_inds(flag_lg_t_inds))=1;
+EEG.marks=marks_add_label(EEG.marks,'time_info', ...
+	{'ic_lg',[0,1,1],iclg_epoch_flags});
+logging_log('INFO', 'TIME TO: CALCULATE LOW-GAMMA ICAACT POWER AND UPDATE MARKS...');
+toc
+clear iclg_epoch_flags;
+
+
+%% CALCULATE HIGH GAMMA ICAACT POWER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Calculates and flags times of high High-Gamma Power. 
+% Note that at the moment this mark is used for removals.
+
+% Calculating the Beta component flag
+logging_log('INFO', 'Calculating the high-gamma IC power array for window criteria...');
+tic;
+[EEG,icaact_hg_t]=chan_variance(EEG,'data_field','icaact', ...
+		'epoch_inds',epoch_inds, ...
+		'detrend','on', ...
+        'varmeasure','spect', ...
+        'spectrange',[61 100], ...
+        'plot_figs','off');
+logging_log('INFO', 'TIME TO: CALCULATE HIGH-GAMMA ICAACT POWER...');
+
+% Creating the HIGH-GAMMA component flag
+logging_log('INFO', 'Assessing window icaact sd distributions...')
+[~,flag_hg_t_inds]=marks_array2flags(icaact_hg_t, ...
+    'flag_dim','col', ...
+    'init_method','[sd_t_meth]', ...
+    'init_vals',[sd_t_vals], ...
+    'init_crit',[sd_t_o], ...
+    'flag_method','[sd_t_f_meth]', ...
+    'flag_vals',[ [sd_t_f_vals] ], ...
+    'flag_crit',[sd_t_f_o], ...
+    'plot_figs','off');
+
+logging_log('INFO', 'TIME TO: CREATE WINDOW CRITERIA VECTOR...');
+
+% Updating rejection structure
+logging_log('INFO', 'Updating latflaginfo structure...');
+ichg_epoch_flags=zeros(size(EEG.data(1,:,:)));
+ichg_epoch_flags(1,:,epoch_inds(flag_hg_t_inds))=1;
+EEG.marks=marks_add_label(EEG.marks,'time_info', ...
+	{'ic_hg',[0,1,1],ichg_epoch_flags});
+logging_log('INFO', 'TIME TO: CALCULATE HIGH-GAMMA ICAACT POWER AND UPDATE MARKS...');
+toc
+clear ichg_epoch_flags;
 
 %% MARKS UPDATE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,7 +427,7 @@ EEG = pop_dipfit_settings( EEG, 'hdmfile','[dip_vol]', ...
 % EEG = pop_multifit(EEG, [1:EEG.nbchan] ,'threshold',100,'plotopt',{'normlen' 'on'});
 
 % NEW MULTI-THREADED SETUP
-EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8, 'dipoles', 2,'threshold',100,'plotopt',{'normlen' 'on'});
+EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8,'threshold',100,'plotopt',{'normlen' 'on'});
 
 EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
