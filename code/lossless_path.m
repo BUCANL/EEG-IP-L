@@ -28,3 +28,5 @@ if ~exist('derivatives/lossless/code/dependencies/eeglab_asr_amica', 'dir') ...
 end
 addpath([pwd '/' 'derivatives/lossless/code/dependencies/eeglab_asr_amica'])
 addpath([pwd '/' 'derivatives/lossless/code/dependencies/matlog'])
+addpath([pwd '/' 'derivatives/lossless/code/scripts'])
+addpath([pwd '/' 'derivatives/lossless/code/tools/diagnostics'])
