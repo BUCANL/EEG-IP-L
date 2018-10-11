@@ -6,6 +6,9 @@ function single_diagnostic(fOutID, singleSetFile)
     % a buffer. Line starts with filename.
     outString = [singleSetFile, ','];
 
+    % Quantile breakdown used as a constant:
+    quantBreakdown = [0.05,0.15,0.25,0.5,0.75,0.85,0.95];
+    
     % Load:
     EEG = pop_loadset('filepath','','filename',singleSetFile);
     EEG = eeg_checkset( EEG );
@@ -49,12 +52,29 @@ function single_diagnostic(fOutID, singleSetFile)
     % Amica diagnostic info:
     outString = [outString, num2str(mean(EEG.amica(2).models.Lt)), ','];
     outString = [outString, num2str(std(EEG.amica(2).models.Lt)), ','];
-    quants = quantile(EEG.amica(2).models.Lt,[0.05,0.15,0.25,0.5,0.75,0.85,0.95]);
+    quants = quantile(EEG.amica(2).models.Lt,quantBreakdown);
     for i=1:length(quants)
         outString = [outString, num2str(quants(i)), ','];
     end
-    % Pre QC comp count:
-    outString = [outString, num2str(length(EEG.icachansind)), ','];
+    % Manual QC comp count:
+    outString = [outString, num2str(length(find(EEG.marks.comp_info(1).flags == 1))), ','];
+    % Components marked as ic_rt
+    outString = [outString, num2str(length(find(EEG.marks.comp_info(2).flags == 1))), ','];
+    
+    % ISCtest:
+    a = [];
+    for i=2:length(EEG.amica);
+        a(:,:,i-1)=EEG.amica(i).models(1).A;
+    end
+    [~,~,linkpvalues,~] = isctest(a,0.05,0.05,'mixing');
+    outString = [outString, num2str(mean(linkpvalues)), ','];
+    outString = [outString, num2str(std(linkpvalues)), ','];
+    quants = quantile(linkpvalues,quantBreakdown);
+    for i=1:length(quants)
+        outString = [outString, num2str(quants(i)), ','];
+    end
+    
+    % disp('hold');
     
     % Final write - includes newline
     fprintf(fOutID,'%s\n',outString);
