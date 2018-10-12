@@ -74,6 +74,28 @@ function single_diagnostic(fOutID, singleSetFile)
         outString = [outString, num2str(quants(i)), ','];
     end
     
+    % Varianc measures:
+    % Total data:
+    EEG = pop_marks_select_data(EEG,'channel marks',[],'labels',{'manual'},'remove','on');
+    EEG = pop_marks_select_data(EEG,'time marks',[],'labels',{'manual'},'remove','on');
+    tvar=std(EEG.data,[],1);
+    outString = [outString, num2str(mean(tvar)), ','];
+    outString = [outString, num2str(std(tvar)), ','];
+    quants = quantile(tvar,quantBreakdown);
+    for i=1:length(quants)
+        outString = [outString, num2str(quants(i)), ','];
+    end
+
+    % Projected data:
+    EEG = pop_marks_select_data(EEG,'component marks',[],'labels',{'manual'},'remove','on');
+    pvar=std(EEG.data,[],1);
+    outString = [outString, num2str(mean(pvar)), ','];
+    outString = [outString, num2str(std(pvar)), ','];
+    quants = quantile(pvar,quantBreakdown);
+    for i=1:length(quants)
+        outString = [outString, num2str(quants(i)), ','];
+    end
+    
     % disp('hold');
     
     % Final write - includes newline
