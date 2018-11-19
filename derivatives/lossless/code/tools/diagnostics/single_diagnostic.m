@@ -18,32 +18,43 @@ function single_diagnostic(fOutID, singleSetFile)
     outString = [outString, num2str(EEG.pnts), ','];
     outString = [outString, num2str(EEG.srate), ','];
     
-    % All time_info flag enables in seconds:
+    % All time_info flags in seconds:
     % Manual
-    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags==1)) / EEG.srate), ','];
-    % ch_s_sd m
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags== 1)) / EEG.srate), ','];
+    % ch_s_sd_m
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 1)) / EEG.srate), ','];
-    % ch_s_sd b m
+    % ch_s_sd_b_m (padding of ch_s_sd_m)
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 0.5)) / EEG.srate), ','];
-    % ch_s_sd b m ch_sd b
-    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 0.5 & EEG.marks.time_info(4).flags == 0.5)) / EEG.srate), ','];
-    % ch_s_sd b m ic_sd1 b
-    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 0.5 & EEG.marks.time_info(8).flags == 0.5)) / EEG.srate), ','];
-    % ch_sd m
+    % ch_sd_m
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(4).flags == 1)) / EEG.srate), ','];
-    % ch_sd b m
+    % ch_sd_b_m (padding of ch_sd_m)
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(4).flags == 0.5)) / EEG.srate), ','];
-    % ch_sd b m ic_sd1 b
-    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(4).flags == 0.5 & EEG.marks.time_info(8).flags == 0.5)) / EEG.srate), ','];
-    % low_r m
+    % low_r_m
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(5).flags == 1)) / EEG.srate), ','];
-    % ic_sd1 m
+    % ic_sd1_m
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(8).flags == 1)) / EEG.srate), ','];
-    % ic_sd1 b m
+    % ic_sd1_b_m
     outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(8).flags == 0.5)) / EEG.srate), ','];
-    % ic_sd2
-    outString = [outString, num2str(length(find(EEG.marks.time_info(12).flags==1)) / EEG.srate), ','];
-    
+    % ic_sd2_m
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(12).flags == 1)) / EEG.srate), ','];
+    % mark_gap
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(6).flags == 1)) / EEG.srate), ','];
+    % overlap between ch_s_sd_b_m  and ch_sd_b_m
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 0.5 & EEG.marks.time_info(4).flags == 0.5)) / EEG.srate), ','];
+    % overlap between ch_s_sd_b_m  and ic_sd1_b_m
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 0.5 & EEG.marks.time_info(8).flags == 0.5)) / EEG.srate), ','];
+    % overlap between ch_sd_b_m and ic_sd1_b_m
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(4).flags == 0.5 & EEG.marks.time_info(8).flags == 0.5)) / EEG.srate), ','];
+    % overlap between low_r_m and ic_sd1_b_m
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(5).flags == 1 & EEG.marks.time_info(8).flags == 0.5)) / EEG.srate), ','];
+    % manual only
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 1 & EEG.marks.time_info(3).flags == 0 & EEG.marks.time_info(4).flags == 0 & ...
+            EEG.marks.time_info(5).flags == 0 & EEG.marks.time_info(6).flags == 0 & EEG.marks.time_info(8).flags == 0 & EEG.marks.time_info(12).flags == 0)) / EEG.srate), ','];
+    % non-manual but flagged for other reason
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 0 & (EEG.marks.time_info(3).flags > 0 | EEG.marks.time_info(4).flags > 0 | EEG.marks.time_info(5).flags > 0 | EEG.marks.time_info(6).flags > 0 | EEG.marks.time_info(8).flags > 0 | EEG.marks.time_info(12).flags > 0))) / EEG.srate), ','];
+    % all non-manual
+    outString = [outString, num2str(length(find(EEG.marks.time_info(1).flags == 0)) / EEG.srate), ','];
+
     % Single chan_info flag enables in seconds:
     for i=2:5 % [2,5] are ch_s_sd, ch_sd, low_r, and bridge respectively.
         outString = [outString, num2str(length(find(EEG.marks.chan_info(i).flags==1))), ','];
