@@ -10,36 +10,48 @@
 %    in_path =           [in_path]           Relative path to input data files assuming cd = work_path
 %    montage_info =      [montage_info]      Montage information to fit channel locations on a standard surface.
 %                                            This can be a transformations matrix (e.g. [-.14,-22,-48,-.07,0,-1.57,1080,1260,1240])
-%                                            ... or a a file contasining a transformation matrix (e.g. [batch_dfn]_transmat.mat).
+%                                            ... or a a file containing a transformation matrix (e.g. [batch_dfn]_transmat.mat).
 %                                            ... or a BIDS channel location tsv file (assuming that during BIDS init the channels were coregistered to the standard surface).
 %    staging_script =    [staging_script]    Scipt file path/name that creates marks based on events in the raw data file. 
-%	 aref_trim =		 [aref_trim]         Trim of mean for initial average rereference (e.g. 30 = 15% off each side)
 % 	 recur_sec =         [recur_sec]         Recurrence (sec) for artifact detection epoching (e.g. .5, Default 1)
 %    limit_sec =         [limit_sec]         Limits (sec) for artifact detection epoching (e.g. [-.5 0], Default [0 recur_sec])
-%    sd_epoch_z =        [sd_epoch_z]        z threshold for flagging epochs during standard deviation criteria (e.g. 6)
-%    sd_epoch_p =        [sd_epoch_p]        Percentage of flagged channels required to flag an epoch during standard deviation criteria (e.g. .1)
-%    sd_epoch_trim =     [sd_epoch_trim]     Percentage trim for confidence intervals during epoch standard deviation criteria (10 = 5% top and bottom)
-%    sd_epoch_pad =      [sd_epoch_pad]      Number of windows to pad onto each side of the ch_sd time flag
-%    sd_chan_z =         [sd_chan_z]         z threshold for flagging channel during standard deviation criteria (e.g. 6)
-%    sd_chan_p =         [sd_chan_p]         Percentage of flagged epochs required to flag a channel during standard deviation criteria (e.g. .1)
-%    sd_chan_trim =      [sd_chan_trim]      Percentage trim for confidence intervals during channel standard deviation criteria (10 = 5% top and bottom)
+%    sd_t_meth =         [sd_t_meth]         Method used for flagging epochs (e.g. 'q' (quantiles), or 'na' (default))
+%    sd_t_vals  =        [sd_t_vals]         Percentage trim for confidence intervals during epoch standard deviation criteria (e.g. [.3 .7])
+%    sd_t_o =            [sd_t_o]            z threshold for flagging epochs during standard deviation criteria (e.g. 6)
+%    sd_t_f_meth =       [sd_t_f_meth]       Fixed method used for flagging epochs (should be 'fixed')
+%    sd_t_f_vals  =      [sd_t_f_vals]       Percentage trim for confidence intervals during epoch standard deviation criteria (e.g. [.3 .7], leave empty for 'fixed')
+%    sd_t_f_o =          [sd_t_f_o]          z threshold for flagging epochs during fixed standard deviation criteria (e.g. .2)
+%    sd_t_pad =          [sd_t_pad]          Number of windows to pad onto each side of the ch_sd time flag
+%    sd_ch_meth =        [sd_ch_meth]        Method used for flagging channels (e.g. 'q' (quantiles), or 'na' (default))
+%    sd_ch_vals  =       [sd_ch_vals]        Percentage trim for confidence intervals during channel standard deviation criteria (e.g. [.3 .7])
+%    sd_ch_o =           [sd_ch_o]           z threshold for flagging channels during standard deviation criteria (e.g. 6)
+%    sd_ch_f_meth =      [sd_ch_f_meth]      Fixed method used for flagging channels (should be 'fixed')
+%    sd_ch_f_vals  =     [sd_ch_f_vals]      Percentage trim for confidence intervals during channel standard deviation criteria (e.g. [.3 .7], leave empty for 'fixed')
+%    sd_ch_f_o =         [sd_ch_f_o]         z threshold for flagging channel during fixed standard deviation criteria (e.g. 6)
 %    ref_loc_file =      [ref_loc_file]      Name of file containing the reference locations (including the relative path)    
 %    low_bound_hz =      [low_bound_hz]      Lower bound of the filter bass-band
 %    high_bound_hz =     [high_bound_hz]     Upper bound of the filter bass-band
-%    n_neighb_chan =     [n_neighb_chan]     Number of channels to use in nearest neighbour r calculation (for channel criteria)
-%    r_chan_z =          [r_chan_z]          z threshold for flagging channel during neighbour r criteria (e.g. 3)
-%    r_chan_p =          [r_chan_p]          Percentage of flagged epochs required to flag a channel during neighbour r criteria (e.g. .1)
-%    r_chan_trim =       [r_chan_trim]       Percentage trim for confidence intervals during channel neighbour r criteria (10 = 5% top and bottom)
+%    save_f_res =        [save_f_res]        1 if you want to save the filter residuals (Default: 1)
+%    n_nbr_ch =          [n_nbr_ch]          Number of channels to use in nearest neighbour r calculation (for channel criteria)
+%    r_ch_meth =         [sd_ch_meth]        Method used for flagging low r channels (e.g. 'q' (quantiles), or 'na' (default))
+%    r_ch_vals  =        [sd_ch_vals]        Percentage trim for confidence intervals during low r channel standard deviation criteria (e.g. [.3 .7])
+%    r_ch_o =            [r_ch_o]            z threshold for flagging channel during neighbour r criteria (e.g. 3)
+%    r_ch_f_meth =       [r_ch_f_meth]       Fixed method used for flagging low r channels (should be 'fixed')
+%    r_ch_f_vals  =      [r_ch_f_vals]       Percentage trim for confidence intervals during low r channel standard deviation criteria (e.g. [.3 .7], leave empty for 'fixed')
+%    r_ch_f_o =          [r_ch_f_o]          z threshold for flagging channel during fixed neighbour r criteria (e.g. 3)
 %    bridge_trim =       [bridge_trim]       Percentage trim for z calculation of bridged channels (e.g. 40 = 20% top and bottom)
 %    bridge_z =          [bridge_z]          z threshold for flagging channel during bridging criteria (e.g. 8)
-%    n_neighb_epoch =    [n_neighb_epoch]    Number of channels to use in nearest neighbour r calculation (for epoch criteria)
-%    epoch_z =           [epoch_z]           z threshold for flagging epochs during neighbour r criteria (e.g. 3)
-%    epoch_p =           [epoch_p]           Percentage of flagged channels required to flag an epoch during neighbour r criteria (e.g. .1)
-%    epoch_trim =        [epoch_trim]        Percentage trim for confidence intervals during epoch neighbour r criteria (10 = 5% top and bottom)
+%    n_nbr_t =           [n_nbr_t]           Number of channels to use in nearest neighbour r calculation (for epoch criteria)
+%    r_t_meth =          [r_t_meth]          Method used for flagging low r epochs (e.g. 'q' (quantiles), or 'na' (default))
+%    r_t_vals  =         [r_t_vals]          Percentage trim for confidence intervals during low r epoch standard deviation criteria (e.g. [.3 .7])
+%    r_t_o =             [r_t_o]             z threshold for flagging epochs during neighbour r criteria (e.g. 3)
+%    r_t_f_meth =        [r_t_f_meth]        Fixed method used for flagging low r epochs (should be 'fixed')
+%    r_t_f_vals  =       [r_t_f_vals]        Percentage trim for confidence intervals during low r epoch standard deviation criteria (e.g. [.3 .7], leave empty for 'fixed')
+%    r_t_f_o =           [r_t_f_o]           z threshold for flagging epochs during fixed neighbour r criteria (e.g. 3)
 %    min_gap_ms =        [min_gap_ms]        Minimum time (ms) to allow between periods marked for rejection
 %    out_path =          [out_path]          Relative path to output data files assuming cd = work_path
-%    amica_param_file =  [amica_param_file]  template amicadefs.param file to modify.
-%    save_diff =         [savediff]          YES if you want to save the filter residuals (Default: NO)
+%    amica_param_file =  [amica_param_file]  template amicadefs.param file to modify
+%    amica_threads_s02 = [amica_threads_s02] number of threads to use for running s02 amica script (Default: 8)
 
 %% CHECK FOR OUTPUT PATH AND CRETAE IF NECESSARY
 if ~exist('[out_path]/[batch_dfn,/,-1]','dir');
@@ -85,7 +97,7 @@ end
 %warp locations to standard head surface:
 if ~isempty('[montage_info]');
     if isempty(str2num('[montage_info]'));
-        %if it is a BIDS channel tsv, load the tsv,
+        %if it is a BIDS channel tsv, load the tsv,sd_t_f_vals
         %else read the file that is assumed to be a transformation matrix.
     else
         EEG = warp_locs( EEG,'[ref_loc_file]', ...

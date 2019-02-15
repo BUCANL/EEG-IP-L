@@ -5,22 +5,24 @@
 %
 %% From Config          key_strswap     Description
 %-----------------------------------------------------------------------------------------------------------------------------
-%  in_path = 		[in_path]  	Relative path to input data files assuming cd = work_path
-%  out_path = 		[out_path]  	Relative path to output data files assuming cd = work_path
+%  in_path = 		[in_path]  	    Relative path to input data files assuming cd = work_path
 %  recur_sec = 		[recur_sec]  	Recurrence (sec) for the current artifact detection epoching (e.g. 1)
 %  limit_sec = 		[limit_sec]  	Limits (sec) for the current artifact detection epoching (e.g. [0 1])
-%  epoch_z = 		[epoch_z]  	z threshold for flagging channel during icsd criteria (e.g. 2.326)
-%  epoch_p = 		[epoch_p]  	Percentage of flagged components required to flag an epoch during icsd criteria (e.g. .1)
-%  epoch_trim = 	[epoch_trim]  	Percentage trim for confidence intervals during channel neighbour r criteria (10 = 5% top and bottom)
+%  sd_t_meth =      [sd_t_meth]     Method used for flagging epochs (e.g. 'q' (quantiles), or 'na' (default))
+%  sd_t_vals  =     [sd_t_vals]     Percentage trim for confidence intervals during epoch standard deviation criteria (e.g. [.3 .7])
+%  sd_t_o =         [sd_t_o]        z threshold for flagging epochs during standard deviation criteria (e.g. 6)
+%  sd_t_f_meth =    [sd_t_f_meth]   Fixed method used for flagging epochs (should be 'fixed')
+%  sd_t_f_vals  =   [sd_t_f_vals]   Percentage trim for confidence intervals during epoch standard deviation criteria (e.g. [.3 .7], leave empty for 'fixed')
+%  sd_t_f_o =       [sd_t_f_o]      z threshold for flagging epochs during fixed standard deviation criteria (e.g. .2)
 %  min_gap_ms = 	[min_gap_ms]  	Minimum time (ms) to allow between periods marked for rejection  
 %  icr_crit =       [icr_crit]      False discovery rate of component replicatablilty, measure of sensitivity %
-%  dip_vol =        [dip_vol]     file path/name of the standard volume file used in dipole fitting (e.g. derivatives/lossless/code/misc/standard_vol.mat).
-%  dip_mri =        [dip_mri]     file path/name of the standard mri file used in dipole fitting (e.g. derivatives/lossless/code/misc/standard_mri.mat).
-%  dip_elc =        [dip_elc]     file path/name of the standard electrode file used in dipole fitting (derivatives/lossless/code/misc/standard_1020.elc).
+%  dip_vol =        [dip_vol]       file path/name of the standard volume file used in dipole fitting (e.g. derivatives/lossless/code/misc/standard_vol.mat).
+%  dip_mri =        [dip_mri]       file path/name of the standard mri file used in dipole fitting (e.g. derivatives/lossless/code/misc/standard_mri.mat).
+%  dip_elc =        [dip_elc]       file path/name of the standard electrode file used in dipole fitting (derivatives/lossless/code/misc/standard_1020.elc).
 %  dip_transmat =   [dip_transmat]  Transformation matrix to apply during dipole fit (e.g. [0 0 0 0 0 0 1 1 1])
 %  cor_transmat =   [cor_transmat]  The transformation matrix to apply between dipole fitting to the standard head and performing ICLabel to the EEGLAB default orientation (e.g.[0,0,0,0,0,1.57,1,1,1])
-%  cor_nosedir =    [cor_nosedir]   Nose direction of montage to apply between dipole fitting to the standard head and performing ICLabel to the EEGLAB default orientation (e.g.+Y)
-
+%  cor_nosedir =    [cor_nosedir]   Nose direction of montage to apply between dipole fitting to the standard head and performing ICLabel to the EEGLAB default orientation (e.g. +Y)
+%  out_path = 		[out_path]  	Relative path to output data files assuming cd = work_path
 
 %% LOAD COMPART DATASET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,7 +45,7 @@ EEG.amica(2).models=loadmodout15('[in_path]/[batch_dfn,_,-1]_amicaout_A');
 EEG.icaweights=EEG.amica(2).models.W;
 EEG.icasphere=EEG.amica(2).models.S(1:EEG.amica(2).models.num_pcs,:);
 
-%% PASS EEGDATA THROUGH THE AMICA MATRIX
+%% PASS EEG DATA THROUGH THE AMICA MATRIX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Loads the B and C amica models. Amica A is used to fill in the ICA information.
 
