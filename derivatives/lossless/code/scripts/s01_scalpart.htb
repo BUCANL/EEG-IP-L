@@ -33,8 +33,8 @@
 %    high_bound_hz =     [high_bound_hz]     Upper bound of the filter bass-band
 %    save_f_res =        [save_f_res]        1 if you want to save the filter residuals (Default: 1)
 %    n_nbr_ch =          [n_nbr_ch]          Number of channels to use in nearest neighbour r calculation (for channel criteria)
-%    r_ch_meth =         [sd_ch_meth]        Method used for flagging low r channels (e.g. 'q' (quantiles), or 'na' (default))
-%    r_ch_vals  =        [sd_ch_vals]        Percentage trim for confidence intervals during low r channel standard deviation criteria (e.g. [.3 .7])
+%    r_ch_meth =         [r_ch_meth]         Method used for flagging low r channels (e.g. 'q' (quantiles), or 'na' (default))
+%    r_ch_vals  =        [r_ch_vals]         Percentage trim for confidence intervals during low r channel standard deviation criteria (e.g. [.3 .7])
 %    r_ch_o =            [r_ch_o]            z threshold for flagging channel during neighbour r criteria (e.g. 3)
 %    r_ch_f_meth =       [r_ch_f_meth]       Fixed method used for flagging low r channels (should be 'fixed')
 %    r_ch_f_vals  =      [r_ch_f_vals]       Percentage trim for confidence intervals during low r channel standard deviation criteria (e.g. [.3 .7], leave empty for 'fixed')
