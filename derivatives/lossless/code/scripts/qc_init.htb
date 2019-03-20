@@ -1,5 +1,10 @@
 %LOAD DATASET FILE...
 EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
+
+if ~find(strcmpi({EEG.marks.chan_info.label},'ch_s_sd'));
+    EEG.marks=marks_add_label(EEG.marks,'chan_info',{'ch_s_sd',[1,0,0],[]});
+end;
+
 EEG = eeg_checkset(EEG);
 
 % CHECK FOR IC CLASSIFICATION MARKS
@@ -92,7 +97,6 @@ manual_ind=find(strcmp('manual',{EEG.marks.chan_info.label}));
 
 %RESET/INITIATE IC MARKS...
 EEG.marks=marks_add_label(EEG.marks,'comp_info',{'ambig',[.3,.3,1],[.3,.3,1],3,zeros(min(size(EEG.icaweights)),1)});
-
 manual_ind=find(strcmp('manual',{EEG.marks.comp_info.label}));
 ch_s_sd_ind=find(strcmp('ch_s_sd',{EEG.marks.chan_info.label}));
 ch_sd_ind=find(strcmp('ch_sd',{EEG.marks.chan_info.label}));
@@ -110,7 +114,9 @@ other_ind=find(strcmp('other',{EEG.marks.comp_info.label}));
 ambig_ind=find(strcmp('ambig',{EEG.marks.comp_info.label}));
 
 EEG.marks.comp_info(manual_ind).order=1;
-EEG.marks.comp_info(ch_s_sd_ind).order=2;
+if ~isempty(ch_s_sd_ind); % skip study-wide criteria if not used
+    EEG.marks.comp_info(ch_s_sd_ind).order=2;
+end;
 EEG.marks.comp_info(ch_sd_ind).order=2;
 EEG.marks.comp_info(low_r_ind).order=2;
 EEG.marks.comp_info(bridge_ind).order=2;
