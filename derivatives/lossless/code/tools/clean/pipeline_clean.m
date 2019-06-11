@@ -19,7 +19,7 @@
 
 % Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
 %
-% Code written by Brad Kennedy
+% Code written by Mae Kennedy
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ function archive_logs(isset, datafile, mfilename, logs_dir, strat_gzip, strat_xz
     
     tmpdirn = tempname();
     [~] = mkdir(tmpdirn);
-    % TODO(brad) test this
+    % TODO(mae) test this
     parttemp = fullfile(tmpdirn, datafile);
     mkdir(parttemp);
     
@@ -191,7 +191,7 @@ function archive_logs(isset, datafile, mfilename, logs_dir, strat_gzip, strat_xz
     end
     [basedir, tdir, ~] = fileparts(parttemp);
     logpath = fullfile(pwd, 'analysis', 'log', [datafile '-' logs_dir]);
-    % TODO(brad) test system for failures
+    % TODO(mae) test system for failures
     if strat_gzip
         system(sprintf('cd %s && tar --gzip -cf %s %s', basedir, [logpath '.tar.gz'], tdir));
     elseif strat_xz

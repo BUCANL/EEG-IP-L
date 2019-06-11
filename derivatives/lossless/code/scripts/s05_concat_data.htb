@@ -408,7 +408,7 @@ toc
 logging_log('INFO','Checking for JVM...');
 javachk('jvm');
 
-% TODO(brad) this isn't added for some reason
+% TODO(mae) this isn't added for some reason
 addpath([pwd '/derivatives/lossless/code/dependencies/eeglab_asr_amica/plugins/Fieldtrip-lite141209/src'])
 
 %% DIPFIT

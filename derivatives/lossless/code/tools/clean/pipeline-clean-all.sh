@@ -2,7 +2,7 @@
 
 # Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
 #
-# Code written by Brad Kennedy
+# Code written by Mae Kennedy
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ prog="`dirname $0`/pipeline-clean.sh"
 ln=0
 
 while IFS='' read -r line ; do
-    # TODO(brad)
+    # TODO(mae)
     [[ $line =~ -(.+T.{8}) ]]
     time[ln]=${BASH_REMATCH[1]}
     [[ $line =~ .*/(.*)_(.*).m ]]

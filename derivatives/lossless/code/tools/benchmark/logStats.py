@@ -37,7 +37,7 @@ if __name__=="__main__":
         logFile.close()
         good = False
         for line in lines: # skip file if epilogue failed to print
-            if '--- BradNET Epilogue ---' in line or \
+            if '--- MaeNET Epilogue ---' in line or \
                '--- SharcNET Job Epilogue ---' in line:
                 good = True                
                 break

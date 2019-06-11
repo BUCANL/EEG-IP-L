@@ -8,7 +8,7 @@
 %   data - The data to display formatted
 
 % matlog - a Matlab and Octave compatible logging library
-% Copyright (C) 2017 Brad Kennedy
+% Copyright (C) 2017 Mae Kennedy
 % 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License

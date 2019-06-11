@@ -9,7 +9,7 @@
 %   strlevel - maximum level to log char type
 
 % matlog - a Matlab and Octave compatible logging library
-% Copyright (C) 2016 Brad Kennedy
+% Copyright (C) 2016 Mae Kennedy
 % 
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License

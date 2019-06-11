@@ -2,7 +2,7 @@
 
 # Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
 #
-# Code written by Brad Kennedy
+# Code written by Mae Kennedy
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 file=$1
 
 jobidis=`grep -E "Jobid\ is\:\ [0-9]+" "${file}"`
-needto=`grep -E "BradNET\ Epilogue" "${file}"`
+needto=`grep -E "MaeNET\ Epilogue" "${file}"`
 
 if [ "${needto}" ] || ! [ "${jobidis}" ]; then
         echo -e "The file $file does not need an epilogue or has no jobid line \n" \
@@ -85,10 +85,10 @@ fi
 echo "Adding Epilogue to $file" >&2
 cat >> $file << HEAD
 
---- BradNET csv ---
+--- MaeNET csv ---
 `sacct -j "$id" --format="$allformat" --parsable2 | tr '|' ','`
 
---- BradNET Epilogue ---
+--- MaeNET Epilogue ---
          job id: $id
     exit status: $iscompleted
        cpu time: $totalcpu

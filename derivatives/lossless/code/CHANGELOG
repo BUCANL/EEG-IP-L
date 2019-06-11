@@ -55,11 +55,11 @@
 
     * s13_concat_data.htb: same as above
 
-2017-08-01  Brad Kennedy  <bk@co60.ca>
+2017-08-01  Mae Kennedy  <bk@co60.ca>
 
     * eeglab_asr_amica: bumped version, see changelog
 
-2017-08-01  Brad Kennedy  <bk@co60.ca>
+2017-08-01  Mae Kennedy  <bk@co60.ca>
 
     * add-epilog.sh: Fixed issue with completed always = 1
 
@@ -71,7 +71,7 @@
 
     * benchmark.sh: update to benchmarking scripts
 
-2017-08-01  Brad Kennedy  <bk@co60.ca>
+2017-08-01  Mae Kennedy  <bk@co60.ca>
 
     * VERSION: 1.5.5
 
@@ -83,7 +83,7 @@
 
     * remote-sbatch/c99_clean_up.htb: For s99_clean_up.htb
 
-2017-07-28  Brad Kennedy  <bk@co60.ca>
+2017-07-28  Mae Kennedy  <bk@co60.ca>
 
     * VERSION: 1.5.4
 
@@ -94,7 +94,7 @@
       that contains a line Jobid is: [0-9]+ in the log file somewhere
       this epilog contains a lot of accounting information about the job
 
-2017-07-25  Brad Kennedy  <bk@co60.ca>
+2017-07-25  Mae Kennedy  <bk@co60.ca>
 
     * VERSION: 1.5.3
 
@@ -106,7 +106,7 @@
     * eeglab_asr_amica: bumped version, add functions for pipeline clean
       added jobid print to for slurm in amica
 
-2017-07-25  Brad Kennedy  <bk@co60.ca>
+2017-07-25  Mae Kennedy  <bk@co60.ca>
 
     * VERSION: 1.5.2
 

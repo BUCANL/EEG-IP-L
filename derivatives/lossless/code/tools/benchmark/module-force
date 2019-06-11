@@ -1,6 +1,6 @@
 #!/bin/bash
 ##
-# Written by Brad Kennedy
+# Written by Mae Kennedy
 # Works around restrictions on module loading by forcing modules to load
 # without concern of prereqs or conflicts, you are expected to know what
 # you are doing when you use this tool but it is more helpful then
