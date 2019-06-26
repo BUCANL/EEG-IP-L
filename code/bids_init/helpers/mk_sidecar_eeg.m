@@ -56,7 +56,7 @@ if isfield(opts,'ECGChannelCount');
 else
     sidecar_eeg.ECGChannelCount=0;
 end
-sidecar_eeg.EEGReference=EEG.ref;
+sidecar_eeg.EEGReference='CMS';
 if isfield(opts,'MiscChannelCount');
     sidecar_eeg.MiscChannelCount=opts.MiscChannelCount;
 else
@@ -94,7 +94,6 @@ end
 
 if EEG.trials==1;
     sidecar_eeg.RecordingType='continuous';
-    sidecar_eeg.EpochLength='Inf';
     sidecar_eeg.RecordingDuration=EEG.pnts*(1/EEG.srate);
 else
     sidecar_eeg.RecordingType='epoched';

@@ -103,6 +103,9 @@ for i=1:length(EEG.event);
     end
 end
 
+% Down sample
+EEG = pop_resample(EEG,256);
+
 %save output set file
 EEG = pop_saveset( EEG, 'filename',outsetfile);
 

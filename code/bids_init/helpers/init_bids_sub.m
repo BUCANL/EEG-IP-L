@@ -9,6 +9,11 @@ cell2tsv([rootfname,fnamesuf,'_channels.tsv'],channels,'%s\t%s\t%s\n');
 electrodes=mk_electrodes(EEG,[rootfname,fnamesuf,'.set']);
 cell2tsv([rootfname,fnamesuf,'_electrodes.tsv'],electrodes,'%s\t%5.3f\t%5.3f\t%5.3f\t%s\t%s\n');
 
+coordinates=mk_coordinates(EEG,[rootfname,fnamesuf,'.set']);
+fID = fopen([rootfname,fnamesuf,'_coordinates.json'],'w');
+fprintf(fID,'%s',coordinates);
+fclose(fID);
+
 events=mk_events(EEG,[rootfname,fnamesuf,'.set']);
 cell2tsv([rootfname,fnamesuf,'_events.tsv'],events,'%5.3f\t%5.3f\t%s\n');
 
