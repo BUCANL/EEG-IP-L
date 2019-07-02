@@ -14,7 +14,7 @@ end
 for i=1:length(EEG.chanlocs);
    channels{i+1,1}=EEG.chanlocs(i).labels;
    if strcmp(EEG.chanlocs(i).type,'');
-      channels{i+1,2}='NA';
+      channels{i+1,2}='EEG'; % Should be MISC in this case, but face13 is all EEG
    else
       channels{i+1,2}=EEG.chanlocs(i).type;
    end
