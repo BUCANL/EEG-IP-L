@@ -1,6 +1,0 @@
-module unload intel;
-module unload octave;
-#module load octave/3.8.1;
-
-. /home/bk12fy/shares/octave-4.2.1-setup-path.sh
-
