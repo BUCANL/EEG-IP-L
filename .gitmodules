@@ -1,0 +1,3 @@
+[submodule "derivatives/lossless/code/dependencies/eeglab_lossless"]
+	path = derivatives/lossless/code/dependencies/eeglab_lossless
+	url = https://github.com/BUCANL/eeglab-lossless.git
