@@ -1,6 +1,6 @@
 warning off;
 
-addpath([pwd 'derivatives/lossless/code/dependencies/eeglab_asr_amica'], ...
+addpath([pwd 'derivatives/lossless/code/dependencies/eeglab_lossless'], ...
   [pwd 'derivatives/lossless/code/dependencies/matlog']);
 
 % eeglab auto loads the path correctly instead of shotgun blasting with

@@ -48,12 +48,12 @@ bold "Begin Setup\n"
 
 bold "INFO:"; echo "Verify project submodules have been cloned"
 depend="../derivatives/lossless/code/dependencies"
-msg="You likely need to run git clone --recursive https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg.git with the --recursive flag"
-test_dir_exit "$depend/eeglab_asr_amica" "$msg"
-test_dir_exit "$depend/eeglab_asr_amica/plugins/amica" "$msg"
-test_dir_exit "$depend/eeglab_asr_amica/plugins/batch_context" "$msg"
-test_dir_exit "$depend/eeglab_asr_amica/plugins/vised_marks" "$msg"
-test_dir_exit "$depend/eeglab_asr_amica/plugins/interp_mont" "$msg"
+msg="You likely need to run git clone --recursive"
+test_dir_exit "$depend/eeglab_lossless" "$msg"
+test_dir_exit "$depend/eeglab_lossless/plugins/amica" "$msg"
+test_dir_exit "$depend/eeglab_lossless/plugins/batch_context" "$msg"
+test_dir_exit "$depend/eeglab_lossless/plugins/vised_marks" "$msg"
+test_dir_exit "$depend/eeglab_lossless/plugins/interp_mont" "$msg"
 
 #test_dir_warn "analysis/data/1_init" "Have you copied your data files?"
 
@@ -63,7 +63,7 @@ mkdir -p ../derivatives/lossless/log
 if checkset "executable-files" ; then
     bold "INFO:" echo "Ensuring files are executable"
     test_exec "../derivatives/lossless/code/tools/benchmark/module-force"
-    test_exec "$depend/eeglab_asr_amica/plugins/amica/amica15"
+    test_exec "$depend/eeglab_lossless/plugins/amica/amica15"
     set_lockset "executable-files"
 fi
 
@@ -78,8 +78,8 @@ if checkset "amica-make" ; then
     test_which "ifort" "You need Intel Fortran compiler in your path to compile"
     test_which "mpif90" "You need mpif90 in order to compile with MPI"
 
-    bold "INFO:"; echo "Moving to $depend/eeglab_asr_amica/plugins/amica.."
-    cd "$depend/eeglab_asr_amica/plugins/amica"
+    bold "INFO:"; echo "Moving to $depend/eeglab_lossless/plugins/amica.."
+    cd "$depend/eeglab_lossless/plugins/amica"
     bold "INFO:"; echo "Making default target.."
     make amica15-default
 
