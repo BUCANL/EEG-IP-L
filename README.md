@@ -5,11 +5,11 @@
 This repository contains the lossless EEG pipeline package that contains everything you need to get started processing EEG data.
 
 # Documentation
-All documentation including installation instructions is stored on the [Wiki](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/home)
+All documentation including installation instructions is stored on the [Wiki](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki)
 
 ## Contact / Issues
-Feel free to make an issue in the [Issue Tracker](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/issues)
-or [contact us directly](https://git.sharcnet.ca/bucanl_pipelines/bids_lossless_eeg/wikis/contributing#contacting-us)
+Feel free to make an issue in the [Issue Tracker](https://github.com/BUCANL/BIDS-Lossless-EEG/issues)
+or [contact us directly](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki/Contacting-Us)
 
 ## License / Copyright
 
