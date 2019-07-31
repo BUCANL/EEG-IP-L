@@ -62,7 +62,6 @@ mkdir -p ../derivatives/lossless/log
 
 if checkset "executable-files" ; then
     bold "INFO:" echo "Ensuring files are executable"
-    test_exec "../derivatives/lossless/code/tools/benchmark/module-force"
     test_exec "$depend/eeglab_lossless/plugins/amica/amica15"
     set_lockset "executable-files"
 fi
