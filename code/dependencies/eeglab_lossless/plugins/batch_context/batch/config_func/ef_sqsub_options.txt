@@ -1,0 +1,70 @@
+     (-r|-W) timelimit (THIS IS REQUIRED FOR EVERY JOB)
+                    provide a runtime limit (elapsed, wallclock time, not summed 
+                    across cpus) specified in any of the following forms:
+            15      (assumed to be minutes)
+            15m     (same)
+            .25h    (same)
+            2.5h    (2 hours 30 minutes)
+            3.5d    (3 days 12 hours)
+            84:0    (same, in LSF's hours:minutes format)
+
+     -i ifile       job reads inputs from 'ifile' (no default)
+     -o ofile       job output to 'ofile' (REQUIRED FOR EVERY JOB)
+     -e efile       job errors go to 'efile' (default: same as -o)
+
+     -t|--test      'test' mode: short but immediate (preemptive)
+     -q queue       queue name (serial, threaded, mpi; default serial)
+     -f flag        specify certain flags to modify behavior.  flags include:
+                    mpi, interactive, test, mail, permitcoredump
+
+     -n ncpus       require n cpus or cores (default 1)
+     -N nnodes      require n nodes (does not imply exclusive use)
+
+     --ppn=ppn      start ppn proceses per node
+     --tpp=tpp      permit tpp threads per process (OMP_NUM_THREADS)
+     --gpp=gpp      allocate gpp gpus per process
+
+     --mpp=
+     --memperproc=  amount of memory required by each process.  may be specified
+                    like 64M or 2.5G (M=2^20, G=2^30).  for an MPI job, this is 
+                    the per-rank size.  for threaded jobs, it's the process size,
+                    (that is, not per-thread.)
+
+     --nodes=clu[1-4]
+                    require a specific set of nodes.  eg wha[1-4] or req666.
+
+     --pack         require a minimal number of nodes, so processes occupy
+                    all cpus per node.
+    
+     --mail-start   notify when the job starts.
+     --mail-end     notify when the job ends (either normally or not).
+     --mail-abort   notify when the job ends abnormally.
+     -m|--mail      (compatibility - same as mail-end)
+                    this email only goes to your account's email address.
+
+     -w|--waitfor=jobid[,jobid...]]
+                    wait for a list of jobs to complete
+
+     -j|--jobname   provides a name for the job.
+
+     --project      specify a project (group) for accounting purposes.  
+                    defaults to the user's group.  may also be given via
+                    SQ_PROJECT environment variable.
+
+     --idfile=fname write the jobid into a file named 'fname'.
+
+     --nompirun     don't automatically invoke mpirun for mpi jobs.
+                    note that you should probably look at mpirun parameters
+                    sqsub uses, so that you get layout and binding right.
+
+     -f flag        specify certain flags to modify behavior.  
+                    Universal flags include: mpi, threaded, test, mail
+                    on some clusters, other flags have added meaning, such 
+                    xeon/opteron on Hound, and dual/quad on Goblin and 
+                    selecting sub-clusters on Kraken (bal/bru/dol/meg/tig/wha/nar)
+
+     -h or --help   show brief usage message
+     --man          show man page
+
+     -v|--verbose   verbose mode: shows debugging-type details
+     -d|--debug     debug mode: don't actually submit, but show the command
