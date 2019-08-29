@@ -5,14 +5,7 @@ octave-workspace
 # derivatives/lossless/*
 # But keep the pipeline code.
 # !derivatives/lossless/code/*
-derivatives/lossless/log
-code/eeg_init
-
-# Specifically hide the staging script
-derivatives/lossless/code/scripts/staging_script.m
-
-# Ignore the configs as they're specialized to a project
-derivatives/lossless/code/config/remote-sbatch
+log
 
 # BIDS ignores:
 sourcedata/*
