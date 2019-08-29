@@ -29,7 +29,7 @@
 fileName = mfilename('fullpath');
 pathPrefix = fileparts(fileName);
 
-addpath([pathPrefix '/../dependencies/eeglab-lossless'])
+addpath([pathPrefix '/../dependencies/eeglab_lossless'])
 addpath([pathPrefix '/../dependencies/matlog'])
 addpath([pathPrefix '/../scripts'])
 addpath([pathPrefix '/../tools/diagnostics'])
