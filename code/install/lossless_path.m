@@ -19,14 +19,17 @@
 % write to the Free Software Foundation, Inc., 59 Temple Place,
 % Suite 330, Boston, MA  02111-1307  USA
 
-if ~exist('derivatives/lossless/code/dependencies/eeglab_lossless', 'dir') ...
-        || ~exist('derivatives/lossless/code/dependencies/matlog', 'dir')
-    error(['derivatives/lossless/code/dependencies does not not contain ' ...
-        'eeglab_lossless and/or matlog, or is not readable, or ' ...
-        'your current folder in matlab is not the root of your ' ...
-        'project']);
-end
-addpath([pwd '/' 'derivatives/lossless/code/dependencies/eeglab_lossless'])
-addpath([pwd '/' 'derivatives/lossless/code/dependencies/matlog'])
-addpath([pwd '/' 'derivatives/lossless/code/scripts'])
-addpath([pwd '/' 'derivatives/lossless/code/tools/diagnostics'])
+%if ~exist('derivatives/lossless/code/dependencies/eeglab_lossless', 'dir') ...
+%        || ~exist('derivatives/lossless/code/dependencies/matlog', 'dir')
+%    error(['derivatives/lossless/code/dependencies does not not contain ' ...
+%        'eeglab_lossless and/or matlog, or is not readable, or ' ...
+%        'your current folder in matlab is not the root of your ' ...
+%        'project']);
+%end
+fileName = mfilename('fullpath');
+pathPrefix = fileparts(fileName);
+
+addpath([pathPrefix '/../dependencies/eeglab-lossless'])
+addpath([pathPrefix '/../dependencies/matlog'])
+addpath([pathPrefix '/../scripts'])
+addpath([pathPrefix '/../tools/diagnostics'])
