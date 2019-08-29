@@ -71,9 +71,12 @@ if ~strcmp(ext,'.set')
 end
 
 %Load the .set file (this will need to be BIDS data file format compliant)
-logging_log('INFO', 'Loading set file: [batch_dfn]...');
-EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
-EEG = eeg_checkset( EEG );
+%logging_log('INFO', 'Loading set file: [batch_dfn]...');
+%EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
+%EEG = eeg_checkset( EEG );
+logging_log('INFO', 'Loading edf file: [batch_dfn]...');
+EEG = pop_biosig('[batch_dfn]');
+EEG = pop_chanedit(EEG, 'load',{'derivatives/BIDS-Lossless-EEG/code/misc/BioSemi_BUCANL_EEGLAB.sfp' 'filetype' 'autodetect'});
 
 if ~isfield(EEG,'marks');
     if isempty(EEG.icaweights)
