@@ -1,7 +1,8 @@
 #!/bin/bash
 
 set -u
-functionsource="../derivatives/lossless/code/misc/bashfunc"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+functionsource="$DIR/../misc/bashfunc"
 
 cat <<HEAD
 Copyright (C) 2017 Brock University Cognitive and Affective Neuroscience Lab
@@ -47,7 +48,7 @@ source "$functionsource"
 bold "Begin Setup\n"
 
 bold "INFO:"; echo "Verify project submodules have been cloned"
-depend="../derivatives/lossless/code/dependencies"
+depend="$DIR/../dependencies"
 msg="You likely need to run git clone --recursive"
 test_dir_exit "$depend/eeglab_lossless" "$msg"
 test_dir_exit "$depend/eeglab_lossless/plugins/amica" "$msg"
@@ -58,7 +59,8 @@ test_dir_exit "$depend/eeglab_lossless/plugins/interp_mont" "$msg"
 #test_dir_warn "analysis/data/1_init" "Have you copied your data files?"
 
 bold "INFO:"; echo "Making required directories"
-mkdir -p ../derivatives/lossless/log
+logDir="$DIR/../../log"
+mkdir -p "$logDir"
 
 if checkset "executable-files" ; then
     bold "INFO:" echo "Ensuring files are executable"
