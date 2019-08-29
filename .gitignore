@@ -7,7 +7,6 @@ octave-workspace
 # !derivatives/lossless/code/*
 derivatives/lossless/log
 code/eeg_init
-code/misc
 
 # Specifically hide the staging script
 derivatives/lossless/code/scripts/staging_script.m
