@@ -3,9 +3,11 @@ warning off;
 pkg load signal;
 pkg load parallel;
 
-addpath([pwd '/derivatives/lossless/code/dependencies/eeglab_lossless'], ...
-  [pwd '/derivatives/lossless/code/dependencies/matlog'], ...
-  [pwd '/derivatives/lossless/code/tools']);
+file_path = fileparts(mfilename('fullpath'));
+
+addpath([file_path '/../dependencies/eeglab_lossless'], ...
+  [file_path '/../dependencies/matlog'], ...
+  [file_path '/../tools']);
 cd '[:,1,remote_project_work]';
 
 % eeglab auto loads the path correctly instead of shotgun blasting with
