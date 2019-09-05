@@ -61,7 +61,7 @@ end
 
 %% LOAD DATASET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-EEG = pop_bidsload('[batch_dfn]');
+EEG = pop_bidsload('[batch_dfn]','gui',0);
 
 if ~isfield(EEG,'marks');
     if isempty(EEG.icaweights)
