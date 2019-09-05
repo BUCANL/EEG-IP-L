@@ -83,7 +83,7 @@ HEAD
     fi
     bold "INFO:" ; echo "$1 is not available, attempting to install it"
     bold "INFO:" ; echo "This will take some time, please wait patiently"
-    cd "../derivatives/lossless/code/dependencies/Octave_pkg"
+    cd "../dependencies/Octave_pkg"
     
     octave --eval "`cat <<HEAD
 try

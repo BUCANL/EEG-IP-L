@@ -61,22 +61,7 @@ end
 
 %% LOAD DATASET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%Check if it is a .set file
-logging_log('NOTICE', 'Starting scalpart');
-[path name ext] = fileparts('[batch_dfn]');
-if ~strcmp(ext,'.set')
-    logging_log('ERROR', sprintf('Wrong file format: %s should be .set',ext));
-    exit(1);
-end
-
-%Load the .set file (this will need to be BIDS data file format compliant)
-%logging_log('INFO', 'Loading set file: [batch_dfn]...');
-%EEG = pop_loadset('filepath','[batch_dfp]','filename','[batch_dfn]');
-%EEG = eeg_checkset( EEG );
-logging_log('INFO', 'Loading edf file: [batch_dfn]...');
-EEG = pop_biosig('[batch_dfn]');
-EEG = pop_chanedit(EEG, 'load',{'derivatives/BIDS-Lossless-EEG/code/misc/BioSemi_BUCANL_EEGLAB.sfp' 'filetype' 'autodetect'});
+EEG = pop_bidsload('[batch_dfn]');
 
 if ~isfield(EEG,'marks');
     if isempty(EEG.icaweights)

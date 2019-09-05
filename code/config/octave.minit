@@ -2,6 +2,7 @@ warning off;
 
 pkg load signal;
 pkg load parallel;
+pkg load io;
 
 file_path = fileparts(mfilename('fullpath'));
 
