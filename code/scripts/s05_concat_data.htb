@@ -409,7 +409,7 @@ logging_log('INFO','Checking for JVM...');
 javachk('jvm');
 
 % TODO(mae) this isn't added for some reason
-addpath([pwd '/derivatives/lossless/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite141209/src'])
+addpath([pwd '/derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite141209/src'])
 
 %% DIPFIT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
