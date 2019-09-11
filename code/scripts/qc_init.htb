@@ -51,7 +51,7 @@ features = ICL_feature_extractor(EEG, 40);
 
 % run ICL
 disp 'ICLabel: calculating labels...'
-labels = run_ICL(features{:});
+labels = run_ICL('default',features{:});
 
 % save into EEG
 disp 'ICLabel: saving results...'
@@ -139,3 +139,10 @@ EEG.marks.comp_info(manual_ind).flags(bioa_inds)=1;
 %SAVE *_qc.SET DATASET FILE... 
 EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qc.set','filepath','[batch_dfp]');
 %init_bids_sub(EEG,'[batch_dfn,_,-2]','[_,-2,batch_dfn,.,-1]');
+
+% BIDS Export calls - quick disabled varible below
+bidsMode = 1;
+if bidsMode
+    % Dot for path is on purpose. Don't worry - it's safe.
+    pop_writeeeg(EEG, '.[batch_dfp]/[batch_dfn,_,-1]_qc.edf', 'TYPE','EDF');
+end
