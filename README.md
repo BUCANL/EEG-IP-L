@@ -24,7 +24,7 @@ This installation assumes familiarity with the bash terminal, paths, and Matlab 
 6. Change directory into the derivatives folder: `cd derivatives`
 7. Within the derivatives folder, clone the pipeline on the remote: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
 8. Navigate back to the project root: `cd ..`
-9. Run the remote setup and follow the on screen prompts: `bash derivatives/BIDS-lossless-EEG/code/install/setup-remote.sh`
+9. Run the remote setup and follow the on screen prompts: `bash derivatives/BIDS-Lossless-EEG/code/install/setup-remote.sh`
 
 **Running Files Through the Pipeline**
 
