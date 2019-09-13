@@ -30,7 +30,7 @@ This installation assumes familiarity with the bash terminal, paths, and Matlab 
 
 10. Copy files from local to remote. Instructions for copying files can be found in the [Face13 tutorial](https://bucanl.github.io/SDC-LOSSLESS/03-submit/index.html)
 11. Point Matlab to your project_name folder (Face13 folder if you are doing the tutorial)
-12. In the Matlab console execute: `addpath derivatives/BIDS-lossless-EEG/code/install`
+12. In the Matlab console execute: `addpath derivatives/BIDS-Lossless-EEG/code/install`
 13. In the Matlab console execute: `lossless_path`
 14. In the Matlab console execute: `eeglab`
 15. Run history files s01-s05, with batch context configuration files c01-c05, and an appropriate context configuration on selected data files in a history template batch. Information on how to set up a context configuration and load the history template batch can be found in the [Face13 tutorial](https://bucanl.github.io/SDC-LOSSLESS/03-submit/index.html)
