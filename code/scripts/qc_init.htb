@@ -136,13 +136,20 @@ bioa_inds = marks_label2index(EEG.marks.comp_info,{'muscle','eye','heart','chan_
 EEG.marks.comp_info(manual_ind).flags=zeros(min(size(EEG.icaweights)),1);
 EEG.marks.comp_info(manual_ind).flags(bioa_inds)=1;
 
-%SAVE *_qc.SET DATASET FILE... 
-EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qc.set','filepath','[batch_dfp]');
-%init_bids_sub(EEG,'[batch_dfn,_,-2]','[_,-2,batch_dfn,.,-1]');
-
 % BIDS Export calls - quick disabled varible below
 bidsMode = 1;
 if bidsMode
     % Dot for path is on purpose. Don't worry - it's safe.
-    pop_writeeeg(EEG, '.[batch_dfp]/[batch_dfn,_,-1]_qc.edf', 'TYPE','EDF');
+    fName = '.[batch_dfp]/[batch_dfn,_,-1].edf';
+    pop_writeeeg(EEG, fName, 'TYPE','EDF');
+    dlmwrite(strrep(fName,'_eeg.edf','_icaweights.tsv'),{EEG.icaweights},'\t');
+    dlmwrite(strrep(fName,'_eeg.edf','_icasphere.tsv'),{EEG.icasphere},'\t');
+    s = {};
+    s.algorithm = 'amica15';
+    s.icachansind = EEG.icachansind;
+    s.intendedFor = fName;
+    savejson('',s,strrep(fName,'_eeg.edf','_icaweights.json'));
+    export_anno(EEG,fName);
+else
+    EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qc.set','filepath','[batch_dfp]');
 end
