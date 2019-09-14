@@ -149,7 +149,7 @@ if bidsMode
     s.icachansind = EEG.icachansind;
     s.intendedFor = fName;
     savejson('',s,strrep(fName,'_eeg.edf','_icaweights.json'));
-    export_anno(EEG,fName);
+    export_anno(EEG,fName,'ll');
 else
     EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qc.set','filepath','[batch_dfp]');
 end
