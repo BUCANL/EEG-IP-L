@@ -548,9 +548,6 @@ EEG.etc.ic_classification.ICLabel.classifications = labels;
 
 tmp=EEG.etc.ic_classification;
 
-EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
-EEG = eeg_checkset(EEG);
-
 EEG.etc.ic_classification=tmp;
 
 % Extract labels from the structure.
