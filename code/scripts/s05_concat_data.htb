@@ -622,7 +622,7 @@ EEG.marks.comp_info(manual_ind).flags(bioa_inds)=1;
 
 % BIDS Export calls
 % Dot for path is on purpose. Don't worry - it's safe.
-fName = '.[batch_dfp]/[batch_dfn,_,-1].edf';
+fName = '.[batch_dfp]/[out_path]/[batch_dfn].edf';
 pop_writeeeg(EEG, fName, 'TYPE','EDF');
 dlmwrite(strrep(fName,'_eeg.edf','_icaweights.tsv'),EEG.icaweights,'\t');
 dlmwrite(strrep(fName,'_eeg.edf','_icasphere.tsv'),EEG.icasphere,'\t');
