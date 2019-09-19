@@ -548,6 +548,10 @@ EEG.etc.ic_classification.ICLabel.classifications = labels;
 
 tmp=EEG.etc.ic_classification;
 
+% Reload dataset:
+EEG = pop_loadset('filepath','[in_path]','filename','[batch_dfn,_,-1]_eeg_ll.set');
+EEG = eeg_checkset(EEG);
+
 EEG.etc.ic_classification=tmp;
 
 % Extract labels from the structure.
