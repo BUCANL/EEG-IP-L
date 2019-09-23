@@ -1,6 +1,15 @@
-%LOAD DATASET FILE...
-EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
-EEG = eeg_checkset(EEG);
+%LOAD BIDS FILES
+sphereLoc = '[batch_dfp]/[batch_dfn,_,-1]_icasphere.tsv'
+weightsLoc = '[batch_dfp]/[batch_dfn,_,-1]_icaweights.tsv'
+annoFile = '[batch_dfp]/[batch_dfn,_,-1]_annotations.tsv'
+
+elecFile = './[batch_dfn,_,-1]_electrodes.tsv'
+eventsFile = './[batch_dfn,_,-1]_events.tsv'
+
+EEG = pop_bidsload('[batch_dfp]/[batch_dfn]','elecLoc',elecFile,'eventLoc',eventsFile,'icaSphere',sphereLoc,'icaWeights',weightsLoc,'annoLoc',annoFile);
+
+% Update color and flag information with fix script:
+fixMarks;
 
 bfh=figure;
 bar(EEG.etc.ic_classification.ICLabel.classifications,'stacked','Horizontal','on');
@@ -78,6 +87,8 @@ try close(fullnash),clear fullnash, catch clear fullnash, end
 %CLOSE/CLEAR EEG SCROLL PLOT HANDLES
 try close(sfh),clear sfh, catch clear sfh, end
 
-%SAVE *_qc.SET DATASET FILE... 
-EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qcr.set','filepath','[batch_dfp]');
+% SAVE *_qc.SET DATASET FILE... 
+% EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qcr.set','filepath','[batch_dfp]');
 
+% BIDS - Annotation export only
+export_anno(EEG,'[batch_dfp]/[batch_dfn]','qc');
