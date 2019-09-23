@@ -635,4 +635,4 @@ s.algorithm = 'amica15';
 s.icachansind = EEG.icachansind;
 s.intendedFor = fName;
 savejson('',s,strrep(fName,'_eeg.edf','_icaweights.json'));
-export_anno(EEG,fName,'ll');
+export_anno(EEG,fName,'');
