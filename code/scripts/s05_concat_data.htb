@@ -638,5 +638,5 @@ savejson('',s,strrep(fName,'_eeg.edf','_icaweights.json'));
 export_anno(EEG,fName,'');
 
 % ICLabel quick export
-iclFname = strrep(fName,'eeg.edf','_iclabel.mat');
+iclFname = strrep(fName,'_eeg.edf','_iclabel.mat');
 save(iclFname, 'tmp'); % see above ICLabel section for tmp definition
