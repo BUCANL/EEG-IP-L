@@ -11,6 +11,10 @@ EEG = pop_bidsload('[batch_dfp]/[batch_dfn]','elecLoc',elecFile,'eventLoc',event
 % Update color and flag information with fix script:
 fixMarks;
 
+% Load extra ICLabel inforation from via non-bids method
+tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
+EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
+
 bfh=figure;
 bar(EEG.etc.ic_classification.ICLabel.classifications,'stacked','Horizontal','on');
 colormap(jet);
