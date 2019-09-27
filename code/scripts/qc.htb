@@ -14,6 +14,7 @@ fixMarks;
 % Load extra ICLabel inforation from via non-bids method
 tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
 EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
+EEG.etc.ic_classification.ICLabel.classifications = real(EEG.etc.ic_classification.ICLabel.classifications);
 
 bfh=figure;
 bar(EEG.etc.ic_classification.ICLabel.classifications,'stacked','Horizontal','on');
