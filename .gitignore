@@ -9,6 +9,8 @@ log
 
 # BIDS ignores:
 sourcedata/*
+derivatives
+code/misc/locks
 sub-*
 participants.tsv
 dataset_description.json
