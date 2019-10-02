@@ -637,6 +637,11 @@ s.intendedFor = fName;
 savejson('',s,strrep(fName,'_eeg.edf','_icaweights.json'));
 export_anno(EEG,fName,'');
 
+% Should also export the dipole information
+dipFname = strrep(fName,'_eeg.edf','_dipole.mat');
+dipVar = EEG.dipfit;
+save(dipFname,'dipVar');
+
 % ICLabel quick export
 iclFname = strrep(fName,'_eeg.edf','_iclabel.mat');
 save(iclFname, 'tmp'); % see above ICLabel section for tmp definition
