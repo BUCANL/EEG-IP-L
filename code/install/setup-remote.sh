@@ -122,4 +122,19 @@ if checkset "octave-pkgs" ; then
     set_lockset "octave-pkgs"
 fi
 
+if checkset "fieldtrip-made" ; then
+    (
+    sesinit="`request_init octave`"
+    source "${sesinit}"
+    bold "INFO:"; echo "Rebuilding Fieldtrip"
+    pwd
+    cd "$(dirname "$(find ../.. -type d -name 'Fieldtrip*' | head -1)")"/Fieldtrip*
+    make clean OCTAVE=`which octave`
+    mkdir -p engine/private
+    make mex OCTAVE=`which octave`
+    cd -
+    )
+    set_lockset "fieldtrip-made"
+fi
+
 good "Completed!"
