@@ -627,21 +627,21 @@ EEG.marks.comp_info(manual_ind).flags(bioa_inds)=1;
 % BIDS Export calls
 % Dot for path is on purpose. Don't worry - it's safe.
 fName = '.[batch_dfp]/[out_path]/[batch_dfn]';
-pop_writeeeg(EEG, fName, 'TYPE','EDF');
-dlmwrite(strrep(fName,'_eeg.edf','_icaweights.tsv'),EEG.icaweights,'\t');
-dlmwrite(strrep(fName,'_eeg.edf','_icasphere.tsv'),EEG.icasphere,'\t');
+pop_writeeeg(EEG, strrep(fName,'_eeg.edf','_desc-ll_eeg.edf'), 'TYPE','EDF');
+dlmwrite(strrep(fName,'_eeg.edf','_desc-ll_icaweights.tsv'),EEG.icaweights,'\t');
+dlmwrite(strrep(fName,'_eeg.edf','_desc-ll_icasphere.tsv'),EEG.icasphere,'\t');
 s = {};
 s.algorithm = 'amica15';
 s.icachansind = EEG.icachansind;
 s.intendedFor = fName;
-savejson('',s,strrep(fName,'_eeg.edf','_icaweights.json'));
-export_anno(EEG,fName,'');
+savejson('',s,strrep(fName,'_eeg.edf','_desc-ll_icaweights.json'));
+export_anno(EEG,fName,'ll');
 
 % Should also export the dipole information
-dipFname = strrep(fName,'_eeg.edf','_dipole.mat');
+dipFname = strrep(fName,'_eeg.edf','_desc-ll_dipole.mat');
 dipVar = EEG.dipfit;
 save(dipFname,'dipVar');
 
 % ICLabel quick export
-iclFname = strrep(fName,'_eeg.edf','_iclabel.mat');
+iclFname = strrep(fName,'_eeg.edf','_desc-ll_iclabel.mat');
 save(iclFname, 'tmp'); % see above ICLabel section for tmp definition
