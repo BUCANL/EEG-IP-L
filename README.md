@@ -9,7 +9,7 @@ A reference manual for the pipeline can be found on the [Wiki](https://github.co
 A tutorial for using the pipeline with a sample dataset can be found [here](https://bucanl.github.io/SDC-LOSSLESS/)
 
 # Installation and How to Run
-This installation assumes familiarity with the bash terminal, paths, and Matlab console use, as well as requires the use of a remote computer cluster and git. These setup steps can be run to set up the pipeline for use with the Face13 sample dataset during the tutorial or for use with your own data.
+This installation assumes familiarity with the bash terminal, paths, and Matlab console use, as well as requires the use of a remote computer cluster and git. These setup steps function only as a quick reference. First time users should refer to the tutorial linked to above.
 
 **Local Setup**
 1. If necessary, create a derivatives folder within your project folder (this will be the Face13 folder if you are doing the tutorial): `mkdir derivatives`
@@ -17,7 +17,6 @@ This installation assumes familiarity with the bash terminal, paths, and Matlab 
 3. Within the derivatives folder, clone the pipeline locally: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
 
 **Remote Setup**
-
 4. Navigate to your remote computer cluster and create a remote project folder: `mkdir project_name`
 5. In the project_name folder, create a derivatives folder: `mkdir derivatives`
 6. Change directory into the derivatives folder: `cd derivatives`
@@ -26,7 +25,6 @@ This installation assumes familiarity with the bash terminal, paths, and Matlab 
 9. Run the remote setup and follow the on screen prompts: `bash derivatives/BIDS-Lossless-EEG/code/install/setup-remote.sh`
 
 **Running Files Through the Pipeline**
-
 10. Copy files from local to remote. Instructions for copying files can be found in the [Face13 tutorial](https://bucanl.github.io/SDC-LOSSLESS/03-submit/index.html)
 11. Point Matlab to your project_name folder (Face13 folder if you are doing the tutorial)
 12. In the Matlab console execute: `addpath derivatives/BIDS-Lossless-EEG/code/install`
