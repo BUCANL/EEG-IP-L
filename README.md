@@ -1,15 +1,14 @@
 # The Lossless EEG Pipeline
+This repository contains the lossless EEG pipeline package that contains everything you need to get started processing EEG data.
 
 ![photo](https://www.cosc.brocku.ca/~tk11br/pipelineGraphic.png)
 
-This repository contains the lossless EEG pipeline package that contains everything you need to get started processing EEG data.
-
-## Documentation
+# Documentation
 A reference manual for the pipeline can be found on the [Wiki](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki)
 
 A tutorial for using the pipeline with a sample dataset can be found [here](https://bucanl.github.io/SDC-LOSSLESS/)
 
-## How to Run
+# Installation and How to Run
 This installation assumes familiarity with the bash terminal, paths, and Matlab console use, as well as requires the use of a remote computer cluster and git. These setup steps can be run to set up the pipeline for use with the Face13 sample dataset during the tutorial or for use with your own data.
 
 **Local Setup**
@@ -36,12 +35,11 @@ This installation assumes familiarity with the bash terminal, paths, and Matlab 
 15. Run history files s01-s05, with batch context configuration files c01-c05, and an appropriate context configuration on selected data files in a history template batch. Information on how to set up a context configuration and load the history template batch can be found in the [Face13 tutorial](https://bucanl.github.io/SDC-LOSSLESS/03-submit/index.html)
 16. Copy completed files from remote to local. Instructions for copying files can be found in the [Face13 tutorial](https://bucanl.github.io/SDC-LOSSLESS/03-submit/index.html)
 
-## Contact / Issues
+# Contact / Issues
 Feel free to make an issue in the [Issue Tracker](https://github.com/BUCANL/BIDS-Lossless-EEG/issues)
 or [contact us directly](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki/Contacting-Us)
 
-## License / Copyright
-
+# License / Copyright
 Copyright (C) 2017 James Desjardins and others
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
