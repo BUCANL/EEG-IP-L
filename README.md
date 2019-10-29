@@ -37,7 +37,10 @@ This installation assumes familiarity with the bash terminal, paths, and Matlab 
 
 # Contact / Issues
 Feel free to make an issue in the [Issue Tracker](https://github.com/BUCANL/BIDS-Lossless-EEG/issues)
-or [contact us directly](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki/Contacting-Us)
+or [contact us directly](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki/Contacting-Us).
+
+# Attribution
+Code initially designed and written by James A. Desjardins (SHARCNET) with contributions from Andrew Lofts, Allan Campopiano, Mae Kennedy, Tyler Collins, Sara Stephenson, and Mike Cichonski supported by NSERC to Sidney J. Segalowitz at the Jack and Nora Walker Centre for Lifespan Development Research (Brock University), Brain Canada funding to Alan C. Evans at the Montreal Neurological Institute and Hospital (McGill University), and a Dedicated Programming award from SHARCNET, Compute Ontario.
 
 # License / Copyright
 Copyright (C) 2017 James Desjardins and others
