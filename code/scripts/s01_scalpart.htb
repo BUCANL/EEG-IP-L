@@ -1,20 +1,10 @@
-%% SCRIPT DESCRIPTION
-% This script features the main preprocessing and cleaning of the data before the ICA process begin. Data is flagged for high standard deveiavtion
-% by channel to remove comically bad channels. The data is then rereferenced to the average site, and high/low pass filtered.
-% Channel neighbor correlations are then calculated to find odd channels and bridged channels. The outermost channel is also flagged to reduce the rank of the data.
-% After another rereference channel correlations are calculated by time epoch and flagged. The file is saved containing the, marks structure, then saved again 
-% with all of the mentioned flags puregd from the data in order to prime it for ICA.
-%
 %% From Config          key_strswap         Description
 %-----------------------------------------------------------------------------------------------------------------------------
 %    in_path =           [in_path]           Relative path to input data files assuming cd = work_path
 %    montage_info =      [montage_info]      Montage information to fit channel locations on a standard surface.
-%                                            This can be a transformations matrix (e.g. [-.14,-22,-48,-.07,0,-1.57,1080,1260,1240])
-%                                            ... or a a file containing a transformation matrix (e.g. [batch_dfn]_transmat.mat).
-%                                            ... or a BIDS channel location tsv file (assuming that during BIDS init the channels were coregistered to the standard surface).
-%    staging_script =    [staging_script]    Script file path/name that creates marks based on events in the raw data file. 
-% 	 recur_sec =         [recur_sec]         Recurrence (sec) for artifact detection epoching (e.g. .5, Default 1)
-%    limit_sec =         [limit_sec]         Limits (sec) for artifact detection epoching (e.g. [-.5 0], Default [0 recur_sec])
+%    staging_script =    [staging_script]    Path to Staging script. See Wiki for details. 
+% 	 recur_sec =         [recur_sec]         Frequency of dummy events for windowing.
+%    limit_sec =         [limit_sec]         Time interval around dummy event for each epoch. (e.g. [0 1] in seconds)
 %    sd_t_meth =         [sd_t_meth]         Method used for flagging epochs (e.g. 'q' (quantiles), or 'na' (default))
 %    sd_t_vals  =        [sd_t_vals]         Percentage trim for confidence intervals during epoch standard deviation criteria (e.g. [.3 .7])
 %    sd_t_o =            [sd_t_o]            z threshold for flagging epochs during standard deviation criteria (e.g. 6)
@@ -61,8 +51,10 @@ end
 
 %% LOAD DATASET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Initial load
 EEG = pop_bidsload('[batch_dfn]','gui',0);
 
+% Build marks structure if it does not exist.
 if ~isfield(EEG,'marks');
     if isempty(EEG.icaweights)
         EEG.marks=marks_init(size(EEG.data));
@@ -71,18 +63,17 @@ if ~isfield(EEG,'marks');
     end
 end
 
-EEG.marks = marks_add_label(EEG.marks,'time_info', ...
-{'init_ind',[0,0,1],[1:EEG.pnts]});
+% Mark added to tell if time has been lost
+EEG.marks = marks_add_label(EEG.marks,'time_info', {'init_ind',[0,0,1],[1:EEG.pnts]});
 
-%execute the staging script if specified.
+% Execute the staging script if specified.
 if exist('[staging_script]');
     [ssp,ssn,sse]=fileparts('[staging_script]');
     addpath(ssp);
     eval(ssn);
 end
 
-%add channel coregistration procedure here.
-%warp locations to standard head surface:
+% Warp locations to standard head surface:
 if ~isempty('[montage_info]');
     if isempty(str2num('[montage_info]'));
         %if it is a BIDS channel tsv, load the tsv,sd_t_f_vals
@@ -94,19 +85,11 @@ if ~isempty('[montage_info]');
     end
 end
 
-% Apply average re-reference
-%chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
-%chan_m = mean(EEG.data(chan_inds,:),1);
-%chan_m_mat = repmat(chan_m,size(EEG.data,1),1);
-%EEG.data = EEG.data - chan_m_mat;
-%clear chan_m_mat;
-
 % Window the continuous data
 logging_log('INFO', 'Windowing the continous data...');
 EEG = marks_continuous2epochs(EEG,'recurrence',[[recur_sec]],'limits',[[limit_sec]]);
-logging_log('INFO', 'LOADED DATASET...');
 
-% rereference to selected channels..
+% Determines comically bad channels, and leaves them out of average rereference
 chan_inds = marks_label2index(EEG.marks.chan_info,{'manual'},'indexes','invert','on');
 epoch_inds = marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
 [EEG,trim_ch_sd]=chan_variance(EEG,'data_field','data', ...
@@ -125,6 +108,7 @@ q=quantile(mean_chan_dist,[.3,.7]);
 refchans=find(mean_chan_dist<m+6*diff(q));
 
 EEG.data=EEG.data-repmat(mean(EEG.data(chan_inds(refchans),:,:),1),size(EEG.data,1),1);
+% end rereference block
 
 %% CALCULATE DATA SD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -334,7 +318,6 @@ mr = median(data_r_ch,2);
 iqrr = iqr(data_r_ch,2);
 msr = mr./iqrr;
 flag_b_chan_inds = find(msr>ve_trimmean(msr,[bridge_trim],1)+ve_trimstd(msr,[bridge_trim],1)*[bridge_z]);
-logging_log('INFO', 'IDENTIFIED BRIDGED CHANNELS...');
 
 % Edit the channel flag info structure
 logging_log('INFO', 'Updating chflaginfo structure...');

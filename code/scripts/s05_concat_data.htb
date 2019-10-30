@@ -158,7 +158,6 @@ tic;
 epoch_inds=marks_label2index(EEG.marks.time_info,{'manual'},'indexes','invert','on');
 [EEG,icaact_sd2_t]=chan_variance(EEG,'data_field','icaact', ...
 		'epoch_inds',epoch_inds, ...
-		'varmeasure','absmean', ...
         'detrend','off', ...
         'plot_figs','off');
 
@@ -408,8 +407,7 @@ toc
 logging_log('INFO','Checking for JVM...');
 javachk('jvm');
 
-% TODO(mae) this isn't added for some reason
-addpath([pwd '/derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite141209/src'])
+addpath([pwd '/derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite20190922/src'])
 
 %% DIPFIT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -425,39 +423,12 @@ EEG = pop_dipfit_settings( EEG, 'hdmfile','[dip_vol]', ...
 				'coord_transform',[dip_transmat], ...
 				'chansel',[1:EEG.nbchan] );
 
-% OLD SINGLE THREADED SETUP
-% EEG = pop_multifit(EEG, [1:EEG.nbchan] ,'threshold',100,'plotopt',{'normlen' 'on'});
-
 % NEW MULTI-THREADED SETUP
 EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8,'threshold',100,'plotopt',{'normlen' 'on'});
 
 EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
 toc
-
-%% MARK ICs FOR REJECTION BASED ON RV
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Creates marks based on dipfit results. Dipfit marks are added
-% for rejection while ICMARC are just for reference.
-% IC RESIDUAL VARIANCE FLAG
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Residuals greater than 15% are flagged - can be done here as it only references
-% dipoles and their values.
-%logging_log('INFO','UPDATE MARKS STRUCTURE WITH IC_RV...');
-%tic;
-% Dipole criteria changed from 0.15 to 0.2 to be less sensitive
-%EEG.reject.gcompreject(find([EEG.dipfit.model.rv]>.15))=1;
-%EEG.reject.gcompreject(find(isnan([EEG.dipfit.model.rv])))=1;
-%EEG.marks=marks_add_label(EEG.marks,'comp_info', ...
-%	{'ic_rv',[1,0,0],[1,0,0],-1,EEG.reject.gcompreject'});
-%logging_log('INFO','TIME TO: UPDATE MARKS STRUCTURE...');
-%toc
-
-% COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...
-%tic;
-%EEG=pop_marks_merge_labels(EEG,'comp_info',{'manual','ic_rv'},'target_label','manual');
-%logging_log('INFO','TIME TO: COMBINE MARKS STRUCTURE INTO MANUAL FLAGS...');
-%toc
 
 % Adjust montage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -487,7 +458,7 @@ end
 logging_log('INFO', 'Scheduler: [scheduler]');
 print_chan_sample(EEG);
 
-
+% Incase the standard studywide diagnostic mark name wasn't used
 if ~find(strcmpi({EEG.marks.chan_info.label},'ch_s_sd'));
     EEG.marks=marks_add_label(EEG.marks,'chan_info',{'ch_s_sd',[1,0,0],[]});
 end;

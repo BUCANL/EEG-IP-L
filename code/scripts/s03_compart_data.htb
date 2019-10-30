@@ -127,7 +127,6 @@ toc
 % Flags small gaps between rejection flags so that there are not as many
 % short segments to be analyzed
 
-% Mark any flag gaps < 2 sec.
 tic;
 EEG=pop_marks_flag_gap(EEG,{'manual','mark_gap','ic_sd1'}, ...
                             [min_gap_ms],'mark_gap',[.8,.8,.8],'offsets',[0 0],'ref_point','both');
