@@ -107,13 +107,13 @@ if checkset "octave-pkgs" ; then
     test_octave_pkg "control" "control-3.0.0.tar.gz"
   
     bold "INFO:" ; echo "This will take some time, please wait patiently"
-    test_octave_pkg "signal" "signal-1.3.2.tar.gz"
+    test_octave_pkg "signal" "signal-1.4.1.tar.gz"
 
     bold "INFO:" ; echo "This will take some time, please wait patiently"
     test_octave_pkg "struct" "struct-1.0.14.tar.gz"
 
     bold "INFO:" ; echo "This will take some time, please wait patiently"
-    test_octave_pkg "parallel" "parallel-3.1.1.tar.gz"
+    test_octave_pkg "parallel" "parallel-3.1.3.tar.gz"
 
     bold "INFO:" ; echo "This will take some time, please wait patiently"
     test_octave_pkg "io" "io-2.4.12.tar.gz"
