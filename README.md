@@ -9,19 +9,19 @@ A reference manual for the pipeline can be found on the [Wiki](https://github.co
 A tutorial for using the pipeline with a sample dataset can be found [here](https://bucanl.github.io/SDC-LOSSLESS/)
 
 # Installation and How to Run
-This installation assumes familiarity with the bash terminal, paths, and Matlab console use, as well as requires the use of a remote computer cluster and git. These setup steps function only as a quick reference. First time users should refer to the tutorial linked to above.
+This installation assumes familiarity with the bash terminal, paths, and Matlab console use, as well as requires the use of a remote computer cluster and git. These setup steps function only as a quick reference. First time users should refer to the [tutorial](https://bucanl.github.io/SDC-LOSSLESS/).
 
 **Local Setup**
 1. If necessary, create a derivatives folder within your project folder (this will be the Face13 folder if you are doing the tutorial): `mkdir derivatives`
 2. Change directory into the derivatives folder: `cd derivatives`
-3. Within the derivatives folder, clone the pipeline locally: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
+3. Within the derivatives folder, clone the pipeline locally. **NOTE:** Use the recursive flag in order to clone all the required submodules: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
 
 **Remote Setup**
 
 4. Navigate to your remote computer cluster and create a remote project folder: `mkdir project_name`
 5. In the project_name folder, create a derivatives folder: `mkdir derivatives`
 6. Change directory into the derivatives folder: `cd derivatives`
-7. Within the derivatives folder, clone the pipeline on the remote: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
+7. Within the derivatives folder, clone the pipeline on the remote. **NOTE:** Use the recursive flag in order to clone all the required submodules: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
 8. Navigate back to the project root: `cd ..`
 9. Run the remote setup and follow the on screen prompts: `bash derivatives/BIDS-Lossless-EEG/code/install/setup-remote.sh`
 
