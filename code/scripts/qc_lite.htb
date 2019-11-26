@@ -1,18 +1,18 @@
 %LOAD BIDS FILES
-sphereLoc = '[batch_dfp]/[batch_dfn,_,-1]_desc-ll_icasphere.tsv'
-weightsLoc = '[batch_dfp]/[batch_dfn,_,-1]_desc-ll_icaweights.tsv'
-annoFile = '[batch_dfp]/[batch_dfn,_,-1]_desc-ll_annotations.tsv'
+sphereLoc = '[batch_dfp]/[batch_dfn,_,-1]_icasphere.tsv'
+weightsLoc = '[batch_dfp]/[batch_dfn,_,-1]_icaweights.tsv'
+annoFile = '[batch_dfp]/[batch_dfn,_,-1]_annotations.tsv'
 
-elecFile = './[batch_dfn,_,-1]_electrodes.tsv'
-eventsFile = './[batch_dfn,_,-1]_events.tsv'
+elecFile = './[batch_dfn,_,-2]_electrodes.tsv'
+eventsFile = './[batch_dfn,_,-2]_events.tsv'
 
-EEG = pop_bidsload('[batch_dfp]/[batch_dfn,_,-1]_desc-ll_eeg.edf','elecLoc',elecFile,'eventLoc',eventsFile,'icaSphere',sphereLoc,'icaWeights',weightsLoc,'annoLoc',annoFile);
+EEG = pop_bidsload('[batch_dfp]/[batch_dfn]','elecLoc',elecFile,'eventLoc',eventsFile,'icaSphere',sphereLoc,'icaWeights',weightsLoc,'annoLoc',annoFile);
 
 % Update color and flag information with fix script:
 fixMarks;
 
 % Load extra ICLabel inforation from via non-bids method
-tmp = load('[batch_dfp]/[batch_dfn,_,-1]_desc-ll_iclabel.mat');
+tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
 EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
 EEG.etc.ic_classification.ICLabel.classifications = real(EEG.etc.ic_classification.ICLabel.classifications);
 
@@ -58,4 +58,4 @@ close(tfh(find(strncmp('View components properties - pop_viewprops() (dataset:',
 try close(sfh),clear sfh, catch clear sfh, end
 
 % BIDS - Annotation export only
-export_anno(EEG,'[batch_dfp]/[batch_dfn]','qc');
+export_anno(EEG,'[batch_dfp]/[batch_dfn,_,-2]_eeg.edf','qc');
