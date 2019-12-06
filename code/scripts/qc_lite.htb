@@ -16,6 +16,13 @@ tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
 EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
 EEG.etc.ic_classification.ICLabel.classifications = real(EEG.etc.ic_classification.ICLabel.classifications);
 
+% Edge case for empty figure plots
+if isempty(EEG.event)
+    EEG.event(1).latency = 0;
+    EEG.event(1).type = 'null';
+    EEG.event(1).urevent = 1;
+end
+
 screendims = get(0,'ScreenSize');
 xdim = screendims(3);
 ydim = screendims(4);
