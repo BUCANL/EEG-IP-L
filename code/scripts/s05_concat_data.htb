@@ -505,7 +505,8 @@ EEG = pop_marks_select_data(EEG,'time marks',[],'labels',{'manual'},'remove','on
 
 % extract features
 disp 'ICLabel: extracting features...'
-features = ICL_feature_extractor(EEG, 40);
+features = ICL_feature_extractor(EEG, 1);
+features{3} = real(features{3});
 
 % run ICL
 disp 'ICLabel: calculating labels...'
