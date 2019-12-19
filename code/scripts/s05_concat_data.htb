@@ -1,7 +1,8 @@
 %% SCRIPT DESCRIPTION
-% This script combineds the results of the amicas A,B and C. It takes this information and using ICAtest it determines which components were
-% and were not replicated across and flags them, along with time sections with high standard deviation. Beta,theta and Alpha power is calculated 
-% arcoss time and is marked but not primed for removal.
+% This script combines the results of Amica A,B and C. It takes this information and using ICAtest 
+% it determines which components were replicated across runs. Additionally, time sections with high 
+% standard deviation, beta, theta and alpha power are marked across time. Other processing includes: 
+% dipole fitting, ICLabel classification, and BIDS exporting.
 %
 %% From Config          key_strswap     Description
 %-----------------------------------------------------------------------------------------------------------------------------
