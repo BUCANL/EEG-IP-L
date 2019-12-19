@@ -1,10 +1,8 @@
 %% SCRIPT DESCRIPTION
-% This script is loads the results of a preliminary ICA and uses the
-% standard deviation of the components to flag and remove data time that
-% does not fit a well behaved model. This will help make the next
-% components stronger. The log likelihood of the model is also flagged for
-% reference. Sections marked for high SD often have low log likelihoods
-% as well. It then prepares the required parameter files for the parrallel amicas ABC.
+% This script loads the results of the preliminary ICA and uses the standard deviation 
+% of the components to flag and remove time that does not fit the model. This will help make 
+% the next iteration of Amica more stable. The log likelihood of the model is also ingested for 
+% future reference. It then prepares the required parameter files for the parrallel Amicas (s04a, s04b, s04c).
 %
 %% From Config          key_strswap         Description
 %-----------------------------------------------------------------------------------------------------------------------------
