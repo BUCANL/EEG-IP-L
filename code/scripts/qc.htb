@@ -1,21 +1,8 @@
-%LOAD BIDS FILES
-sphereLoc = '[batch_dfp]/[batch_dfn,_,-1]_icasphere.tsv'
-weightsLoc = '[batch_dfp]/[batch_dfn,_,-1]_icaweights.tsv'
-annoFile = '[batch_dfp]/[batch_dfn,_,-1]_annotations.tsv'
+%LOAD DATASET FILE...
+EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
+EEG = eeg_checkset(EEG);
 
-elecFile = './[batch_dfn,_,-2]_electrodes.tsv'
-eventsFile = './[batch_dfn,_,-2]_events.tsv'
-
-EEG = pop_bidsload('[batch_dfp]/[batch_dfn]','elecLoc',elecFile,'eventLoc',eventsFile,'icaSphere',sphereLoc,'icaWeights',weightsLoc,'annoLoc',annoFile);
-
-% Update color and flag information with fix script:
-fixMarks;
-
-% Load extra ICLabel inforation from via non-bids method
-tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
-EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
-EEG.etc.ic_classification.ICLabel.classifications = real(EEG.etc.ic_classification.ICLabel.classifications);
-
+EEG.event = [];
 % Edge case for empty figure plots
 if isempty(EEG.event)
     EEG.event(1).latency = 0;
@@ -99,5 +86,6 @@ try close(fullnash),clear fullnash, catch clear fullnash, end
 %CLOSE/CLEAR EEG SCROLL PLOT HANDLES
 try close(sfh),clear sfh, catch clear sfh, end
 
-% BIDS - Annotation export only
-export_anno(EEG,'[batch_dfp]/[batch_dfn,_,-2]_eeg.edf','qc');
+%SAVE *_qc.SET DATASET FILE... 
+EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qcr.set','filepath','[batch_dfp]');
+

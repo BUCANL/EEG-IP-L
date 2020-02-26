@@ -440,12 +440,12 @@ EEG = warp_locs( EEG, '[dip_elc]', ...
 EEG.chaninfo.nosedir='[cor_nosedir]';
 EEG=eeg_checkset(EEG);
 
-%% SAVE LOSSLESS DERIVATIVE *_eeg_ll.set FILE (same name as the input file from the 
+%% SAVE PRE ICLABEL *_eeg_picl.set FILE (same name as the input file from the 
 % BIDS root directory [but located in the derivatives/lossless directory]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-logging_log('INFO','Saving set file: [out_path]/[batch_dfn,_,-1]_eeg_ll.set...');
+logging_log('INFO','Saving set file: [out_path]/[batch_dfn,_,-1]_eeg_picl.set...');
 tic;
-EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_eeg_ll.set');
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_eeg_picl.set');
 logging_log('INFO','TIME TO: SAVE DIP DATA SET...');
 toc
 
@@ -522,7 +522,7 @@ EEG.etc.ic_classification.ICLabel.classifications = labels;
 tmp=EEG.etc.ic_classification;
 
 % Reload dataset:
-EEG = pop_loadset('filepath','[in_path]','filename','[batch_dfn,_,-1]_eeg_ll.set');
+EEG = pop_loadset('filepath','[in_path]','filename','[batch_dfn,_,-1]_eeg_picl.set');
 EEG = eeg_checkset(EEG);
 
 EEG.etc.ic_classification=tmp;
@@ -596,6 +596,15 @@ EEG.marks.comp_info(ambig_ind).order=3;
 bioa_inds = marks_label2index(EEG.marks.comp_info,{'muscle','eye','heart','chan_noise'},'indexes');
 EEG.marks.comp_info(manual_ind).flags=zeros(min(size(EEG.icaweights)),1);
 EEG.marks.comp_info(manual_ind).flags(bioa_inds)=1;
+
+%% SAVE LOSSLESS DERIVATIVE *_eeg_ll.set FILE (same name as the input file from the 
+% BIDS root directory [but located in the derivatives/lossless directory]).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+logging_log('INFO','Saving set file: [out_path]/[batch_dfn,_,-1]_eeg_ll.set...');
+tic;
+EEG = pop_saveset( EEG, 'filename','[out_path]/[batch_dfn,_,-1]_eeg_ll.set');
+logging_log('INFO','TIME TO: SAVE DIP DATA SET...');
+toc
 
 % BIDS Export calls
 % Dot for path is on purpose. Don't worry - it's safe.
