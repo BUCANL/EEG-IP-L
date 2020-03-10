@@ -1,20 +1,25 @@
-%LOAD BIDS FILES
-sphereLoc = '[batch_dfp]/[batch_dfn,_,-1]_icasphere.tsv'
-weightsLoc = '[batch_dfp]/[batch_dfn,_,-1]_icaweights.tsv'
-annoFile = '[batch_dfp]/[batch_dfn,_,-1]_annotations.tsv'
+%LOAD .SET FILES- for running *_ll.set files 
+%LOAD DATASET FILE...
+EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
+EEG = eeg_checkset(EEG);
 
-elecFile = './[batch_dfn,_,-2]_electrodes.tsv'
-eventsFile = './[batch_dfn,_,-2]_events.tsv'
+%LOAD BIDS FILES- for running .edf files
+%sphereLoc = '[batch_dfp]/[batch_dfn,_,-1]_icasphere.tsv'
+%weightsLoc = '[batch_dfp]/[batch_dfn,_,-1]_icaweights.tsv'
+%annoFile = '[batch_dfp]/[batch_dfn,_,-1]_annotations.tsv'
 
-EEG = pop_bidsload('[batch_dfp]/[batch_dfn]','elecLoc',elecFile,'eventLoc',eventsFile,'icaSphere',sphereLoc,'icaWeights',weightsLoc,'annoLoc',annoFile);
+%elecFile = './[batch_dfn,_,-2]_electrodes.tsv'
+%eventsFile = './[batch_dfn,_,-2]_events.tsv'
+
+%EEG = pop_bidsload('[batch_dfp]/[batch_dfn]','elecLoc',elecFile,'eventLoc',eventsFile,'icaSphere',sphereLoc,'icaWeights',weightsLoc,'annoLoc',annoFile);
 
 % Update color and flag information with fix script:
-fixMarks;
+%fixMarks;
 
 % Load extra ICLabel inforation from via non-bids method
-tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
-EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
-EEG.etc.ic_classification.ICLabel.classifications = real(EEG.etc.ic_classification.ICLabel.classifications);
+%tmp = load('[batch_dfp]/[batch_dfn,_,-1]_iclabel.mat');
+%EEG.etc.ic_classification = tmp.tmp; % Octave makes this a bit strange...
+%EEG.etc.ic_classification.ICLabel.classifications = real(EEG.etc.ic_classification.ICLabel.classifications);
 
 % Edge case for empty figure plots
 if isempty(EEG.event)
@@ -36,7 +41,7 @@ EEG_scalp = pop_vised(EEG,'data_type','EEG', ...
     'command','', ...
     'tag','ve_eeg', ...
     'keyselectcommand',{'t,ve_eegplot(''topoplot'',gcbf)';'r,ve_eegplot(''drawp'',0)';'o,qc_ovl_tog';'u,qc_ovl_upd'}, ...
-    'dispchans',32);
+    'dispchans',64);
 
 sfh = gcf;
 set(sfh,'Position',[1 1 xdim/2 ydim]);
@@ -64,5 +69,8 @@ close(tfh(find(strncmp('View components properties - pop_viewprops() (dataset:',
 %CLOSE/CLEAR EEG SCROLL PLOT HANDLES
 try close(sfh),clear sfh, catch clear sfh, end
 
-% BIDS - Annotation export only
-export_anno(EEG,'[batch_dfp]/[batch_dfn,_,-2]_eeg.edf','qc');
+%SAVE *_qcr.SET DATASET FILE... 
+EEG = pop_saveset( EEG,'filename','[batch_dfn,_,-1]_qcr.set','filepath','[batch_dfp]');
+
+%BIDS SAVE - Annotation export only- for running .edf files
+%export_anno(EEG,'[batch_dfp]/[batch_dfn,_,-2]_eeg.edf','qc');
