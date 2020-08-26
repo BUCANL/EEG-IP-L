@@ -1,0 +1,63 @@
+./code/scripts/s04c_amica.htb:1:[dep_path]/[amica_ver] derivatives/BIDS-Lossless-EEG/[batch_dfn,_,-1]_C.param
+./code/scripts/s04a_amica.htb:1:[dep_path]/[amica_ver] derivatives/BIDS-Lossless-EEG/[batch_dfn,_,-1]_A.param
+./code/scripts/fixMarks.m:1:lossless_marks = load('derivatives/BIDS-Lossless-EEG/code/scripts/lossless_marks.mat');
+./code/scripts/s02_amica_init.htb:1:[dep_path]/[amica_ver] derivatives/BIDS-Lossless-EEG/[batch_dfn,_,-1]_init.param
+./code/scripts/ll_validate.m:7:    [EEG, transform] = warp_locs( EEG,'derivatives/BIDS-Lossless-EEG/code/misc/standard_1005.elc', ...
+./code/scripts/ll_validate.m:8:            'mesh', 'derivatives/BIDS-Lossless-EEG/code/misc/standard_vol.mat', ...
+./code/scripts/localParam.m:21:ref_loc_file = 'derivatives/BIDS-Lossless-EEG/code/misc/standard_1020_ll_ref19.elc';
+./code/scripts/s04b_amica.htb:1:[dep_path]/[amica_ver] derivatives/BIDS-Lossless-EEG/[batch_dfn,_,-1]_B.param
+./code/scripts/s05_concat_data.htb:411:addpath([pwd '/derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite20190922/src'])
+./code/dependencies/eeglab_lossless/plugins/vised_marks/README.md:12:This plugin is part of BUCANL's [Lossless](https://github.com/BUCANL/BIDS-Lossless-EEG) EEG pipeline. As part of this, all tutorials and documentation are written using the Face13 dataset. Instructions on how to download and initialize this data can be found, [here](https://github.com/BUCANL/BIDS-Init-Face13-EEGLAB).
+./code/dependencies/eeglab_lossless/plugins/batch_context/README.md:8:This plugin is part of BUCANL's [Lossless](https://github.com/BUCANL/BIDS-Lossless-EEG) EEG pipeline. As part of this, all tutorials and documentation are written using the Face13 dataset. Instructions on how to download and initialize this data can be found, [here](https://github.com/BUCANL/BIDS-Init-Face13-EEGLAB).
+./code/config/contextconfig.cfg:2:	derivatives/BIDS-Lossless-EEG/log
+./code/config/contextconfig.cfg:6:	derivatives/BIDS-Lossless-EEG/code/dependencies
+./code/config/contextconfig.cfg:16:	graham.computecanada.ca:/scratch/user_name/project_name/derivatives/BIDS-Lossless-EEG/code/dependencies
+./code/config/contextconfig.cfg:22:    [config_dir] derivatives/BIDS-Lossless-EEG/code/config
+./code/config/contextconfig.cfg:24:    [script_dir] derivatives/BIDS-Lossless-EEG/code/scripts
+./code/config/face13_sbatch/c05_concat_data.cfg:6:    [in_path],derivatives/BIDS-Lossless-EEG
+./code/config/face13_sbatch/c05_concat_data.cfg:17:    [dip_vol], derivatives/BIDS-Lossless-EEG/code/misc/standard_vol.mat
+./code/config/face13_sbatch/c05_concat_data.cfg:18:    [dip_mri], derivatives/BIDS-Lossless-EEG/code/misc/standard_mri.mat
+./code/config/face13_sbatch/c05_concat_data.cfg:19:    [dip_elc], derivatives/BIDS-Lossless-EEG/code/misc/standard_1020.elc
+./code/config/face13_sbatch/c05_concat_data.cfg:24:    [out_path],derivatives/BIDS-Lossless-EEG
+./code/config/face13_sbatch/c05_concat_data.cfg:28:	derivatives/BIDS-Lossless-EEG/code/config/octave.sesinit
+./code/config/face13_sbatch/c05_concat_data.cfg:36:	derivatives/BIDS-Lossless-EEG/code/config/octave.minit
+./code/config/face13_sbatch/c01_scalpart_remote.cfg:8:	[staging_script],derivatives/BIDS-Lossless-EEG/code/scripts/face13_staging.m
+./code/config/face13_sbatch/c01_scalpart_remote.cfg:25:	[ref_loc_file],derivatives/BIDS-Lossless-EEG/code/misc/standard_1020_ll_ref19.elc
+./code/config/face13_sbatch/c01_scalpart_remote.cfg:46:	[out_path],derivatives/BIDS-Lossless-EEG
+./code/config/face13_sbatch/c01_scalpart_remote.cfg:47:	[amica_param_file],derivatives/BIDS-Lossless-EEG/code/misc/amica15_default.param
+./code/config/face13_sbatch/c01_scalpart_remote.cfg:52:	derivatives/BIDS-Lossless-EEG/code/config/octave.sesinit
+./code/config/face13_sbatch/c01_scalpart_remote.cfg:60:	derivatives/BIDS-Lossless-EEG/code/config/octave.minit
+./code/config/face13_sbatch/c04a_amica_remote.cfg:6:	[dep_path],derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/amica
+./code/config/face13_sbatch/c04a_amica_remote.cfg:12:	derivatives/BIDS-Lossless-EEG/code/config/amica.sesinit
+./code/config/face13_sbatch/c04a_amica_remote.cfg:18:	 derivatives/BIDS-Lossless-EEG/code/config/amica.jobinit
+./code/config/face13_sbatch/c03_compart_data_remote.cfg:6:	[in_path],derivatives/BIDS-Lossless-EEG
+./code/config/face13_sbatch/c03_compart_data_remote.cfg:16:	[out_path],derivatives/BIDS-Lossless-EEG
+./code/config/face13_sbatch/c03_compart_data_remote.cfg:17:	[amica_param_file],derivatives/BIDS-Lossless-EEG/code/misc/amica_default.param
+./code/config/face13_sbatch/c03_compart_data_remote.cfg:22:	derivatives/BIDS-Lossless-EEG/code/config/octave.sesinit
+./code/config/face13_sbatch/c03_compart_data_remote.cfg:30:	derivatives/BIDS-Lossless-EEG/code/config/octave.minit
+./code/config/face13_sbatch/c04c_amica_remote.cfg:6:	[dep_path],derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/amica
+./code/config/face13_sbatch/c04c_amica_remote.cfg:12:	derivatives/BIDS-Lossless-EEG/code/config/amica.sesinit
+./code/config/face13_sbatch/c04c_amica_remote.cfg:18:	derivatives/BIDS-Lossless-EEG/code/config/amica.jobinit
+./code/config/face13_sbatch/c04b_amica_remote.cfg:6:	[dep_path],derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/amica
+./code/config/face13_sbatch/c04b_amica_remote.cfg:12:	derivatives/BIDS-Lossless-EEG/code/config/amica.sesinit
+./code/config/face13_sbatch/c04b_amica_remote.cfg:18:	derivatives/BIDS-Lossless-EEG/code/config/amica.jobinit
+./code/config/face13_sbatch/c02_amica_init_remote.cfg:6:	[dep_path],derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/amica
+./code/config/face13_sbatch/c02_amica_init_remote.cfg:12:	derivatives/BIDS-Lossless-EEG/code/config/amica.sesinit
+./code/config/face13_sbatch/c02_amica_init_remote.cfg:18:	 derivatives/BIDS-Lossless-EEG/code/config/amica.jobinit
+Binary file ./Desjardins_20_Lossless_preprint.pdf matches
+./README:6:A reference manual for the pipeline can be found on the [Wiki](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki)
+./README:16:3. Within the derivatives folder, clone the pipeline locally: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
+./README:23:7. Within the derivatives folder, clone the pipeline on the remote: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
+./README:25:9. Run the remote setup and follow the on screen prompts: `bash derivatives/BIDS-Lossless-EEG/code/install/setup-remote.sh`
+./README:31:12. In the Matlab console execute: `addpath derivatives/BIDS-Lossless-EEG/code/install`
+./README:38:Feel free to make an issue in the [Issue Tracker](https://github.com/BUCANL/BIDS-Lossless-EEG/issues)
+./README:39:or [contact us directly](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki/Contacting-Us)
+./dataset_description.json:5:        "Name": "BIDS-Lossless-EEG",
+./dataset_description.json:7:        "CodeURL": "https://github.com/BUCANL/BIDS-Lossless-EEG"
+./README.md:7:A reference manual for the pipeline can be found on the [Wiki](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki)
+./README.md:17:3. Within the derivatives folder, clone the pipeline locally. **NOTE:** Use the recursive flag in order to clone all the required submodules: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
+./README.md:24:7. Within the derivatives folder, clone the pipeline on the remote. **NOTE:** Use the recursive flag in order to clone all the required submodules: `git clone --recursive https://github.com/BUCANL/BIDS-Lossless-EEG.git`
+./README.md:26:9. Run the remote setup and follow the on screen prompts: `bash derivatives/BIDS-Lossless-EEG/code/install/setup-remote.sh`
+./README.md:32:12. In the Matlab console execute: `addpath derivatives/BIDS-Lossless-EEG/code/install`
+./README.md:39:Feel free to make an issue in the [Issue Tracker](https://github.com/BUCANL/BIDS-Lossless-EEG/issues)
+./README.md:40:or [contact us directly](https://github.com/BUCANL/BIDS-Lossless-EEG/wiki/Contacting-Us).
