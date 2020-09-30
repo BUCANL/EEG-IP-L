@@ -69,11 +69,17 @@ end
 % These will always be the first two...
 EEG.marks.time_info(1) = EEG.marks.sorted_info(1);
 EEG.marks.time_info(2) = EEG.marks.sorted_info(2);
-extraLen = length(EEG.marks.extra_info);
-for i=1:extraLen
-    EEG.marks.time_info(2+i) = EEG.marks.extra_info(i);
+try
+    extraLen = length(EEG.marks.extra_info);
+catch ME,
+    extraLen = 0;
 end
-EEG.marks = rmfield(EEG.marks,'extra_info');
+if extraLen > 0
+    for i=1:extraLen
+        EEG.marks.time_info(2+i) = EEG.marks.extra_info(i);
+    end
+    EEG.marks = rmfield(EEG.marks,'extra_info');
+end
 for i=3:length(EEG.marks.sorted_info)
     EEG.marks.time_info(extraLen+i) = EEG.marks.sorted_info(i);
 end
