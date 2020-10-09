@@ -408,7 +408,7 @@ toc
 logging_log('INFO','Checking for JVM...');
 javachk('jvm');
 
-addpath([pwd '/derivatives/BIDS-Lossless-EEG/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite20190922/src'])
+addpath([pwd '/derivatives/EEG-IP-L/code/dependencies/eeglab_lossless/plugins/Fieldtrip-lite20190922/src'])
 
 %% DIPFIT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

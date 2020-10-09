@@ -1,4 +1,4 @@
-lossless_marks = load('derivatives/BIDS-Lossless-EEG/code/scripts/lossless_marks.mat');
+lossless_marks = load('derivatives/EEG-IP-L/code/scripts/lossless_marks.mat');
 
 timeOrdering = {'manual','init_ind','ch_sd','low_r','mark_gap','logl_init', ...
     'ic_sd1','logl_A','logl_B','logl_C','ic_sd2','ic_dt','ic_a','ic_b','ic_lg','ic_hg'};
