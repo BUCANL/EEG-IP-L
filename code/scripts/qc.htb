@@ -2,7 +2,6 @@
 EEG = pop_loadset('filename','[batch_dfn]','filepath','[batch_dfp]');
 EEG = eeg_checkset(EEG);
 
-EEG.event = [];
 % Edge case for empty figure plots
 if isempty(EEG.event)
     EEG.event(1).latency = 0;
