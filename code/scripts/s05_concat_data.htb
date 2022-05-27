@@ -425,7 +425,9 @@ EEG = pop_dipfit_settings( EEG, 'hdmfile','[dip_vol]', ...
 				'chansel',[1:EEG.nbchan] );
 
 % NEW MULTI-THREADED SETUP
-EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8,'threshold',100,'plotopt',{'normlen' 'on'});
+%EEG = pop_multifit_bucanl_parallel(EEG, [1:EEG.nbchan], 8,'threshold',100,'plotopt',{'normlen' 'on'});
+%running in serial until multi thread issue is resolved.
+EEG = pop_multifit(EEG, [1:EEG.nbchan],'threshold',100,'plotopt',{'normlen' 'on'});
 
 EEG=eeg_checkset(EEG);
 logging_log('INFO','TIME TO: FIT DIPOLES...');
