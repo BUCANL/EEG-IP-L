@@ -1,6 +1,6 @@
 # The EEG-IP-L Pipeline
 
-**This Project is no longer supported in MATLAB: Instead, please use the [Python version of this pipeline](https://github.com/lina-usc/pylossless)
+**This Project is no longer supported in MATLAB**: Instead, please use the [Python version of this pipeline](https://github.com/lina-usc/pylossless)
 
 ![photo](https://www.cosc.brocku.ca/~tk11br/pipelineGraphic.png)
 
