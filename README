@@ -1,6 +1,6 @@
 # The Lossless EEG Pipeline
 
-This repository contains the EEG-IP-L pipeline package that contains everything you need to get started processing EEG data.
+**This Project is no longer supported in MATLAB**: Instead, please use the [Python version of this pipeline](https://github.com/lina-usc/pylossless)
 
 ## Documentation
 A reference manual for the pipeline can be found on the [Wiki](https://github.com/BUCANL/EEG-IP-L/wiki)
